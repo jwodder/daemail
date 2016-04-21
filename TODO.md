@@ -3,6 +3,7 @@
 - Support sending directly using `smtplib`
 - Direct output to tempfiles instead of reading it all into a string
 - Make the subject reflect the exit status
+- Look into version requirements for `python-daemon`
 
 - Options to add:
     - split stdout and stderr instead of combining them
@@ -14,6 +15,7 @@
     - `-H`, `--header` — set additional mail headers (`action='append'`)
     - only capture stdout/don't capture stderr
     - only capture stderr/don't capture stdout
+    - Capture stdout/stderr, but don't send it?
     - use specified file for stdin?
     - Attach stdout to the e-mail as an `application/octet-stream` file
         - cannot be used with merged output
