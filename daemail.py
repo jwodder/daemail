@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import argparse
-import codecs
 from   datetime      import datetime
 import email.charset
 from   email.message import Message
@@ -34,22 +33,21 @@ def subcmd(cmd, merged=False, stdout=False, stderr=False):
         "command": ' '.join(cmd),  ### TODO: Quote arguments
     }
 
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--from', dest='sender')
-    parser.add_argument('-t', '--to')
-    parser.add_argument('-s', '--subject', default='Finished: {command}')
-    parser.add_argument('-F', '--failure-only', action='store_true')
-    parser.add_argument('-m', '--mail-cmd', default='sendmail -t')
-    parser.add_argument('-l', '--logfile', type=argparse.FileType('w+'))
-    parser.add_argument('-b', '--body', default='''\
+body_tmpl = '''\
 Started: {start}
 Finished: {end}
 Return code: {rc}
 
 {stdout}
-''')
+'''
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--from', dest='sender')
+    parser.add_argument('-t', '--to')
+    parser.add_argument('-F', '--failure-only', action='store_true')
+    parser.add_argument('-m', '--mail-cmd', default='sendmail -t')
+    parser.add_argument('-l', '--logfile', type=argparse.FileType('w+'))
     parser.add_argument('command')
     parser.add_argument('args', nargs=argparse.REMAINDER)
     args = parser.parse_args()
@@ -57,15 +55,15 @@ Return code: {rc}
         args.sender = os.getlogin() + '@' + socket.gethostname()
     if args.to is None:
         args.to = os.getlogin() + '@' + socket.gethostname()
-    with DaemonContext(stdout=args.logfile, stderr=args.logfile, working_directory=os.getcwd()):
+    with DaemonContext(stdout=args.logfile, stderr=args.logfile,
+                       working_directory=os.getcwd()):
         proc = subcmd([args.command] + args.args, merged=True)
         if proc["rc"] != 0 or not args.failure_only:
             msg = Message()
-            msg['Subject'] = args.subject.format(**proc)
+            msg['Subject'] = 'Finished: ' + proc["command"]
             msg['From'] = args.sender
             msg['To'] = args.to
-            body = codecs.decode(args.body, 'string_escape').format(**proc)
-            ### Use 'unicode_escape' instead?
+            body = body_tmpl.format(**proc)
             chrset = email.charset.Charset('utf-8')
             chrset.body_encoding = email.charset.QP
             msg.set_payload(body, chrset)
@@ -73,7 +71,6 @@ Return code: {rc}
                                         stdin=subprocess.PIPE)
             sendmail.communicate(str(msg))
             sys.exit(sendmail.returncode)
-
 
 if __name__ == '__main__':
     main()

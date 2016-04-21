@@ -3,6 +3,8 @@
 
 - Options to add:
     - set subject
+        - set subject for success
+        - set subject for failure
     - set body
         - read body template from stdin/a file
         - When not read from stdin, supports escape sequences in the format
