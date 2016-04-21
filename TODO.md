@@ -2,7 +2,6 @@
   options
 - Support sending directly using `smtplib`
 - Look into version requirements for `python-daemon`
-- If the output is empty, write "Output: none" instead of having an empty quote
 
 - Options to add:
     - split stdout and stderr instead of combining them

@@ -61,14 +61,13 @@ def main():
             msg['From'] = args.sender
             msg['To'] = args.to
             proc["stdout"] = re.sub(r'^', '> ', proc["stdout"], flags=re.M)
-            body = '''\
-Start Time:  {start}
-End Time:    {end}
-Exit Status: {rc}
-
-Output:
-{stdout}
-'''.format(**proc)
+            body = 'Start Time:  {start}\n' \
+                   'End Time:    {end}\n' \
+                   'Exit Status: {rc}\n\n'.format(**proc)
+            if proc["stdout"]:
+                body += 'Output:\n' + proc["stdout"] + '\n'
+            else:
+                body += 'Output: none\n'
             chrset = email.charset.Charset('utf-8')
             chrset.body_encoding = email.charset.QP
             msg.set_payload(body, chrset)
