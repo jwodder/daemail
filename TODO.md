@@ -2,10 +2,10 @@
   options
 - Support sending directly using `smtplib`
 - Look into version requirements for `python-daemon`
+- Add an `X-Daemail-Version` header to sent e-mails
 
 - Options to add:
     - split stdout and stderr instead of combining them
-    - only send e-mail on nonempty output?
     - set command to use for sending (default: `sendmail -t`)
         - The only format variables used for this are `from` (`sender`?), `to`,
           `subject`, and maybe something for extra headers

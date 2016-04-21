@@ -44,10 +44,11 @@ def subcmd(cmd, merged=False, stdout=False, stderr=False):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--from', dest='sender')
-    parser.add_argument('-t', '--to')
     parser.add_argument('-F', '--failure-only', action='store_true')
-    parser.add_argument('-m', '--mail-cmd', default='sendmail -t')
     parser.add_argument('-l', '--logfile', type=argparse.FileType('w+'))
+    parser.add_argument('-m', '--mail-cmd', default='sendmail -t')
+    parser.add_argument('-n', '--nonempty', action='store_true')
+    parser.add_argument('-t', '--to')
     parser.add_argument('command')
     parser.add_argument('args', nargs=argparse.REMAINDER)
     args = parser.parse_args()
@@ -58,7 +59,8 @@ def main():
     with DaemonContext(stdout=args.logfile, stderr=args.logfile,
                        working_directory=os.getcwd()):
         proc = subcmd([args.command] + args.args, merged=True)
-        if proc["rc"] != 0 or not args.failure_only:
+        if (proc["rc"] != 0 or not args.failure_only) and \
+                (proc["stdout"] != '' or not args.nonempty):
             msg = Message()
             msg['Subject'] = ('[SUCCESS]' if proc["rc"] == 0 else '[FAILED]') \
                            + ' ' + proc["command"]
