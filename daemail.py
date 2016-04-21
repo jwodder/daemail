@@ -8,6 +8,7 @@ import socket
 import sys
 import subprocess
 from   daemon        import DaemonContext  # python-daemon
+from   six.moves     import shlex_quote as quote
 
 def subcmd(cmd, merged=False, stdout=False, stderr=False):
     params = {}
@@ -20,6 +21,8 @@ def subcmd(cmd, merged=False, stdout=False, stderr=False):
             params["stderr"] = subprocess.PIPE
     start = datetime.now()
     p = subprocess.Popen(cmd, **params)
+    # The command's output is all going to be in memory at some point anyway,
+    # so why not start with `communicate`?
     out, err = p.communicate()
     end = datetime.now()
     return {
@@ -30,7 +33,7 @@ def subcmd(cmd, merged=False, stdout=False, stderr=False):
         "stderr": err,
         "pid": p.pid,
         "argv0": cmd[0],
-        "command": ' '.join(cmd),  ### TODO: Quote arguments
+        "command": ' '.join(map(quote, cmd)),
     }
 
 body_tmpl = '''\
@@ -71,6 +74,7 @@ def main():
                                         stdin=subprocess.PIPE)
             sendmail.communicate(str(msg))
             sys.exit(sendmail.returncode)
+            ### TODO: Log an error if sendmail failed
 
 if __name__ == '__main__':
     main()

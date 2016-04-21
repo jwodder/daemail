@@ -1,7 +1,6 @@
 - Support using a config file (`~/.config/daemail.ini`) for pre-specifying all
   options
 - Support sending directly using `smtplib`
-- Direct output to tempfiles instead of reading it all into a string
 - Make the subject reflect the exit status
 - Look into version requirements for `python-daemon`
 
@@ -32,6 +31,7 @@
     - working directory to change to?
     - make the body be just the output, with other values (end time etc.) sent
       in X-Daemail- mail headers
+    - Run the command via the shell
 
 - For the first version, don't let the user customize the subject or body;
   always use a subject of:
