@@ -8,9 +8,9 @@
   `application/octet-stream` attachment regardless of command-line options
 - Support format options for sender, recipient, & subject in `--mail-cmd`
 - Only create the logfile when there's something to write
+- Add `help` fields to options
 
 - Options to add:
-    - `--split` — split stdout & stderr instead of combining them
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
     - don't capture any output (`--no-output`?)
     - only capture stdout/don't capture stderr (`--no-stderr`?)

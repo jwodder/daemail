@@ -41,6 +41,9 @@ def subcmd(cmd, merged=False, stdout=False, stderr=False):
         "command": ' '.join(map(quote, cmd)),
     }
 
+def mail_quote(s):
+    return re.sub(r'^', '> ', s, flags=re.M)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--from', dest='sender')
@@ -48,6 +51,7 @@ def main():
     parser.add_argument('-l', '--logfile', type=argparse.FileType('w+'))
     parser.add_argument('-m', '--mail-cmd', default='sendmail -t')
     parser.add_argument('-n', '--nonempty', action='store_true')
+    parser.add_argument('--split', action='store_true')
     parser.add_argument('-t', '--to')
     parser.add_argument('command')
     parser.add_argument('args', nargs=argparse.REMAINDER)
@@ -58,30 +62,35 @@ def main():
         args.to = os.getlogin() + '@' + socket.gethostname()
     with DaemonContext(stdout=args.logfile, stderr=args.logfile,
                        working_directory=os.getcwd()):
-        proc = subcmd([args.command] + args.args, merged=True)
-        if (proc["rc"] != 0 or not args.failed) and \
-                (proc["stdout"] != '' or not args.nonempty):
-            msg = Message()
-            msg['Subject'] = ('[SUCCESS]' if proc["rc"] == 0 else '[FAILED]') \
-                           + ' ' + proc["command"]
-            msg['From'] = args.sender
-            msg['To'] = args.to
-            proc["stdout"] = re.sub(r'^', '> ', proc["stdout"], flags=re.M)
-            body = 'Start Time:  {start}\n' \
-                   'End Time:    {end}\n' \
-                   'Exit Status: {rc}\n\n'.format(**proc)
-            if proc["stdout"]:
-                body += 'Output:\n' + proc["stdout"] + '\n'
-            else:
-                body += 'Output: none\n'
-            chrset = email.charset.Charset('utf-8')
-            chrset.body_encoding = email.charset.QP
-            msg.set_payload(body, chrset)
-            sendmail = subprocess.Popen(args.mail_cmd, shell=True,
-                                        stdin=subprocess.PIPE)
-            sendmail.communicate(str(msg))
-            sys.exit(sendmail.returncode)
-            ### TODO: Log an error if sendmail failed
+        proc = subcmd([args.command] + args.args, merged=not args.split,
+                      stdout=True, stderr=True)
+        if args.failed and proc["rc"] == 0 or \
+                args.nonempty and not proc["stdout"] and not proc["stderr"]:
+            sys.exit(0)
+        msg = Message()
+        msg['Subject'] = ('[SUCCESS]' if proc["rc"] == 0 else '[FAILED]') \
+                       + ' ' + proc["command"]
+        msg['From'] = args.sender
+        msg['To'] = args.to
+        body = 'Start Time:  {start}\n' \
+               'End Time:    {end}\n' \
+               'Exit Status: {rc}\n\n'.format(**proc)
+        if proc["stdout"]:
+            body += 'Output:\n' + mail_quote(proc["stdout"]) + '\n'
+        else:
+            body += 'Output: none\n'
+        if proc["stderr"]:
+            # If stderr was captured separately but is still empty, don't
+            # bother saying "Error Output: none".
+            body += 'Error Output:\n' + mail_quote(proc["stderr"]) + '\n'
+        chrset = email.charset.Charset('utf-8')
+        chrset.body_encoding = email.charset.QP
+        msg.set_payload(body, chrset)
+        sendmail = subprocess.Popen(args.mail_cmd, shell=True,
+                                    stdin=subprocess.PIPE)
+        sendmail.communicate(str(msg))
+        sys.exit(sendmail.returncode)
+        ### TODO: Log an error if sendmail failed
 
 if __name__ == '__main__':
     main()
