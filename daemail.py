@@ -4,6 +4,7 @@ from   datetime      import datetime
 import email.charset
 from   email.message import Message
 import os
+import re
 import socket
 import sys
 import subprocess
@@ -36,14 +37,6 @@ def subcmd(cmd, merged=False, stdout=False, stderr=False):
         "command": ' '.join(map(quote, cmd)),
     }
 
-body_tmpl = '''\
-Started: {start}
-Finished: {end}
-Return code: {rc}
-
-{stdout}
-'''
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--from', dest='sender')
@@ -67,7 +60,15 @@ def main():
                            + ' ' + proc["command"]
             msg['From'] = args.sender
             msg['To'] = args.to
-            body = body_tmpl.format(**proc)
+            proc["stdout"] = re.sub(r'^', '> ', proc["stdout"], flags=re.M)
+            body = '''\
+Start Time:  {start}
+End Time:    {end}
+Exit Status: {rc}
+
+Output:
+{stdout}
+'''.format(**proc)
             chrset = email.charset.Charset('utf-8')
             chrset.body_encoding = email.charset.QP
             msg.set_payload(body, chrset)
