@@ -63,7 +63,8 @@ def main():
         proc = subcmd([args.command] + args.args, merged=True)
         if proc["rc"] != 0 or not args.failure_only:
             msg = Message()
-            msg['Subject'] = 'Finished: ' + proc["command"]
+            msg['Subject'] = ('[SUCCESS]' if proc["rc"] == 0 else '[FAILED]') \
+                           + ' ' + proc["command"]
             msg['From'] = args.sender
             msg['To'] = args.to
             body = body_tmpl.format(**proc)

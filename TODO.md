@@ -1,7 +1,6 @@
 - Support using a config file (`~/.config/daemail.ini`) for pre-specifying all
   options
 - Support sending directly using `smtplib`
-- Make the subject reflect the exit status
 - Look into version requirements for `python-daemon`
 
 - Options to add:
