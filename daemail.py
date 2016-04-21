@@ -9,7 +9,11 @@ import socket
 import sys
 import subprocess
 from   daemon        import DaemonContext  # python-daemon
-from   six.moves     import shlex_quote as quote
+
+if sys.version_info[0] == 2:
+    from pipes import quote
+else:
+    from shlex import quote
 
 def subcmd(cmd, merged=False, stdout=False, stderr=False):
     params = {}
