@@ -15,6 +15,8 @@ if sys.version_info[0] == 2:
 else:
     from shlex import quote
 
+__version__ = '0.1.0'
+
 def subcmd(cmd, merged=False, stdout=False, stderr=False):
     params = {}
     if merged:
@@ -72,6 +74,7 @@ def main():
                        + ' ' + proc["command"]
         msg['From'] = args.sender
         msg['To'] = args.to
+        msg['User-Agent'] = 'daemail ' + __version__
         body = 'Start Time:  {start}\n' \
                'End Time:    {end}\n' \
                'Exit Status: {rc}\n\n'.format(**proc)

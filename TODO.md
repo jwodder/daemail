@@ -2,7 +2,6 @@
   options
 - Support sending directly using `smtplib`
 - Look into version requirements for `python-daemon`
-- Add an `X-Daemail-Version` header to sent e-mails
 - Allow specifying multiple `--to`s on the command line?
 - If an encoding failure occurs with the output, send it as an
   `application/octet-stream` attachment regardless of command-line options
