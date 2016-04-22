@@ -42,7 +42,7 @@ def subcmd(cmd, merged=False, stdout=False, stderr=False):
     }
 
 def mail_quote(s):
-    return re.sub(r'^', '> ', s, flags=re.M)
+    return re.sub(r'^(?=.)', '> ', s, flags=re.M)
 
 def main():
     parser = argparse.ArgumentParser()
