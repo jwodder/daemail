@@ -6,7 +6,6 @@
 - If an encoding failure occurs with the output, send it as an
   `application/octet-stream` attachment regardless of command-line options
 - Support format options for sender, recipient, & subject in `--mail-cmd`
-- Only create the logfile when there's something to write
 - Add `help` fields to options
 - When the subprocess is stopped by a signal, show the name of the signal in
   the e-mail
@@ -30,6 +29,7 @@
     - Set the sender's "real name" separately from their e-mail address?
     - specifying what to write to the logfile? (e.g., starting & ending
       messages vs. only unexpected errors)
+    - include captured output when logging errors
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - something for specifying the line ending convention of the output?
