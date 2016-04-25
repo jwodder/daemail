@@ -8,6 +8,9 @@
 - Support format options for sender, recipient, & subject in `--mail-cmd`
 - Only create the logfile when there's something to write
 - Add `help` fields to options
+- When the subprocess is stopped by a signal, show the name of the signal in
+  the e-mail
+- Add a license
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
@@ -29,3 +32,6 @@
     - Set the sender's "real name" separately from their e-mail address?
     - specifying what to write to the logfile? (e.g., starting & ending
       messages vs. only unexpected errors)
+    - only capture the last `n` lines/bytes of output (for people who try to
+      use this as a poor man's process supervisor)
+    - something for specifying the line ending convention of the output?

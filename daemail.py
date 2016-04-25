@@ -17,9 +17,9 @@ else:
 
 __version__ = '0.1.0'
 
-def subcmd(cmd, merged=False, stdout=False, stderr=False):
+def subcmd(cmd, stdout=None, stderr=None):
     params = {}
-    if merged:
+    if stdout is None and stderr is None:
         params = {"stdout": subprocess.PIPE, "stderr": subprocess.STDOUT}
     else:
         if stdout:
@@ -64,8 +64,10 @@ def main():
         args.to = os.getlogin() + '@' + socket.gethostname()
     with DaemonContext(stdout=args.logfile, stderr=args.logfile,
                        working_directory=os.getcwd()):
-        proc = subcmd([args.command] + args.args, merged=not args.split,
-                      stdout=True, stderr=True)
+        if args.split:
+            proc = subcmd([args.command] + args.args, stdout=True, stderr=True)
+        else:
+            proc = subcmd([args.command] + args.args)
         if args.failed and proc["rc"] == 0 or \
                 args.nonempty and not proc["stdout"] and not proc["stderr"]:
             sys.exit(0)
