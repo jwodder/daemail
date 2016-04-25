@@ -54,6 +54,8 @@ def main():
     parser.add_argument('-m', '--mail-cmd', default='sendmail -t')
     parser.add_argument('-n', '--nonempty', action='store_true')
     parser.add_argument('--split', action='store_true')
+    parser.add_argument('--no-stdout', action='store_true')
+    parser.add_argument('--no-stderr', action='store_true')
     parser.add_argument('-t', '--to')
     parser.add_argument('command')
     parser.add_argument('args', nargs=argparse.REMAINDER)
@@ -64,10 +66,13 @@ def main():
         args.to = os.getlogin() + '@' + socket.gethostname()
     with DaemonContext(stdout=args.logfile, stderr=args.logfile,
                        working_directory=os.getcwd()):
-        if args.split:
-            proc = subcmd([args.command] + args.args, stdout=True, stderr=True)
-        else:
-            proc = subcmd([args.command] + args.args)
+        outopts = {}
+        if args.split or args.no_stdout or args.no_stderr:
+            outopts = {
+                "stdout": not args.no_stdout,
+                "stderr": not args.no_stderr,
+            }
+        proc = subcmd([args.command] + args.args, **outopts)
         if args.failed and proc["rc"] == 0 or \
                 args.nonempty and not proc["stdout"] and not proc["stderr"]:
             sys.exit(0)
@@ -79,15 +84,15 @@ def main():
         msg['User-Agent'] = 'daemail ' + __version__
         body = 'Start Time:  {start}\n' \
                'End Time:    {end}\n' \
-               'Exit Status: {rc}\n\n'.format(**proc)
+               'Exit Status: {rc}\n'.format(**proc)
         if proc["stdout"]:
-            body += 'Output:\n' + mail_quote(proc["stdout"]) + '\n'
-        else:
-            body += 'Output: none\n'
+            body += '\nOutput:\n' + mail_quote(proc["stdout"]) + '\n'
+        elif proc["stdout"] == '':
+            body += '\nOutput: none\n'
         if proc["stderr"]:
             # If stderr was captured separately but is still empty, don't
             # bother saying "Error Output: none".
-            body += 'Error Output:\n' + mail_quote(proc["stderr"]) + '\n'
+            body += '\nError Output:\n' + mail_quote(proc["stderr"]) + '\n'
         chrset = email.charset.Charset('utf-8')
         chrset.body_encoding = email.charset.QP
         msg.set_payload(body, chrset)

@@ -15,8 +15,6 @@
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
     - don't capture any output (`--no-output`?)
-    - only capture stdout/don't capture stderr (`--no-stderr`?)
-    - only capture stderr/don't capture stdout (`--no-stdout`?)
     - `--mime <MIME type>` — send stdout as an attachment with the given MIME
       type
         - cannot be used with merged output
