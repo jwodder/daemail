@@ -10,6 +10,8 @@
         - When not read from stdin, supports escape sequences in the format
           string
     - read template for the whole e-mail (headers and all) from a file?
+    - make the body be just the output, with other values (end time etc.) sent
+      in X-Daemail- mail headers?
 
 - Variables for subject and body format strings:
     - `rc` — return code

@@ -50,15 +50,23 @@ def mail_quote(s):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--from', dest='sender')
-    parser.add_argument('-F', '--failed', action='store_true')
-    parser.add_argument('-l', '--logfile')
-    parser.add_argument('-m', '--mail-cmd', default='sendmail -t')
-    parser.add_argument('-n', '--nonempty', action='store_true')
-    parser.add_argument('--no-stdout', action='store_true')
-    parser.add_argument('--no-stderr', action='store_true')
-    parser.add_argument('--split', action='store_true')
-    parser.add_argument('-t', '--to')
+    parser.add_argument('-f', '--from', dest='sender',
+                        help='From: address of e-mail')
+    parser.add_argument('-F', '--failed', action='store_true',
+                        help='Only send e-mail if command returned nonzero')
+    parser.add_argument('-l', '--logfile',
+                        help='Append unrecoverable errors to this file')
+    parser.add_argument('-m', '--mail-cmd', default='sendmail -t',
+                        metavar='COMMAND', help='Command for sending e-mail')
+    parser.add_argument('-n', '--nonempty', action='store_true',
+                        help='Only send e-mail if there was output')
+    parser.add_argument('--no-stdout', action='store_true',
+                        help="Don't capture stdout")
+    parser.add_argument('--no-stderr', action='store_true',
+                        help="Don't capture stderr")
+    parser.add_argument('--split', action='store_true',
+                        help='Capture stdout and stderr separately')
+    parser.add_argument('-t', '--to', help='To: address of e-mail')
     parser.add_argument('command')
     parser.add_argument('args', nargs=argparse.REMAINDER)
     args = parser.parse_args()
