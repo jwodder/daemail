@@ -3,8 +3,6 @@
 - Support sending directly using `smtplib`
 - Look into version requirements for `python-daemon`
 - Allow specifying multiple `--to`s on the command line?
-- When the subprocess is stopped by a signal, show the name of the signal in
-  the e-mail
 - Add a license
 - Make logfile entries look like mbox entries
 - Exceptions raised by `subprocess.Popen` should still be mailed to the user;

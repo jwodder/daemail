@@ -10,9 +10,10 @@ from   email.mime.text        import MIMEText
 import locale
 import os
 import re
+import signal
 import socket
-import sys
 import subprocess
+import sys
 import traceback
 from   daemon                 import DaemonContext  # python-daemon
 
@@ -99,7 +100,14 @@ def main():
             errhead = 'Error constructing e-mail'
             body = 'Start Time:  {start}\n' \
                    'End Time:    {end}\n' \
-                   'Exit Status: {rc}\n'.format(**proc)
+                   'Exit Status: {rc}'.format(**proc)
+            if proc["rc"] < 0:
+                # cf. <http://stackoverflow.com/q/2549939/744178>
+                for k,v in vars(signal).items():
+                    if k.startswith('SIG') and v == -proc["rc"]:
+                        body += ' (' + k + ')'
+                        break
+            body += '\n'
             # An empty byte string is always an empty character string and vice
             # versa, right?
             attachments = []

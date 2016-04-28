@@ -1,5 +1,7 @@
-- Check the validity of format strings (by populating them with dummy values?)
-  before daemonizing
+For implementing later: Configurable subject & body templates
+
+- Check the validity of format strings before daemonizing by populating them
+  with dummy values
 
 - Options to add:
     - set subject
