@@ -1,9 +1,10 @@
 #!/usr/bin/python
-from   __future__    import print_function
+from   __future__    import print_function, unicode_literals
 import argparse
 from   datetime      import datetime
 import email.charset
 from   email.message import Message
+import locale
 import os
 import re
 import socket
@@ -49,7 +50,11 @@ def mail_quote(s):
     return re.sub(r'^(?=.)', '> ', s, flags=re.M)
 
 def main():
+    prefenc = locale.getpreferredencoding(False)
     parser = argparse.ArgumentParser()
+    parser.add_argument('-e', '--encoding', default=prefenc,
+                        help='Set encoding of stdout and stderr')
+    parser.add_argument('-E', '--err-encoding', help='Set encoding of stderr')
     parser.add_argument('-f', '--from', dest='sender',
                         help='From: address of e-mail')
     parser.add_argument('-F', '--failed', action='store_true',
@@ -98,13 +103,18 @@ def main():
             body = 'Start Time:  {start}\n' \
                    'End Time:    {end}\n' \
                    'Exit Status: {rc}\n'.format(**proc)
+            # An empty byte string is always an empty character string and vice
+            # versa, right?
             if proc["stdout"]:
+                proc["stdout"] = proc["stdout"].decode(args.encoding)
                 body += '\nOutput:\n' + mail_quote(proc["stdout"]) + '\n'
             elif proc["stdout"] == '':
                 body += '\nOutput: none\n'
             if proc["stderr"]:
                 # If stderr was captured separately but is still empty, don't
                 # bother saying "Error Output: none".
+                proc["stderr"] = proc["stderr"].decode(args.err_encoding or \
+                                                       args.encoding)
                 body += '\nError Output:\n' + mail_quote(proc["stderr"]) + '\n'
             chrset = email.charset.Charset('utf-8')
             chrset.body_encoding = email.charset.QP
@@ -120,6 +130,7 @@ def main():
             # If no logfile was specified or this open() fails, die alone where
             # no one will ever know.
             sys.stderr = open(args.logfile, 'a')
+                ### What encoding do I use for this???
             print(datetime.now().isoformat(), errhead, file=sys.stderr)
             print('Command:', args.args, file=sys.stderr)
             print('From address:', args.sender, file=sys.stderr)

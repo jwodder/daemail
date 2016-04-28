@@ -14,6 +14,10 @@
   prevents e-mailing happens
 - Rename `--from` to `--sender` and `--to` to `--rcpt` or `--recipient`?
 - Write a proper README with full/in-depth documentation
+- Ensure this works in both Python 2 and Python 3
+- Capture the output from the sendmail command in case it fails
+- Support using format specifiers in the logfile name
+- Don't capture errors that occur when entering DaemonContext?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
@@ -21,7 +25,6 @@
       type
         - cannot be used with merged output
     - `--err-mime` — `--mime` for stderr?
-    - something for specifying encoding of stdout & stderr
     - timestamp format (defaults to ISO 8601)
         - timestamp timezone?
     - working directory to change to?
@@ -34,4 +37,6 @@
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - something for specifying the line ending convention of the output?
-        - `Popen` has a `universal_newlines` argument...
+        - `Popen` has a `universal_newlines` argument, but this doesn't work in
+          Python 3 when the output uses an encoding other than
+          `locale.getpreferredencoding()`

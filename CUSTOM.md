@@ -25,6 +25,7 @@
     - `command` (all arguments)
     - `runtime` (`str(timedelta)`)
     - `pid` (of spawned process)
+    - `ppid` (PID of daemail post-daemonization) ?
 
     Should the `{merged}`, `{stdin}`, and `{stderr}` variables automatically
     have trailing newlines (or embedded newlines?) stripped when used in the
