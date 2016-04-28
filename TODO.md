@@ -3,8 +3,6 @@
 - Support sending directly using `smtplib`
 - Look into version requirements for `python-daemon`
 - Allow specifying multiple `--to`s on the command line?
-- If an encoding failure occurs with the output, send it as an
-  `application/octet-stream` attachment regardless of command-line options
 - When the subprocess is stopped by a signal, show the name of the signal in
   the e-mail
 - Add a license

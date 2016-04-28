@@ -1,9 +1,12 @@
 #!/usr/bin/python
-from   __future__    import print_function, unicode_literals
+from   __future__             import print_function, unicode_literals
 import argparse
-from   datetime      import datetime
+from   datetime               import datetime
 import email.charset
-from   email.message import Message
+from   email.message          import Message
+from   email.mime.application import MIMEApplication
+from   email.mime.multipart   import MIMEMultipart
+from   email.mime.text        import MIMEText
 import locale
 import os
 import re
@@ -11,7 +14,7 @@ import socket
 import sys
 import subprocess
 import traceback
-from   daemon        import DaemonContext  # python-daemon
+from   daemon                 import DaemonContext  # python-daemon
 
 if sys.version_info[0] == 2:
     from pipes import quote
@@ -94,31 +97,61 @@ def main():
                     args.nonempty and not (proc["stdout"] or proc["stderr"]):
                 sys.exit(0)
             errhead = 'Error constructing e-mail'
-            msg = Message()
-            msg['Subject'] = ('[SUCCESS]' if proc["rc"] == 0 else '[FAILED]') \
-                           + ' ' + proc["command"]
-            msg['From'] = args.sender
-            msg['To'] = args.to
-            msg['User-Agent'] = 'daemail ' + __version__
             body = 'Start Time:  {start}\n' \
                    'End Time:    {end}\n' \
                    'Exit Status: {rc}\n'.format(**proc)
             # An empty byte string is always an empty character string and vice
             # versa, right?
+            attachments = []
             if proc["stdout"]:
-                proc["stdout"] = proc["stdout"].decode(args.encoding)
-                body += '\nOutput:\n' + mail_quote(proc["stdout"]) + '\n'
+                body += '\n'
+                try:
+                    stdout = proc["stdout"].decode(args.encoding)
+                except UnicodeDecodeError:
+                    stdout = MIMEApplication(proc["stdout"])
+                    stdout.add_header('Content-Disposition', 'attachment',
+                                      filename='stdout')
+                    attachments.append(stdout)
+                    body += 'The output could not be decoded and is attached.'
+                else:
+                    body += 'Output:\n' + mail_quote(stdout)
+                body += '\n'
             elif proc["stdout"] == '':
                 body += '\nOutput: none\n'
             if proc["stderr"]:
                 # If stderr was captured separately but is still empty, don't
                 # bother saying "Error Output: none".
-                proc["stderr"] = proc["stderr"].decode(args.err_encoding or \
-                                                       args.encoding)
-                body += '\nError Output:\n' + mail_quote(proc["stderr"]) + '\n'
+                body += '\n'
+                try:
+                    proc["stderr"] = proc["stderr"].decode(args.err_encoding or
+                                                           args.encoding)
+                except UnicodeDecodeError:
+                    stderr = MIMEApplication(proc["stderr"])
+                    stderr.add_header('Content-Disposition', 'attachment',
+                                      filename='stderr')
+                    attachments.append(stderr)
+                    body += 'The error output could not be decoded and is' \
+                            ' attached.'
+                else:
+                    body += 'Error Output:\n' + mail_quote(proc["stderr"])
+                body += '\n'
             chrset = email.charset.Charset('utf-8')
             chrset.body_encoding = email.charset.QP
-            msg.set_payload(body, chrset)
+            if attachments:
+                msg = MIMEMultipart()
+                txt = MIMEText('', _charset=None)
+                txt.set_payload(body, chrset)
+                msg.attach(txt)
+                for a in attachments:
+                    msg.attach(a)
+            else:
+                msg = Message()
+                msg.set_payload(body, chrset)
+            msg['Subject'] = ('[SUCCESS]' if proc["rc"] == 0 else '[FAILED]') \
+                           + ' ' + proc["command"]
+            msg['From'] = args.sender
+            msg['To'] = args.to
+            msg['User-Agent'] = 'daemail ' + __version__
             errhead = 'Error sending e-mail'
             sendmail = subprocess.Popen(args.mail_cmd, shell=True,
                                         stdin=subprocess.PIPE)
