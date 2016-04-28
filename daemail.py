@@ -58,7 +58,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-e', '--encoding', default=prefenc,
                         help='Set encoding of stdout and stderr')
-    parser.add_argument('-E', '--err-encoding', help='Set encoding of stderr')
+    parser.add_argument('-E', '--err-encoding', help='Set encoding of stderr',
+                        metavar='ENCODING')
     parser.add_argument('-f', '--from', dest='sender',
                         help='From: address of e-mail')
     parser.add_argument('-F', '--failed', action='store_true',
@@ -76,6 +77,8 @@ def main():
     parser.add_argument('--split', action='store_true',
                         help='Capture stdout and stderr separately')
     parser.add_argument('-t', '--to', help='To: address of e-mail')
+    parser.add_argument('-V', '--version', action='version',
+                                           version='daemail ' + __version__)
     parser.add_argument('command')
     parser.add_argument('args', nargs=argparse.REMAINDER)
     args = parser.parse_args()
