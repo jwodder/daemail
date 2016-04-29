@@ -179,7 +179,7 @@ def main():
             print('Command:', args.args, file=sys.stderr)
             print('From address:', args.sender, file=sys.stderr)
             print('To address:', args.to, file=sys.stderr)
-            print('Mail command:', args.mail_cmd)
+            print('Mail command:', args.mail_cmd, file=sys.stderr)
             ### TODO: Also log whether stdout & stderr were being captured
             print('', file=sys.stderr)
             traceback.print_exc()
