@@ -11,8 +11,6 @@
 - Rename `--from` to `--sender` and `--to` to `--rcpt` or `--recipient`?
 - Ensure this works in both Python 2 and Python 3
 - Support using format specifiers in the logfile name
-- Include the Python version in the User-Agent header and/or `--version`
-  output?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)

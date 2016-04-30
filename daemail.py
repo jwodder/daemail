@@ -9,6 +9,7 @@ from   email.mime.multipart   import MIMEMultipart
 from   email.mime.text        import MIMEText
 import locale
 import os
+import platform
 import re
 import signal
 import socket
@@ -23,6 +24,10 @@ else:
     from shlex import quote
 
 __version__ = '0.1.0'
+
+USER_AGENT = 'daemail {} ({} {})'.format(
+    __version__, platform.python_implementation(), platform.python_version()
+)
 
 def subcmd(cmd, stdout=None, stderr=None):
     params = {}
@@ -162,7 +167,7 @@ def main():
                            + ' ' + proc["command"]
             msg['From'] = args.sender
             msg['To'] = args.to
-            msg['User-Agent'] = 'daemail ' + __version__
+            msg['User-Agent'] = USER_AGENT
             errhead = 'Error sending e-mail'
             sendmail = subprocess.Popen(args.mail_cmd, shell=True,
                                         stdin=subprocess.PIPE)
