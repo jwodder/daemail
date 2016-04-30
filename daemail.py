@@ -163,7 +163,7 @@ def main():
             else:
                 msg = Message()
                 msg.set_payload(body, chrset)
-            msg['Subject'] = ('[SUCCESS]' if proc["rc"] == 0 else '[FAILED]') \
+            msg['Subject'] = ('[DONE]' if proc["rc"] == 0 else '[FAILED]') \
                            + ' ' + proc["command"]
             msg['From'] = args.sender
             msg['To'] = args.to
