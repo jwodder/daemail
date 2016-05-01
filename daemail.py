@@ -7,6 +7,7 @@ from   email.message          import Message
 from   email.mime.application import MIMEApplication
 from   email.mime.multipart   import MIMEMultipart
 from   email.mime.text        import MIMEText
+import io
 import locale
 import os
 import platform
@@ -178,8 +179,7 @@ def main():
         if args.logfile:
             # If no logfile was specified or this open() fails, die alone where
             # no one will ever know.
-            sys.stderr = open(args.logfile, 'a')
-                ### What encoding do I use for this???
+            sys.stderr = io.open(args.logfile, 'a', encoding=prefenc)
             print(datetime.now().isoformat(), errhead, file=sys.stderr)
             print('Command:', [args.command] + args.args, file=sys.stderr)
             print('From address:', args.sender, file=sys.stderr)
