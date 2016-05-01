@@ -181,7 +181,7 @@ def main():
             sys.stderr = open(args.logfile, 'a')
                 ### What encoding do I use for this???
             print(datetime.now().isoformat(), errhead, file=sys.stderr)
-            print('Command:', args.args, file=sys.stderr)
+            print('Command:', [args.command] + args.args, file=sys.stderr)
             print('From address:', args.sender, file=sys.stderr)
             print('To address:', args.to, file=sys.stderr)
             print('Mail command:', args.mail_cmd, file=sys.stderr)
