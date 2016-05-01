@@ -8,9 +8,9 @@
 - Look into version requirements for `python-daemon`
 - Allow specifying multiple `--to`s on the command line?
 - Make logfile entries look like mbox entries
-- Rename `--from` to `--sender` and `--to` to `--rcpt` or `--recipient`?
 - Ensure this works in both Python 2 and Python 3
 - Support using format specifiers in the logfile name
+- Renamed `--failed` to something better?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)

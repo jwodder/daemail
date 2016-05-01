@@ -65,7 +65,7 @@ def main():
                         help='Set encoding of stdout and stderr')
     parser.add_argument('-E', '--err-encoding', help='Set encoding of stderr',
                         metavar='ENCODING')
-    parser.add_argument('-f', '--from', dest='sender',
+    parser.add_argument('-f', '--from', '--sender', dest='sender',
                         help='From: address of e-mail')
     parser.add_argument('-F', '--failed', action='store_true',
                         help='Only send e-mail if command returned nonzero')
@@ -81,7 +81,8 @@ def main():
                         help="Don't capture stderr")
     parser.add_argument('--split', action='store_true',
                         help='Capture stdout and stderr separately')
-    parser.add_argument('-t', '--to', help='To: address of e-mail')
+    parser.add_argument('-t', '--to', '--recipient', '--rcpt',
+                        help='To: address of e-mail', metavar='RECIPIENT')
     parser.add_argument('-V', '--version', action='version',
                                            version='daemail ' + __version__)
     parser.add_argument('command')

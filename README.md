@@ -9,7 +9,7 @@ Usage
 
     daemail.py [-e|--encoding <encoding>]
                [-E|--err-encoding <encoding>]
-               [-f|--from <address>]
+               [-f|--from|--sender <address>]
                [-F|--failed]
                [-l|--logfile <logfile>]
                [-m|--mail-cmd <command>]
@@ -17,7 +17,7 @@ Usage
                [--no-stdout]
                [--no-stderr]
                [--split]
-               [-t|--to <address>]
+               [-t|--to|--recipient|--rcpt <address>]
                <command> [<arg> ...]
 
 Options
@@ -32,8 +32,8 @@ Options
   `<command>` to be in the given encoding; defaults to the value specified via
   `--encoding` or its default
 
-- `-f <address>`, `--from <address>` — Set the `From:` address of the e-mail;
-  defaults to the current user at the local host
+- `-f <address>`, `--from <address>`, `--sender <address>` — Set the `From:`
+  address of the e-mail; defaults to the current user at the local host
 
 - `-F`, `--failed` — Only send an e-mail if the command exits with a nonzero
   status
@@ -55,8 +55,9 @@ Options
 - `--split` — Capture the command's stdout and stderr separately rather than as
   a single stream
 
-- `-t <address>`, `--to <address>` — Set the recipient of the e-mail; defaults
-  to the current user at the local host
+- `-t <address>`, `--to <address>`, `--recipient <address>`, `--rcpt <address>`
+  — Set the recipient of the e-mail; defaults to the current user at the local
+  host
 
 
 [preferred]: https://docs.python.org/3/library/locale.html#locale.getpreferredencoding
