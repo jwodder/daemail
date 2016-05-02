@@ -174,7 +174,8 @@ def main():
                                         stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.STDOUT)
-            out, _ = sendmail.communicate(str(msg))
+            out, _ = sendmail.communicate(bytes(msg))
+            # `bytes` is an alias for `str` in Python 2
             if sendmail.returncode:
                 errmsg = out
             else:
