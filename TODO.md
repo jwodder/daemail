@@ -1,6 +1,3 @@
-- Exceptions raised by `subprocess.Popen` should still be mailed to the user;
-  only resort to writing to the logfile when something unrecoverable that
-  prevents e-mailing happens
 - Support using a config file (`~/.config/daemail.cfg`) for pre-specifying all
   options
 - Support sending directly using `smtplib`

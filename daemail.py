@@ -38,22 +38,27 @@ def subcmd(cmd, stdout=None, stderr=None):
             params["stdout"] = subprocess.PIPE
         if stderr:
             params["stderr"] = subprocess.PIPE
-    start = datetime.now()
-    p = subprocess.Popen(cmd, **params)
-    # The command's output is all going to be in memory at some point anyway,
-    # so why not start with `communicate`?
-    out, err = p.communicate()
-    end = datetime.now()
-    return {
-        "rc": p.returncode,
-        "start": start.isoformat(),
-        "end": end.isoformat(),
-        "stdout": out,
-        "stderr": err,
-        "pid": p.pid,
+    proc = {
+        "start": datetime.now().isoformat(),
         "argv0": cmd[0],
         "command": ' '.join(map(quote, cmd)),
     }
+    try:
+        p = subprocess.Popen(cmd, **params)
+        # The command's output is all going to be in memory at some point
+        # anyway, so why not start with `communicate`?
+        out, err = p.communicate()
+    except Exception:
+        proc["msg"] = 'Error executing command:\n' + traceback.format_exc()
+    else:
+        proc.update({
+            "rc": p.returncode,
+            "end": datetime.now().isoformat(),
+            "stdout": out,
+            "stderr": err,
+            "pid": p.pid,
+        })
+    return proc
 
 def mail_quote(s):
     return re.sub(r'^(?=.)', '> ', s, flags=re.M | re.S)
@@ -103,55 +108,59 @@ def main():
                 }
             errhead = 'Error running command'
             proc = subcmd([args.command] + args.args, **outopts)
-            if args.failed and proc["rc"] == 0 or \
+            errhead = 'Error constructing e-mail'
+            attachments = []
+            if "msg" in proc:
+                body = proc["msg"]
+            elif args.failed and proc["rc"] == 0 or \
                     args.nonempty and not (proc["stdout"] or proc["stderr"]):
                 sys.exit(0)
-            errhead = 'Error constructing e-mail'
-            body = 'Start Time:  {start}\n' \
-                   'End Time:    {end}\n' \
-                   'Exit Status: {rc}'.format(**proc)
-            if proc["rc"] < 0:
-                # cf. <http://stackoverflow.com/q/2549939/744178>
-                for k,v in vars(signal).items():
-                    if k.startswith('SIG') and v == -proc["rc"]:
-                        body += ' (' + k + ')'
-                        break
-            body += '\n'
-            # An empty byte string is always an empty character string and vice
-            # versa, right?
-            attachments = []
-            if proc["stdout"]:
+            else:
+                body = 'Start Time:  {start}\n' \
+                       'End Time:    {end}\n' \
+                       'Exit Status: {rc}'.format(**proc)
+                if proc["rc"] < 0:
+                    # cf. <http://stackoverflow.com/q/2549939/744178>
+                    for k,v in vars(signal).items():
+                        if k.startswith('SIG') and v == -proc["rc"]:
+                            body += ' (' + k + ')'
+                            break
                 body += '\n'
-                try:
-                    stdout = proc["stdout"].decode(args.encoding)
-                except UnicodeDecodeError:
-                    stdout = MIMEApplication(proc["stdout"])
-                    stdout.add_header('Content-Disposition', 'attachment',
-                                      filename='stdout')
-                    attachments.append(stdout)
-                    body += 'The output could not be decoded and is attached.'
-                else:
-                    body += 'Output:\n' + mail_quote(stdout)
-                body += '\n'
-            elif proc["stdout"] == '':
-                body += '\nOutput: none\n'
-            if proc["stderr"]:
-                # If stderr was captured separately but is still empty, don't
-                # bother saying "Error Output: none".
-                body += '\n'
-                try:
-                    proc["stderr"] = proc["stderr"].decode(args.err_encoding or
-                                                           args.encoding)
-                except UnicodeDecodeError:
-                    stderr = MIMEApplication(proc["stderr"])
-                    stderr.add_header('Content-Disposition', 'attachment',
-                                      filename='stderr')
-                    attachments.append(stderr)
-                    body += 'The error output could not be decoded and is' \
-                            ' attached.'
-                else:
-                    body += 'Error Output:\n' + mail_quote(proc["stderr"])
-                body += '\n'
+                # An empty byte string is always an empty character string and
+                # vice versa, right?
+                if proc["stdout"]:
+                    body += '\n'
+                    try:
+                        stdout = proc["stdout"].decode(args.encoding)
+                    except UnicodeDecodeError:
+                        stdout = MIMEApplication(proc["stdout"])
+                        stdout.add_header('Content-Disposition', 'attachment',
+                                          filename='stdout')
+                        attachments.append(stdout)
+                        body+='The output could not be decoded and is attached.'
+                    else:
+                        body += 'Output:\n' + mail_quote(stdout)
+                    body += '\n'
+                elif proc["stdout"] == '':
+                    body += '\nOutput: none\n'
+                if proc["stderr"]:
+                    # If stderr was captured separately but is still empty,
+                    # don't bother saying "Error Output: none".
+                    body += '\n'
+                    try:
+                        proc["stderr"] = proc["stderr"].decode(
+                            args.err_encoding or args.encoding
+                        )
+                    except UnicodeDecodeError:
+                        stderr = MIMEApplication(proc["stderr"])
+                        stderr.add_header('Content-Disposition', 'attachment',
+                                          filename='stderr')
+                        attachments.append(stderr)
+                        body += 'The error output could not be decoded and is' \
+                                ' attached.'
+                    else:
+                        body += 'Error Output:\n' + mail_quote(proc["stderr"])
+                    body += '\n'
             chrset = email.charset.Charset('utf-8')
             chrset.body_encoding = email.charset.QP
             if attachments:
@@ -164,7 +173,7 @@ def main():
             else:
                 msg = Message()
                 msg.set_payload(body, chrset)
-            msg['Subject'] = ('[DONE]' if proc["rc"] == 0 else '[FAILED]') \
+            msg['Subject'] = ('[DONE]' if proc.get("rc") == 0 else '[FAILED]') \
                            + ' ' + proc["command"]
             msg['From'] = args.sender
             msg['To'] = args.to
