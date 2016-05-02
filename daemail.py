@@ -171,25 +171,30 @@ def main():
             msg['User-Agent'] = USER_AGENT
             errhead = 'Error sending e-mail'
             sendmail = subprocess.Popen(args.mail_cmd, shell=True,
-                                        stdin=subprocess.PIPE)
-            sendmail.communicate(str(msg))
-            sys.exit(sendmail.returncode)
-            ### TODO: Log an error if sendmail failed
+                                        stdin=subprocess.PIPE,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT)
+            out, _ = sendmail.communicate(str(msg))
+            if sendmail.returncode:
+                errmsg = out
+            else:
+                sys.exit()
     except Exception:
-        if args.logfile:
-            # If no logfile was specified or this open() fails, die alone where
-            # no one will ever know.
-            sys.stderr = open(args.logfile, 'a')
-                ### What encoding do I use for this???
-            print(datetime.now().isoformat(), errhead, file=sys.stderr)
-            print('Command:', [args.command] + args.args, file=sys.stderr)
-            print('From address:', args.sender, file=sys.stderr)
-            print('To address:', args.to, file=sys.stderr)
-            print('Mail command:', args.mail_cmd, file=sys.stderr)
-            ### TODO: Also log whether stdout & stderr were being captured
-            print('', file=sys.stderr)
-            traceback.print_exc()
-        sys.exit(1)
+        errmsg = traceback.format_exc()
+    # If we're here, an error occurred.
+    if args.logfile:
+        # If no logfile was specified or this open() fails, die alone where no
+        # one will ever know.
+        sys.stderr = open(args.logfile, 'a')
+            ### What encoding do I use for this???
+        print(datetime.now().isoformat(), errhead, file=sys.stderr)
+        print('Command:', [args.command] + args.args, file=sys.stderr)
+        print('From address:', args.sender, file=sys.stderr)
+        print('To address:', args.to, file=sys.stderr)
+        print('Mail command:', args.mail_cmd, file=sys.stderr)
+        print('', file=sys.stderr)
+        print(errmsg, file=sys.stderr)
+    sys.exit(1)
 
 if __name__ == '__main__':
     main()

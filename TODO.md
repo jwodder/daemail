@@ -1,7 +1,6 @@
 - Exceptions raised by `subprocess.Popen` should still be mailed to the user;
   only resort to writing to the logfile when something unrecoverable that
   prevents e-mailing happens
-- Capture the output from the sendmail command in case it fails
 - Support using a config file (`~/.config/daemail.cfg`) for pre-specifying all
   options
 - Support sending directly using `smtplib`
@@ -9,8 +8,8 @@
 - Allow specifying multiple `--to`s on the command line?
 - Make logfile entries look like mbox entries
 - Ensure this works in both Python 2 and Python 3
-- Support using format specifiers in the logfile name
-- Renamed `--failed` to something better?
+- Support format specifiers in the logfile name
+- Rename `--failed` to something better?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
