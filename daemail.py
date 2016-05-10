@@ -23,7 +23,7 @@ if sys.version_info[0] == 2:
 else:
     from shlex import quote
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 USER_AGENT = 'daemail {} ({} {})'.format(
     __version__, platform.python_implementation(), platform.python_version()
@@ -61,7 +61,7 @@ def subcmd(cmd, stdout=None, stderr=None):
     return proc
 
 def mail_quote(s):
-    return re.sub(r'^(?=.)', '> ', s, flags=re.M | re.S)
+    return '> ' + re.sub(r'(\r\n?|\n)(?=.)', '\n> ', s, flags=re.S)
 
 def main():
     prefenc = locale.getpreferredencoding(False)

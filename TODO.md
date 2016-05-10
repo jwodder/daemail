@@ -7,6 +7,10 @@
 - Ensure this works in both Python 2 and Python 3
 - Support format specifiers in the logfile name
 - Rename `--failed` to something better?
+- When an error occurs when trying to send an e-mail, log the e-mail itself
+  (with the error message appended to its body) rather than just the error
+  message?
+- Python 2: Decode command-line arguments using the locale's preferred encoding?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
@@ -26,9 +30,5 @@
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
-    - something for specifying the line ending convention of the output?
-        - `Popen` has a `universal_newlines` argument, but this doesn't work in
-          Python 3 when the output uses an encoding other than
-          `locale.getpreferredencoding()`
     - send on failure even if there's no output and `--nonempty` is given
     - Report exceptions encountered by daemail itself to the logfile / e-mail
