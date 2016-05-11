@@ -61,7 +61,7 @@ def subcmd(cmd, stdout=None, stderr=None):
     return proc
 
 def mail_quote(s):
-    return '> ' + re.sub(r'(\r\n?|\n)(?=.)', '\n> ', s, flags=re.S)
+    return '> ' + re.sub(r'(\r(\n|(?!\n))|\n)(?=.)', '\n> ', s, flags=re.S)
 
 def main():
     prefenc = locale.getpreferredencoding(False)

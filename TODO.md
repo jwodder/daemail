@@ -19,7 +19,7 @@
         - cannot be used with merged output
     - `--err-mime` — `--mime` for stderr?
     - timestamp format (defaults to ISO 8601)
-        - timestamp timezone?
+    - use UTC timestamps
     - working directory to change to?
     - Run the command via the shell (or the user could just specify `bash -c
       '...'` or the like as the command)
