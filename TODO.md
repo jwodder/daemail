@@ -11,6 +11,7 @@
   (with the error message appended to its body) rather than just the error
   message?
 - Python 2: Decode command-line arguments using the locale's preferred encoding?
+- Try to write tests
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
