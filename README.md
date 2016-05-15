@@ -7,7 +7,8 @@ module](https://pypi.python.org/pypi/python-daemon).
 Usage
 =====
 
-    daemail.py [-e|--encoding <encoding>]
+    daemail.py [-D|--dead-letter <file>]
+               [-e|--encoding <encoding>]
                [-E|--err-encoding <encoding>]
                [-f|--from|--sender <address>]
                [-F|--failed]
@@ -22,6 +23,9 @@ Usage
 
 Options
 -------
+
+- `-D <file>`, `--dead-letter <file>` — If an error occurs when trying to send,
+  append the e-mail (including a description of the error) to `<file>`
 
 - `-e <encoding>`, `--encoding <encoding>` — Expect the stdout (and stderr,
   unless overridden by `--err-encoding`) of `<command>` to be in the given
