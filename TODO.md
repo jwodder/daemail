@@ -3,15 +3,18 @@
 - Support sending directly using `smtplib`
 - Look into version requirements for `python-daemon`
 - Allow specifying multiple `--to`s on the command line?
-- Make logfile entries look like mbox entries
+- Make logfile entries look like mbox entries?
 - Ensure this works in both Python 2 and Python 3
 - Support format specifiers in the logfile name
 - Rename `--failed` to something better?
-- When an error occurs when trying to send an e-mail, log the e-mail itself
-  (with the error message appended to its body) rather than just the error
-  message?
 - Python 2: Decode command-line arguments using the locale's preferred encoding?
 - Try to write tests
+    - Combinations of possibilities to test:
+        - command succeeds/fails/errors
+        - command output can/can't be decoded
+        - mail command succeeds/fails/errors
+        - mail command output can/can't be decoded
+- Attach undecodable output as inline attachments
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
@@ -27,9 +30,9 @@
     - Set the sender's "real name" separately from their e-mail address?
     - specifying what to write to the logfile? (e.g., starting & ending
       messages vs. only unexpected errors)
-    - include captured output when logging errors
+    - Report exceptions encountered by daemail itself to the logfile rather
+      than e-mail or _vice versa_
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
     - send on failure even if there's no output and `--nonempty` is given
-    - Report exceptions encountered by daemail itself to the logfile / e-mail

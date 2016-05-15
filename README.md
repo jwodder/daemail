@@ -25,7 +25,8 @@ Options
 -------
 
 - `-D <file>`, `--dead-letter <file>` — If an error occurs when trying to send,
-  append the e-mail (including a description of the error) to `<file>`
+  append the e-mail (including a description of the error) to `<file>`;
+  defaults to `dead.letter` in the current directory
 
 - `-e <encoding>`, `--encoding <encoding>` — Expect the stdout (and stderr,
   unless overridden by `--err-encoding`) of `<command>` to be in the given

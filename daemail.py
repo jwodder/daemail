@@ -226,6 +226,7 @@ def mail_quote(s):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-D', '--dead-letter', metavar='FILE',
+                        default='dead.letter',
                         help="Append undeliverable mail to this file")
     parser.add_argument('-e', '--encoding',
                         help='Set encoding of stdout and stderr')
