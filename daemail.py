@@ -183,7 +183,7 @@ class InternalMailCmdError(MailCmdError):
     def update_email(self):
         self.msg.body += '\nAdditionally, an exception occurred while trying' \
                          ' to send this e-mail with ' + repr(self.mail_cmd) + \
-                         ':\n\n' + mail_quote(str(self.cause)) + '\n'
+                         ':\n\n' + mail_quote(str(self.cause))
 
 
 class ExternalMailCmdError(MailCmdError):
@@ -220,7 +220,10 @@ def decode_quote(blob, encoding, name):
 
 
 def mail_quote(s):
-    return '> ' + re.sub(r'(\r(\n|(?!\n))|\n)(?=.)', '\n> ', s, flags=re.S)
+    s = '> ' + re.sub(r'(\r(\n|(?!\n))|\n)(?=.)', '\n> ', s, flags=re.S)
+    if not s.endswith("\n"):
+        s += "\n"
+    return s
 
 
 def main():
