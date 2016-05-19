@@ -51,7 +51,7 @@ Options
   to `<command>` (executed via the shell) on stdin; default command: `sendmail
   -t`
 
-- `-n`, `--nonempty` — Only send an e-mail if any output was captured
+- `-n`, `--nonempty` — Only send an e-mail if the command emitted any output
 
 - `--no-stdout` — Don't capture the command's stdout; implies `--split`
 

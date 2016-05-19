@@ -50,7 +50,7 @@ class CommandMailer(object):
         if self.mail_cmd is None:
             self.mail_cmd = 'sendmail -t'
         if self.encoding is None:
-            self.encoding = locale.getpreferredencoding(False)
+            self.encoding = locale.getpreferredencoding(True)
         if self.err_encoding is None:
             self.err_encoding = self.encoding
 
@@ -145,6 +145,8 @@ class DraftMessage(object):
 
     def compile(self):
         msg = MIMEText('', _charset=None)
+        # No, `chrset` cannot be passed to MIMEText's constructor, as it seems
+        # to expect a string (in Python 2.7, at least).
         chrset = email.charset.Charset('utf-8')
         chrset.body_encoding = email.charset.QP
         msg.set_payload(self.body, chrset)
@@ -198,7 +200,7 @@ class ExternalMailCmdError(MailCmdError):
         addendum = '\nAdditionally, the mail command {0!r} exited with return'\
                    ' code {1} when asked to send this e-mail'\
                    .format(self.mail_cmd, self.rc)
-        mailerr = decode_quote(self.output, locale.getpreferredencoding(False),
+        mailerr = decode_quote(self.output, locale.getpreferredencoding(True),
                                'sendmail-output')
         if isinstance(mailerr, Message):
             self.msg.attachments.append(mailerr)
