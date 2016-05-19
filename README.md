@@ -1,3 +1,5 @@
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+
 This is a Python script for running a command in the background and sending an
 e-mail once it's done.  It should work in both Python 2.7 and Python 3.2+, the
 only external dependency being [the python-daemon
