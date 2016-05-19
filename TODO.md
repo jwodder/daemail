@@ -14,7 +14,9 @@
         - command output can/can't be decoded
         - mail command succeeds/fails/errors
         - mail command output can/can't be decoded
-- Attach undecodable output as inline attachments
+- Don't log exceptions that result in dead letters?
+    - If such exceptions are logged, make their stringified forms informative
+- Improve (or eliminate?) the configuration settings dump in the logfile
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
@@ -28,8 +30,6 @@
     - Run the command via the shell (or the user could just specify `bash -c
       '...'` or the like as the command)
     - Set the sender's "real name" separately from their e-mail address?
-    - specifying what to write to the logfile? (e.g., starting & ending
-      messages vs. only unexpected errors)
     - Report exceptions encountered by daemail itself to the logfile rather
       than e-mail or _vice versa_
     - only capture the last `n` lines/bytes of output (for people who try to

@@ -3,7 +3,6 @@ from   __future__             import print_function, unicode_literals
 import argparse
 from   datetime               import datetime
 import email.charset
-from   email.message          import Message
 from   email.mime.application import MIMEApplication
 from   email.mime.multipart   import MIMEMultipart
 from   email.mime.text        import MIMEText
@@ -28,6 +27,9 @@ __version__ = '0.2.0'
 USER_AGENT = 'daemail {} ({} {})'.format(
     __version__, platform.python_implementation(), platform.python_version()
 )
+
+utf8qp = email.charset.Charset('utf-8')
+utf8qp.body_encoding = email.charset.QP
 
 class CommandMailer(object):
     def __init__(self, sender=None, to=None, failed=False, nonempty=False,
@@ -64,8 +66,8 @@ class CommandMailer(object):
             results = self.subcmd(command, *args)
         except Exception:
             msg.headers['Subject'] = '[ERROR] ' + cmdstring
-            msg.body = 'An error occurred while attempting to run the command:'\
-                       '\n\n' + traceback.format_exc()
+            msg.addtext('An error occurred while attempting to run the command:'
+                        '\n\n' + traceback.format_exc())
         else:
             if self.nonempty and not (results["stdout"] or results["stderr"]) \
                     or self.failed and results["rc"] == 0:
@@ -74,42 +76,30 @@ class CommandMailer(object):
                 msg.headers['Subject'] = '[DONE] ' + cmdstring
             else:
                 msg.headers['Subject'] = '[FAILED] ' + cmdstring
-            msg.body = 'Start Time:  {start}\n' \
-                       'End Time:    {end}\n' \
-                       'Exit Status: {rc}'.format(**results)
+            msg.addtext('Start Time:  {start}\n'
+                        'End Time:    {end}\n'
+                        'Exit Status: {rc}'.format(**results))
             if results["rc"] < 0:
                 # cf. <http://stackoverflow.com/q/2549939/744178>
                 for k,v in vars(signal).items():
                     if k.startswith('SIG') and v == -results["rc"]:
-                        msg.body += ' (' + k + ')'
+                        msg.addtext(' (' + k + ')')
                         break
-            msg.body += '\n'
+            msg.addtext('\n')
             # An empty byte string is always an empty character string and vice
             # versa, right?
             if results["stdout"]:
-                msg.body += '\n'
-                stdout = decode_quote(results["stdout"],self.encoding,'stdout')
-                if isinstance(stdout, Message):
-                    msg.attachments.append(stdout)
-                    msg.body += 'The output could not be decoded and is attached.'
-                else:
-                    msg.body += 'Output:\n' + stdout
-                msg.body += '\n'
+                msg.addtext('\nOutput:\n')
+                msg.addblobquote(results["stdout"], self.encoding, 'stdout')
+                msg.addtext('\n')
             elif results["stdout"] == '':
-                msg.body += '\nOutput: none\n'
+                msg.addtext('\nOutput: none\n')
             if results["stderr"]:
                 # If stderr was captured separately but is still empty, don't
                 # bother saying "Error Output: none".
-                msg.body += '\n'
-                stderr = decode_quote(results["stderr"], self.err_encoding,
-                                      'stderr')
-                if isinstance(stderr, Message):
-                    msg.attachments.append(stderr)
-                    msg.body += 'The error output could not be decoded and is' \
-                            ' attached.'
-                else:
-                    msg.body += 'Error Output:\n' + stderr
-                msg.body += '\n'
+                msg.addtext('\nError Output:\n')
+                msg.addblobquote(results["stderr"], self.err_encoding, 'stderr')
+                msg.addtext('\n')
         msg.send(self.mail_cmd)
 
     def subcmd(self, command, *args):
@@ -140,18 +130,50 @@ class CommandMailer(object):
 class DraftMessage(object):
     def __init__(self):
         self.headers = {}
-        self.body = ''
-        self.attachments = []  # list of MIMEBAse objects
+        self._attached = []  # list of MIMEBAse objects
+        self._trailing = ''
+
+    def addtext(self, txt):
+        self._trailing += txt
+
+    def _endtext(self):
+        if self._trailing:
+            if self._attached and isinstance(self._attached[-1], MIMEText):
+                last = self._attached[-1]
+                last.set_payload(mime_text(last) + self._trailing, utf8qp)
+            else:
+                msg = MIMEText('', _charset=None)
+                # No, `utf8qp` cannot be passed to MIMEText's constructor, as
+                # it seems to expect a string (in Python 2.7, at least).
+                msg.set_payload(self._trailing, utf8qp)
+                self._attached.append(msg)
+            self._trailing = ''
+
+    def addblobquote(self, blob, encoding, filename):
+        try:
+            txt = blob.decode(encoding)
+        except UnicodeDecodeError:
+            self._endtext()
+            attach = MIMEApplication(blob)
+            attach.add_header('Content-Disposition', 'inline',
+                              filename=filename)
+            self._attached.append(attach)
+        else:
+            self.addtext(mail_quote(txt))
 
     def compile(self):
-        msg = MIMEText('', _charset=None)
-        # No, `chrset` cannot be passed to MIMEText's constructor, as it seems
-        # to expect a string (in Python 2.7, at least).
-        chrset = email.charset.Charset('utf-8')
-        chrset.body_encoding = email.charset.QP
-        msg.set_payload(self.body, chrset)
-        if self.attachments:
-            msg = MIMEMultipart(_subparts = [msg] + self.attachments)
+        self._endtext()
+        if not self._attached:
+            msg = MIMEText('', _charset=None)
+        elif len(self._attached) == 1 and \
+                isinstance(self._attached[0], MIMEText):
+            # Copy the payload so that we don't set any headers on the
+            # attachment itself, which would cause problems if `compile` is
+            # later called again after more attachments have been added
+            msg = MIMEText('', _charset=None)
+            msg.set_payload(mime_text(self._attached[0]), utf8qp)
+        else:
+            msg = MIMEMultipart(_subparts=self._attached)
         for k,v in self.headers.items():
             msg[k] = v
         return bytes(msg)
@@ -183,9 +205,9 @@ class InternalMailCmdError(MailCmdError):
         self.mail_cmd = mail_cmd
 
     def update_email(self):
-        self.msg.body += '\nAdditionally, an exception occurred while trying' \
-                         ' to send this e-mail with ' + repr(self.mail_cmd) + \
-                         ':\n\n' + mail_quote(str(self.cause))
+        self.msgaddtext('\nAdditionally, an exception occurred while trying to'
+                        ' send this e-mail with ' + repr(self.mail_cmd) +
+                        ':\n\n' + mail_quote(str(self.cause)))
 
 
 class ExternalMailCmdError(MailCmdError):
@@ -197,28 +219,12 @@ class ExternalMailCmdError(MailCmdError):
         self.output = output
 
     def update_email(self):
-        addendum = '\nAdditionally, the mail command {0!r} exited with return'\
-                   ' code {1} when asked to send this e-mail'\
-                   .format(self.mail_cmd, self.rc)
-        mailerr = decode_quote(self.output, locale.getpreferredencoding(True),
-                               'sendmail-output')
-        if isinstance(mailerr, Message):
-            self.msg.attachments.append(mailerr)
-            addendum += '.  Its output could not be decoded and is attached.\n'
-        else:
-            addendum += ':\n' + mailerr + '\n'
-        self.msg.body += addendum
-
-
-def decode_quote(blob, encoding, name):
-    try:
-        txt = blob.decode(encoding)
-    except UnicodeDecodeError:
-        attach = MIMEApplication(blob)
-        attach.add_header('Content-Disposition', 'attachment', filename=name)
-        return attach
-    else:
-        return mail_quote(txt)
+        self.msg.addtext('\nAdditionally, the mail command {0!r} exited with'
+                         ' return code {1} when asked to send this e-mail:\n'
+                         .format(self.mail_cmd, self.rc))
+        self.msg.addblobquote(self.output, locale.getpreferredencoding(True),
+                              'sendmail-output')
+        self.msg.addtext('\n')
 
 
 def mail_quote(s):
@@ -226,6 +232,10 @@ def mail_quote(s):
     if not s.endswith("\n"):
         s += "\n"
     return s
+
+def mime_text(msg):
+    # Even if you say `decode=True`, get_payload still returns a `bytes` object
+    return msg.get_payload(decode=True).decode('utf-8')
 
 
 def main():
@@ -293,6 +303,7 @@ def main():
             print('Command:', [args.command] + args.args, file=sys.stderr)
             if isinstance(e, MailCmdError) and args.dead_letter:
                 print('E-mail saved to',repr(args.dead_letter), file=sys.stderr)
+            print('', file=sys.stderr)
         sys.exit(1)
 
 if __name__ == '__main__':
