@@ -29,7 +29,6 @@
     - working directory to change to?
     - Run the command via the shell (or the user could just specify `bash -c
       '...'` or the like as the command)
-    - Set the sender's "real name" separately from their e-mail address?
     - Report exceptions encountered by daemail itself to the logfile rather
       than e-mail or _vice versa_
     - only capture the last `n` lines/bytes of output (for people who try to
