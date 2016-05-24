@@ -9,7 +9,8 @@ module](https://pypi.python.org/pypi/python-daemon).
 Usage
 =====
 
-    daemail.py [-D|--dead-letter <file>]
+    daemail.py [--chdir <directory>]
+               [-D|--dead-letter <file>]
                [-e|--encoding <encoding>]
                [-E|--err-encoding <encoding>]
                [-f|--from|--sender <address>]
@@ -25,6 +26,8 @@ Usage
 
 Options
 -------
+
+- `--chdir <directory>` — Change to `<directory>` before running `<command>`
 
 - `-D <file>`, `--dead-letter <file>` — If an error occurs when trying to send,
   append the e-mail (including a description of the error) to `<file>`;

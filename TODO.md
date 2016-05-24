@@ -5,7 +5,7 @@
 - Allow specifying multiple `--to`s on the command line?
 - Make logfile entries look like mbox entries?
 - Ensure this works in both Python 2 and Python 3
-- Support format specifiers in the logfile name
+- Support format specifiers in the log and dead letter filenames
 - Rename `--failed` to something better?
 - Python 2: Decode command-line arguments using the locale's preferred encoding?
 - Try to write tests
@@ -25,10 +25,7 @@
         - cannot be used with merged output
     - `--err-mime` — `--mime` for stderr?
     - timestamp format (defaults to ISO 8601)
-    - use UTC timestamps
-    - working directory to change to?
-    - Run the command via the shell (or the user could just specify `bash -c
-      '...'` or the like as the command)
+    - use UTC timestamps (`-Z`)
     - Report exceptions encountered by daemail itself to the logfile rather
       than e-mail or _vice versa_
     - only capture the last `n` lines/bytes of output (for people who try to

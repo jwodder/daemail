@@ -240,6 +240,8 @@ def mime_text(msg):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--chdir', metavar='DIR', default=os.getcwd(),
+                        help="Change to this directory before running")
     parser.add_argument('-D', '--dead-letter', metavar='FILE',
                         default='dead.letter',
                         help="Append undeliverable mail to this file")
@@ -283,7 +285,7 @@ def main():
         to=args.to,
     )
     try:
-        with DaemonContext(working_directory=os.getcwd()):
+        with DaemonContext(working_directory=args.chdir):
             mailer.run(args.command, *args.args)
     except Exception as e:
         if isinstance(e, MailCmdError) and args.dead_letter:
