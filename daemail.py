@@ -69,8 +69,9 @@ class CommandMailer(object):
             msg.addtext('An error occurred while attempting to run the command:'
                         '\n\n' + traceback.format_exc())
         else:
-            if self.nonempty and not (results["stdout"] or results["stderr"]) \
-                    or self.failed and results["rc"] == 0:
+            if results["rc"] == 0 and (self.failed or
+                    self.nonempty and not (results["stdout"] or
+                                           results["stderr"])):
                 return
             if results["rc"] == 0:
                 msg.headers['Subject'] = '[DONE] ' + cmdstring

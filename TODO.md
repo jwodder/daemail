@@ -11,12 +11,13 @@
 - Try to write tests
     - Combinations of possibilities to test:
         - command succeeds/fails/errors
-        - command output can/can't be decoded
+        - command output can/can't be decoded/is empty
         - mail command succeeds/fails/errors
-        - mail command output can/can't be decoded
+        - mail command output can/can't be decoded/is empty
 - Don't log exceptions that result in dead letters?
     - If such exceptions are logged, make their stringified forms informative
 - Improve (or eliminate?) the configuration settings dump in the logfile
+- Handle the mail command erroring with no output
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
