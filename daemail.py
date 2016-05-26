@@ -32,12 +32,12 @@ utf8qp = email.charset.Charset('utf-8')
 utf8qp.body_encoding = email.charset.QP
 
 class CommandMailer(object):
-    def __init__(self, sender=None, to=None, failed=False, nonempty=False,
+    def __init__(self, sender=None, to=None, failure_only=False, nonempty=False,
                  mail_cmd=None, no_stdout=False, no_stderr=False, split=False,
                  encoding=None, err_encoding=None):
         self.sender = sender
         self.to = to
-        self.failed = failed
+        self.failure_only = failure_only
         self.nonempty = nonempty
         self.mail_cmd = mail_cmd
         self.no_stdout = no_stdout
@@ -69,7 +69,7 @@ class CommandMailer(object):
             msg.addtext('An error occurred while attempting to run the command:'
                         '\n\n' + traceback.format_exc())
         else:
-            if results["rc"] == 0 and (self.failed or
+            if results["rc"] == 0 and (self.failure_only or
                     self.nonempty and not (results["stdout"] or
                                            results["stderr"])):
                 return
@@ -252,7 +252,7 @@ def main():
                         metavar='ENCODING')
     parser.add_argument('-f', '--from', '--sender', dest='sender',
                         help='From: address of e-mail')
-    parser.add_argument('-F', '--failed', action='store_true',
+    parser.add_argument('-F', '--failure-only', action='store_true',
                         help='Only send e-mail if command returned nonzero')
     parser.add_argument('-l', '--logfile',
                         help='Append unrecoverable errors to this file')
@@ -277,7 +277,7 @@ def main():
         encoding=args.encoding,
         err_encoding=args.err_encoding,
         sender=args.sender,
-        failed=args.failed,
+        failure_only=args.failure_only,
         mail_cmd=args.mail_cmd,
         nonempty=args.nonempty,
         no_stdout=args.no_stdout,

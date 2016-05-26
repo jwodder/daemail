@@ -14,7 +14,7 @@ Usage
                [-e|--encoding <encoding>]
                [-E|--err-encoding <encoding>]
                [-f|--from|--sender <address>]
-               [-F|--failed]
+               [-F|--failure-only]
                [-l|--logfile <logfile>]
                [-m|--mail-cmd <command>]
                [-n|--nonempty]
@@ -45,8 +45,8 @@ Options
 - `-f <address>`, `--from <address>`, `--sender <address>` — Set the `From:`
   address of the e-mail; defaults to the current user at the local host
 
-- `-F`, `--failed` — Only send an e-mail if the command exits with a nonzero
-  status
+- `-F`, `--failure-only` — Only send an e-mail if the command exits with a
+  nonzero status
 
 - `-l <logfile>`, `--logfile <logfile>` — If something goes wrong after
   daemonization that prevents any e-mails from being sent, append a report to

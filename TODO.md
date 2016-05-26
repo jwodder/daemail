@@ -6,7 +6,6 @@
 - Make logfile entries look like mbox entries?
 - Ensure this works in both Python 2 and Python 3
 - Support format specifiers in the log and dead letter filenames
-- Rename `--failed` to something better?
 - Python 2: Decode command-line arguments using the locale's preferred encoding?
 - Try to write tests
     - Combinations of possibilities to test:
@@ -18,6 +17,8 @@
     - If such exceptions are logged, make their stringified forms informative
 - Improve (or eliminate?) the configuration settings dump in the logfile
 - Handle the mail command erroring with no output
+- Add a note to the documentation about passing things to the command on stdin
+  not being an option (or fix things so that it is an option?)
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
