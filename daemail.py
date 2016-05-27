@@ -259,7 +259,7 @@ def main():
     parser.add_argument('-m', '--mail-cmd', default='sendmail -t',
                         metavar='COMMAND', help='Command for sending e-mail')
     parser.add_argument('-n', '--nonempty', action='store_true',
-                        help='Only send e-mail if there was output')
+                        help='Only send e-mail if there was output or failure')
     parser.add_argument('--no-stdout', action='store_true',
                         help="Don't capture stdout")
     parser.add_argument('--no-stderr', action='store_true',

@@ -45,7 +45,7 @@ Options
 - `-f <address>`, `--from <address>`, `--sender <address>` — Set the `From:`
   address of the e-mail; defaults to the current user at the local host
 
-- `-F`, `--failure-only` — Only send an e-mail if the command exits with a
+- `-F`, `--failure-only` — Only send an e-mail if the command exited with a
   nonzero status
 
 - `-l <logfile>`, `--logfile <logfile>` — If something goes wrong after
@@ -56,7 +56,8 @@ Options
   to `<command>` (executed via the shell) on stdin; default command: `sendmail
   -t`
 
-- `-n`, `--nonempty` — Only send an e-mail if the command emitted any output
+- `-n`, `--nonempty` — Do not send an e-mail if the command exited successfully
+  with no output
 
 - `--no-stdout` — Don't capture the command's stdout; implies `--split`
 

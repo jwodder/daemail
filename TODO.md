@@ -33,4 +33,3 @@
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
-    - send on failure even if there's no output and `--nonempty` is given
