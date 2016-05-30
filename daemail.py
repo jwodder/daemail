@@ -93,7 +93,7 @@ class CommandMailer(object):
                 msg.addtext('\nOutput:\n')
                 msg.addblobquote(results["stdout"], self.encoding, 'stdout')
                 msg.addtext('\n')
-            elif results["stdout"] == '':
+            elif results["stdout"] is not None:
                 msg.addtext('\nOutput: none\n')
             if results["stderr"]:
                 # If stderr was captured separately but is still empty, don't
@@ -221,11 +221,16 @@ class ExternalMailCmdError(MailCmdError):
 
     def update_email(self):
         self.msg.addtext('\nAdditionally, the mail command {0!r} exited with'
-                         ' return code {1} when asked to send this e-mail:\n'
+                         ' return code {1} when asked to send this e-mail.\n'
                          .format(self.mail_cmd, self.rc))
-        self.msg.addblobquote(self.output, locale.getpreferredencoding(True),
-                              'sendmail-output')
-        self.msg.addtext('\n')
+        if self.output:
+            self.msg.addtext('\nMail command output:\n')
+            self.msg.addblobquote(self.output,
+                                  locale.getpreferredencoding(True),
+                                  'sendmail-output')
+            self.msg.addtext('\n')
+        else:
+            self.msg.addtext('\nMail command output: none\n')
 
 
 def mail_quote(s):

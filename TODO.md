@@ -16,9 +16,9 @@
 - Don't log exceptions that result in dead letters?
     - If such exceptions are logged, make their stringified forms informative
 - Improve (or eliminate?) the configuration settings dump in the logfile
-- Handle the mail command erroring with no output
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
+- Switch to pure Python 3?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
