@@ -34,7 +34,7 @@ utf8qp.body_encoding = email.charset.QP
 class CommandMailer(object):
     def __init__(self, sender=None, to=None, failure_only=False, nonempty=False,
                  mail_cmd=None, no_stdout=False, no_stderr=False, split=False,
-                 encoding=None, err_encoding=None):
+                 encoding=None, err_encoding=None, utc=False):
         self.sender = sender
         self.to = to
         self.failure_only = failure_only
@@ -45,6 +45,7 @@ class CommandMailer(object):
         self.split = split
         self.encoding = encoding
         self.err_encoding = err_encoding
+        self.utc = utc
         if self.sender is None:
             self.sender = os.getlogin() + '@' + socket.gethostname()
         if self.to is None:
@@ -112,16 +113,22 @@ class CommandMailer(object):
             }
         else:
             params = {"stdout": subprocess.PIPE, "stderr": subprocess.STDOUT}
-        start = datetime.now()
+        if self.utc:
+            start = datetime.utcnow().isoformat() + 'Z'
+        else:
+            start = datetime.now().isoformat()
         p = subprocess.Popen((command,) + args, **params)
         # The command's output is all going to be in memory at some point
         # anyway, so why not start with `communicate`?
         out, err = p.communicate()
-        end = datetime.now()
+        if self.utc:
+            end = datetime.utcnow().isoformat() + 'Z'
+        else:
+            end = datetime.now().isoformat()
         return {
             "rc": p.returncode,
-            "start": start.isoformat(),
-            "end": end.isoformat(),
+            "start": start,
+            "end": end,
             "stdout": out,
             "stderr": err,
             "pid": p.pid,
@@ -275,6 +282,8 @@ def main():
                         help='To: address of e-mail', metavar='RECIPIENT')
     parser.add_argument('-V', '--version', action='version',
                                            version='daemail ' + __version__)
+    parser.add_argument('-Z', '--utc', action='store_true',
+                        help='Use UTC timestamps')
     parser.add_argument('command')
     parser.add_argument('args', nargs=argparse.REMAINDER)
     args = parser.parse_args()

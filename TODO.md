@@ -4,10 +4,12 @@
 - Look into version requirements for `python-daemon`
 - Allow specifying multiple `--to`s on the command line?
 - Make logfile entries look like mbox entries?
-- Ensure this works in both Python 2 and Python 3
 - Support format specifiers in the log and dead letter filenames
-- Python 2: Decode command-line arguments using the locale's preferred encoding?
+- Handle encoding of command-line arguments
+    - Python 2: Decode command-line arguments using the locale's preferred
+      encoding?
 - Try to write tests
+    - Ensure this works in both Python 2 and Python 3
     - Combinations of possibilities to test:
         - command succeeds/fails/errors
         - command output can/can't be decoded/is empty
@@ -27,7 +29,6 @@
         - cannot be used with merged output
     - `--err-mime` — `--mime` for stderr?
     - timestamp format (defaults to ISO 8601)
-    - use UTC timestamps (`-Z`)
     - Report exceptions encountered by daemail itself to the logfile rather
       than e-mail or _vice versa_
     - only capture the last `n` lines/bytes of output (for people who try to

@@ -22,6 +22,7 @@ Usage
                [--no-stderr]
                [--split]
                [-t|--to|--recipient|--rcpt <address>]
+               [-Z|--utc]
                <command> [<arg> ...]
 
 Options
@@ -70,5 +71,6 @@ Options
   — Set the recipient of the e-mail; defaults to the current user at the local
   host
 
+- `-Z`, `--utc` — Show start & end times in UTC instead of local time
 
 [preferred]: https://docs.python.org/3/library/locale.html#locale.getpreferredencoding
