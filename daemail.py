@@ -131,7 +131,7 @@ class CommandMailer(object):
             "end": end,
             "stdout": out,
             "stderr": err,
-            "pid": p.pid,
+            #"pid": p.pid,
         }
 
 
@@ -298,6 +298,7 @@ def main():
         no_stderr=args.no_stderr,
         split=args.split,
         to=args.to,
+        utc=args.utc,
     )
     try:
         with DaemonContext(working_directory=args.chdir):

@@ -8,6 +8,7 @@
 - Handle encoding of command-line arguments
     - Python 2: Decode command-line arguments using the locale's preferred
       encoding?
+    - Python 3: See PEP 383 and os.fsencode
 - Try to write tests
     - Ensure this works in both Python 2 and Python 3
     - Combinations of possibilities to test:
