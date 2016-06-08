@@ -322,7 +322,7 @@ def main():
         with DaemonContext(working_directory=args.chdir):
             mailer.run(args.command, *args.args)
     except Exception as e:
-        if isinstance(e, MailCmdError) and args.dead_letter:
+        if isinstance(e, MailCmdError):
             e.update_email()
             with open(args.dead_letter, 'ab') as fp:
                 fp.write(e.msg.compile())
@@ -337,7 +337,7 @@ def main():
             print('', file=sys.stderr)
             print('Configuration:', vars(mailer), file=sys.stderr)
             print('Command:', [args.command] + args.args, file=sys.stderr)
-            if isinstance(e, MailCmdError) and args.dead_letter:
+            if isinstance(e, MailCmdError):
                 print('E-mail saved to',repr(args.dead_letter), file=sys.stderr)
             print('', file=sys.stderr)
         sys.exit(1)
