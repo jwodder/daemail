@@ -22,12 +22,10 @@
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
 - Switch to pure Python 3?
+- Preserve umask?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
-    - `--mime <MIME type>` — send stdout as an attachment with the given MIME
-      type
-        - cannot be used with merged output
     - `--err-mime` — `--mime` for stderr?
     - timestamp format (defaults to ISO 8601)
     - Report exceptions encountered by daemail itself to the logfile rather

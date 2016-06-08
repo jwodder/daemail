@@ -17,6 +17,7 @@ Usage
                [-F|--failure-only]
                [-l|--logfile <logfile>]
                [-m|--mail-cmd <command>]
+               [--mime <mime-type>]
                [-n|--nonempty]
                [--no-stdout]
                [--no-stderr]
@@ -56,6 +57,11 @@ Options
 - `-m <command>`, `--mail-cmd <command>` — Send e-mail by passing the message
   to `<command>` (executed via the shell) on stdin; default command: `sendmail
   -t`
+
+- `--mime <mime-type>` — Attach the output of `<command>` to the e-mail as an
+  inline attachment with the given MIME type.  The MIME type may include
+  parameters, e.g., `--mime "application/json; charset=utf-16"`.  Implies
+  `--split`.
 
 - `-n`, `--nonempty` — Do not send an e-mail if the command exited successfully
   with no output
