@@ -24,7 +24,6 @@
   not being an option (or fix things so that it is an option?)
 - Preserve umask
 - Rename `--mime` to `--mime-type`?
-- Give `--mime` an `-M` short form?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)

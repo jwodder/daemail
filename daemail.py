@@ -286,7 +286,7 @@ def main():
                         help='Append unrecoverable errors to this file')
     parser.add_argument('-m', '--mail-cmd', default='sendmail -t',
                         metavar='COMMAND', help='Command for sending e-mail')
-    parser.add_argument('--mime',
+    parser.add_argument('-M', '--mime',
                         help='Send output as attachment with given MIME type')
     parser.add_argument('-n', '--nonempty', action='store_true',
                         help='Only send e-mail if there was output or failure')
