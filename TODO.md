@@ -12,17 +12,19 @@
 - Try to write tests
     - Ensure this works in both Python 2 and Python 3
     - Combinations of possibilities to test:
-        - command succeeds/fails/errors
+        - command succeeds/fails/errors/is killed by a signal
         - command output can/can't be decoded/is empty
         - mail command succeeds/fails/errors
         - mail command output can/can't be decoded/is empty
 - Don't log exceptions that result in dead letters?
     - If such exceptions are logged, make their stringified forms informative
 - Improve (or eliminate?) the configuration settings dump in the logfile
+    - Include the `--chdir` setting in the config dump
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
-- Switch to pure Python 3?
-- Preserve umask?
+- Preserve umask
+- Rename `--mime` to `--mime-type`?
+- Give `--mime` an `-M` short form?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)

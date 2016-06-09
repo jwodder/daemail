@@ -152,6 +152,7 @@ class DraftMessage(object):
 
     def _endtext(self):
         if self._trailing:
+            # In case of `addtext, _endtext, addtext, _endtext`:
             if self._attached and isinstance(self._attached[-1], MIMEText):
                 last = self._attached[-1]
                 last.set_payload(mime_text(last) + self._trailing, utf8qp)
