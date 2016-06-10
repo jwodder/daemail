@@ -22,13 +22,14 @@
     - Include the `--chdir` setting in the config dump
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
-- Preserve umask
 - Rename `--mime` to `--mime-type`?
+- Make `--from` default to omitting the `From:` header so that it's filled in
+  by sendmail?
+- Omit the hostname from the default value of `--to`?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
     - `--err-mime` — `--mime` for stderr?
-    - timestamp format (defaults to ISO 8601)
     - Report exceptions encountered by daemail itself to the logfile rather
       than e-mail or _vice versa_
     - only capture the last `n` lines/bytes of output (for people who try to

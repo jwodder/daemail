@@ -14,6 +14,7 @@ For implementing later: Configurable subject & body templates
     - read template for the whole e-mail (headers and all) from a file?
     - make the body be just the output, with other values (end time etc.) sent
       in X-Daemail- mail headers?
+    - set timestamp format (defaults to ISO 8601)
 
 - Variables for subject and body format strings:
     - `rc` — return code

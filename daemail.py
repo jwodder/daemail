@@ -320,7 +320,7 @@ def main():
         mime=args.mime,
     )
     try:
-        with DaemonContext(working_directory=args.chdir):
+        with DaemonContext(working_directory=args.chdir, umask=os.umask(0)):
             mailer.run(args.command, *args.args)
     except Exception as e:
         if isinstance(e, MailCmdError):
