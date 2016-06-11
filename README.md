@@ -1,8 +1,9 @@
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![MIT License](https://img.shields.io/github/license/jwodder/daemail.svg?maxAge=2592000)](https://opensource.org/licenses/MIT)
 
 This is a Python script for running a command in the background and sending an
-e-mail with its output once it's done.  It should work in both Python 2.7 and
-Python 3.2+, the only external dependency being [the python-daemon
+e-mail with its output (by default, the combined stdout and stderr) once it's
+done.  It should work in both Python 2.7 and Python 3.2+, the only external
+dependency being [the python-daemon
 module](https://pypi.python.org/pypi/python-daemon).
 
 
@@ -17,7 +18,7 @@ Usage
                [-F|--failure-only]
                [-l|--logfile <logfile>]
                [-m|--mail-cmd <command>]
-               [-M|--mime <mime-type>]
+               [-M|--mime-type <mime-type>]
                [-n|--nonempty]
                [--no-stdout]
                [--no-stderr]
@@ -41,8 +42,8 @@ Options
   defaults to the preferred encoding returned by Python's
   [`locale.getpreferredencoding`][preferred].  If decoding fails, the output
   will be attached to the e-mail as an `application/octet-stream` file.
-    - When `--mime` is also given, this option has no effect other than to set
-      the default value for `--err-encoding`.
+    - When `--mime-type` is also given, this option has no effect other than to
+      set the default value for `--err-encoding`.
 
 - `-E <encoding>`, `--err-encoding <encoding>` — Expect the stderr of
   `<command>` to be in the given encoding; defaults to the value specified via
@@ -65,9 +66,9 @@ Options
   to `<command>` (executed via the shell) on stdin; default command: `sendmail
   -t`
 
-- `-M <mime-type>`, `--mime <mime-type>` — Attach the standard output of
+- `-M <mime-type>`, `--mime-type <mime-type>` — Attach the standard output of
   `<command>` to the e-mail as an inline attachment with the given MIME type.
-  The MIME type may include parameters, e.g., `--mime "application/json;
+  The MIME type may include parameters, e.g., `--mime-type "application/json;
   charset=utf-16"`.  Implies `--split`.
 
 - `-n`, `--nonempty` — Do not send an e-mail if the command exited successfully

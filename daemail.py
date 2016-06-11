@@ -36,7 +36,7 @@ utf8qp.body_encoding = email.charset.QP
 class CommandMailer(object):
     def __init__(self, sender=None, to=None, failure_only=False, nonempty=False,
                  mail_cmd=None, no_stdout=False, no_stderr=False, split=False,
-                 encoding=None, err_encoding=None, utc=False, mime=None):
+                 encoding=None, err_encoding=None, utc=False, mime_type=None):
         self.sender = sender
         self.to = to
         self.failure_only = failure_only
@@ -44,11 +44,11 @@ class CommandMailer(object):
         self.mail_cmd = mail_cmd
         self.no_stdout = no_stdout
         self.no_stderr = no_stderr
-        self.split = split or mime is not None
+        self.split = split or mime_type is not None
         self.encoding = encoding
         self.err_encoding = err_encoding
         self.utc = utc
-        self.mime = mime
+        self.mime_type = mime_type
         if self.sender is None:
             self.sender = os.getlogin() + '@' + socket.gethostname()
         if self.to is None:
@@ -95,8 +95,8 @@ class CommandMailer(object):
             # versa, right?
             if results["stdout"]:
                 msg.addtext('\nOutput:\n')
-                if self.mime is not None:
-                    msg.addmimeblob(results["stdout"], self.mime, 'stdout')
+                if self.mime_type is not None:
+                    msg.addmimeblob(results["stdout"], self.mime_type, 'stdout')
                 else:
                     msg.addblobquote(results["stdout"], self.encoding, 'stdout')
                 msg.addtext('\n')
@@ -286,7 +286,7 @@ def main():
                         help='Append unrecoverable errors to this file')
     parser.add_argument('-m', '--mail-cmd', default='sendmail -t',
                         metavar='COMMAND', help='Command for sending e-mail')
-    parser.add_argument('-M', '--mime',
+    parser.add_argument('-M', '--mime-type',
                         help='Send output as attachment with given MIME type')
     parser.add_argument('-n', '--nonempty', action='store_true',
                         help='Only send e-mail if there was output or failure')
@@ -317,7 +317,7 @@ def main():
         split=args.split,
         to=args.to,
         utc=args.utc,
-        mime=args.mime,
+        mime_type=args.mime_type,
     )
     try:
         with DaemonContext(working_directory=args.chdir, umask=os.umask(0)):
