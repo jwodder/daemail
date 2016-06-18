@@ -337,6 +337,7 @@ def main():
             traceback.print_exc()
             print('', file=sys.stderr)
             print('Configuration:', vars(mailer), file=sys.stderr)
+            print('Chdir:', repr(args.chdir), file=sys.stderr)
             print('Command:', [args.command] + args.args, file=sys.stderr)
             if isinstance(e, MailCmdError):
                 print('E-mail saved to',repr(args.dead_letter), file=sys.stderr)

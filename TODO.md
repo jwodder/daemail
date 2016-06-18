@@ -19,7 +19,6 @@
 - Don't log exceptions that result in dead letters?
     - If such exceptions are logged, make their stringified forms informative
 - Improve (or eliminate?) the configuration settings dump in the logfile
-    - Include the `--chdir` setting in the config dump
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
 - Make `--from` default to omitting the `From:` header so that it's filled in
