@@ -13,7 +13,6 @@ import platform
 import os
 import re
 import signal
-import socket
 import subprocess
 import sys
 import traceback
@@ -50,9 +49,9 @@ class CommandMailer(object):
         self.utc = utc
         self.mime_type = mime_type
         if self.sender is None:
-            self.sender = os.getlogin() + '@' + socket.gethostname()
+            self.sender = os.getlogin()
         if self.to is None:
-            self.to = os.getlogin() + '@' + socket.gethostname()
+            self.to = os.getlogin()
         if self.mail_cmd is None:
             self.mail_cmd = 'sendmail -t'
         if self.encoding is None:

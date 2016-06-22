@@ -23,7 +23,6 @@
   not being an option (or fix things so that it is an option?)
 - Make `--from` default to omitting the `From:` header so that it's filled in
   by sendmail?
-- Omit the hostname from the default value of `--to`?
 - Convert to a Python package and upload to PyPI?
 
 - Options to add:

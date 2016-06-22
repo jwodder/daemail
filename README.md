@@ -53,7 +53,7 @@ Options
       or explicitly.
 
 - `-f <address>`, `--from <address>`, `--sender <address>` — Set the `From:`
-  address of the e-mail; defaults to the current user at the local host
+  address of the e-mail; defaults to the current user (no host)
 
 - `-F`, `--failure-only` — Only send an e-mail if the command exited with a
   nonzero status
@@ -82,8 +82,7 @@ Options
   a single stream
 
 - `-t <address>`, `--to <address>`, `--recipient <address>`, `--rcpt <address>`
-  — Set the recipient of the e-mail; defaults to the current user at the local
-  host
+  — Set the recipient of the e-mail; defaults to the current user (no host)
 
 - `-Z`, `--utc` — Show start & end times in UTC instead of local time
 
