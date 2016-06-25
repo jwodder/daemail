@@ -80,16 +80,10 @@ class CommandMailer(object):
                 msg.headers['Subject'] = '[DONE] ' + cmdstring
             else:
                 msg.headers['Subject'] = '[FAILED] ' + cmdstring
+            results["rc"] = rc_with_signal(results["rc"])
             msg.addtext('Start Time:  {start}\n'
                         'End Time:    {end}\n'
-                        'Exit Status: {rc}'.format(**results))
-            if results["rc"] < 0:
-                # cf. <http://stackoverflow.com/q/2549939/744178>
-                for k,v in vars(signal).items():
-                    if k.startswith('SIG') and v == -results["rc"]:
-                        msg.addtext(' (' + k + ')')
-                        break
-            msg.addtext('\n')
+                        'Exit Status: {rc}\n'.format(**results))
             # An empty byte string is always an empty character string and vice
             # versa, right?
             if results["stdout"]:
@@ -244,7 +238,7 @@ class ExternalMailCmdError(MailCmdError):
     def update_email(self):
         self.msg.addtext('\nAdditionally, the mail command {0!r} exited with'
                          ' return code {1} when asked to send this e-mail.\n'
-                         .format(self.mail_cmd, self.rc))
+                         .format(self.mail_cmd, rc_with_signal(self.rc)))
         if self.output:
             self.msg.addtext('\nMail command output:\n')
             self.msg.addblobquote(self.output,
@@ -264,6 +258,15 @@ def mail_quote(s):
 def mime_text(msg):
     # Even if you say `decode=True`, get_payload still returns a `bytes` object
     return msg.get_payload(decode=True).decode('utf-8')
+
+def rc_with_signal(rc):
+    if rc < 0:
+        # cf. <http://stackoverflow.com/q/2549939/744178>
+        signames = [k for k,v in vars(signal).items()
+                      if k.startswith('SIG') and v == -rc]
+        if signames:
+            return '{} ({})'.format(rc, ', '.join(signames))
+    return str(rc)
 
 
 def main():

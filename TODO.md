@@ -9,13 +9,6 @@
     - Python 2: Decode command-line arguments using the locale's preferred
       encoding?
     - Python 3: See PEP 383 and os.fsencode
-- Try to write tests
-    - Ensure this works in both Python 2 and Python 3
-    - Combinations of possibilities to test:
-        - command succeeds/fails/errors/is killed by a signal
-        - command output can/can't be decoded/is empty
-        - mail command succeeds/fails/errors
-        - mail command output can/can't be decoded/is empty
 - Don't log exceptions that result in dead letters?
     - If such exceptions are logged, make their stringified forms informative
 - Improve (or eliminate?) the configuration settings dump in the logfile
@@ -24,6 +17,14 @@
 - Make `--from` default to omitting the `From:` header so that it's filled in
   by sendmail?
 - Convert to a Python package and upload to PyPI?
+
+- Try to write tests
+    - Ensure this works in both Python 2 and Python 3
+    - Combinations of possibilities to test:
+        - command succeeds/fails/errors/is killed by a signal
+        - command output can/can't be decoded/is empty
+        - mail command succeeds/fails/errors/is killed by a signal
+        - mail command output can/can't be decoded/is empty
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
