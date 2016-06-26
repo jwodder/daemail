@@ -23,7 +23,7 @@ if sys.version_info[0] == 2:
 else:
     from shlex import quote
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
 USER_AGENT = 'daemail {} ({} {})'.format(
     __version__, platform.python_implementation(), platform.python_version()
@@ -48,8 +48,6 @@ class CommandMailer(object):
         self.err_encoding = err_encoding
         self.utc = utc
         self.mime_type = mime_type
-        if self.sender is None:
-            self.sender = os.getlogin()
         if self.to is None:
             self.to = os.getlogin()
         if self.mail_cmd is None:
@@ -62,7 +60,8 @@ class CommandMailer(object):
     def run(self, command, *args):
         cmdstring = ' '.join(map(quote, (command,) + args))
         msg = DraftMessage()
-        msg.headers['From'] = self.sender
+        if self.sender is not None:
+            msg.headers['From'] = self.sender
         msg.headers['To'] = self.to
         msg.headers['User-Agent'] = USER_AGENT
         try:

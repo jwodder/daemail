@@ -14,9 +14,8 @@
 - Improve (or eliminate?) the configuration settings dump in the logfile
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
-- Make `--from` default to omitting the `From:` header so that it's filled in
-  by sendmail?
 - Convert to a Python package and upload to PyPI?
+- Should tracebacks in e-mails be quoted?
 
 - Try to write tests
     - Ensure this works in both Python 2 and Python 3
