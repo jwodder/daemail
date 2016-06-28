@@ -15,7 +15,8 @@
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
 - Convert to a Python package and upload to PyPI?
-- Should tracebacks in e-mails be quoted?
+- Include the full traceback (quoted) when `InternalMailCmdError`s occur
+- Add a "Sent by daemail" signature?
 
 - Try to write tests
     - Ensure this works in both Python 2 and Python 3
