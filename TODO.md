@@ -4,19 +4,19 @@
 - Look into version requirements for `python-daemon`
 - Allow specifying multiple `--to`s on the command line?
 - Make logfile entries look like mbox entries?
-- Support format specifiers in the log and dead letter filenames
+- Support format specifiers in the logfile and dead letter filenames
 - Handle encoding of command-line arguments
     - Python 2: Decode command-line arguments using the locale's preferred
       encoding?
     - Python 3: See PEP 383 and os.fsencode
 - Don't log exceptions that result in dead letters?
     - If such exceptions are logged, make their stringified forms informative
+      (i.e., by calling `super().__init__` with a helpful message)
 - Improve (or eliminate?) the configuration settings dump in the logfile
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
 - Convert to a Python package and upload to PyPI?
 - Include the full traceback (quoted) when `InternalMailCmdError`s occur
-- Add a "Sent by daemail" signature?
 
 - Try to write tests
     - Ensure this works in both Python 2 and Python 3
@@ -33,3 +33,4 @@
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
+    - `--no-daemonize` (for debugging) ???
