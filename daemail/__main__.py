@@ -20,7 +20,7 @@ def main():
                         help='Set encoding of stdout and stderr')
     parser.add_argument('-E', '--err-encoding', help='Set encoding of stderr',
                         metavar='ENCODING')
-    parser.add_argument('-f', '--from', '--sender', dest='sender',
+    parser.add_argument('-f', '--sender', '--from',
                         help='From: address of e-mail')
     parser.add_argument('-F', '--failure-only', action='store_true',
                         help='Only send e-mail if command returned nonzero')
@@ -28,7 +28,7 @@ def main():
                         help='Append unrecoverable errors to this file')
     parser.add_argument('-m', '--mail-cmd', default='sendmail -t',
                         metavar='COMMAND', help='Command for sending e-mail')
-    parser.add_argument('-M', '--mime-type',
+    parser.add_argument('-M', '--mime-type', '--mime',
                         help='Send output as attachment with given MIME type')
     parser.add_argument('-n', '--nonempty', action='store_true',
                         help='Only send e-mail if there was output or failure')

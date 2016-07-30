@@ -18,6 +18,7 @@
 - Convert to a Python package and upload to PyPI?
 - Include the full traceback (quoted) when `InternalMailCmdError`s occur
 - Add docstrings
+- Use a nonempty default for `--logfile`?
 
 - Try to write tests
     - Ensure this works in both Python 2 and Python 3
