@@ -17,6 +17,7 @@
   not being an option (or fix things so that it is an option?)
 - Convert to a Python package and upload to PyPI?
 - Include the full traceback (quoted) when `InternalMailCmdError`s occur
+- Add docstrings
 
 - Try to write tests
     - Ensure this works in both Python 2 and Python 3
