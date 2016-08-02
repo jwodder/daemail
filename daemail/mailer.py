@@ -3,16 +3,10 @@ from   datetime   import datetime
 import locale
 import os
 import subprocess
-import sys
 import traceback
 from   .          import USER_AGENT
 from   .message   import DraftMessage
-from   .util      import mail_quote, rc_with_signal
-
-if sys.version_info[0] == 2:
-    from pipes import quote
-else:
-    from shlex import quote
+from   .util      import mail_quote, rc_with_signal, show_argv
 
 class CommandMailer(object):
     def __init__(self, sender=None, to=None, failure_only=False, nonempty=False,
@@ -40,7 +34,7 @@ class CommandMailer(object):
             self.err_encoding = self.encoding
 
     def run(self, command, *args):
-        cmdstring = ' '.join(map(quote, (command,) + args))
+        cmdstring = show_argv(command, *args)
         msg = DraftMessage()
         if self.sender is not None:
             msg.headers['From'] = self.sender

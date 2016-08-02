@@ -2,13 +2,10 @@
   options
 - Support sending directly using `smtplib`
 - Look into version requirements for `python-daemon`
+- Look into version requirements for `six`
 - Allow specifying multiple `--to`s on the command line?
 - Make logfile entries look like mbox entries?
 - Support format specifiers in the logfile and dead letter filenames
-- Handle encoding of command-line arguments
-    - Python 2: Decode command-line arguments using the locale's preferred
-      encoding?
-    - Python 3: See PEP 383 and os.fsencode
 - Don't log exceptions that result in dead letters?
     - If such exceptions are logged, make their stringified forms informative
       (i.e., by calling `super().__init__` with a helpful message)
@@ -36,3 +33,5 @@
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
     - `--no-daemonize` (for debugging) ???
+    - include environment variables in e-mail?
+    - set the name to use for the stdout/stderr attachment?

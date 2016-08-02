@@ -1,4 +1,5 @@
 from   __future__             import unicode_literals
+import email.charset
 from   email.encoders         import encode_base64
 from   email.message          import Message
 from   email.mime.application import MIMEApplication
@@ -6,7 +7,10 @@ from   email.mime.multipart   import MIMEMultipart
 from   email.mime.text        import MIMEText
 import subprocess
 from   .errors                import InternalMailCmdError, ExternalMailCmdError
-from   .util                  import mail_quote, mime_text, utf8qp
+from   .util                  import mail_quote, mime_text
+
+utf8qp = email.charset.Charset('utf-8')
+utf8qp.body_encoding = email.charset.QP
 
 class DraftMessage(object):
     def __init__(self):

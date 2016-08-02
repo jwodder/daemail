@@ -1,10 +1,8 @@
 from   __future__ import unicode_literals
-import email.charset
+import os
 import re
 import signal
-
-utf8qp = email.charset.Charset('utf-8')
-utf8qp.body_encoding = email.charset.QP
+import six
 
 def mail_quote(s):
     s = '> ' + re.sub(r'(\r(\n|(?!\n))|\n)(?=.)', '\n> ', s, flags=re.S)
@@ -24,3 +22,25 @@ def rc_with_signal(rc):
         if signames:
             return '{} ({})'.format(rc, ', '.join(signames))
     return str(rc)
+
+def show_argv(*argv):
+    shown = ''
+    for a in argv:
+        if isinstance(a, six.text_type):
+            a = os.fsencode(a)
+        if not re.match(br'^[-\w:+=.,/]+$', a):
+            # `shlex.quote` only ever adds quotes; it doesn't even escape
+            # backslashes!  I don't like it, and I'm not using it.
+            a = re.sub(br"([\\'])", br'\\\1', a)
+            a = re.sub(
+                br"[\x7F-\xFF]",
+                lambda m: r'\x{:02x}'.format(six.byte2int(m.group()))\
+                                     .encode('us-ascii'),
+                a,
+            )
+            a = b"'" + a + b"'"
+        a = a.decode('us-ascii')
+        if shown:
+            shown += ' '
+        shown += a
+    return shown

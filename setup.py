@@ -26,7 +26,7 @@ setup(
     long_description=long_desc,
     url='https://github.com/jwodder/daemail',
 
-    install_requires=['python-daemon'],
+    install_requires=['python-daemon', 'six'],
 
     classifiers=[
         'Development Status :: 4 - Beta',
