@@ -39,27 +39,33 @@ bash_slash.update({
 })
 
 def show_argv(*argv):
-    # Assumes that the elements of `argv` have been passed straight from the
-    # command line without any modifications (i.e., each one is a bytes string
-    # in Python 2 and a text string decoded with `os.fsdecode` in Python 3)
+    r"""
+    Join -- and possibly escape & quote -- the elements of ``argv`` into a form
+    suitable for passing directly to a \*nix shell (specifically, Bash, but the
+    format should still be understandable to users of other shells).
+
+    The elements of ``argv`` are assumed to have been taken directly from
+    `sys.argv` (possibly with a detour through `argparse`); specifically, in
+    Python 2, they are assumed to be byte strings (encoding irrelevant), and in
+    Python 3, they are assumed to be text strings decoded with `os.fsdecode`.
+    """
 
     # Just using `repr` for this isn't the best idea, as the quotes it adds
     # around simple (e.g., alphanumeric) arguments are unnecessary (or, for
-    # strings like `"'$HOME'"`, just plain wrong).
+    # strings like `"'$HOME'"`, just plain wrong).  `shlex.quote`, on the other
+    # hand, adds the right quotes at the right times, but that's all it does;
+    # it doesn't even escape backslashes!  Hence, we're rolling our own.
+
     shown = ''
     for a in argv:
         if isinstance(a, six.text_type):
             a = os.fsencode(a)
         a = a.decode('iso-8859-1')
         if not re.match(r'^[-\w:+=.,/]+$', a):
-            # `shlex.quote` only ever adds quotes; it doesn't even escape
-            # backslashes!  I don't like it, and I'm not using it.
-            a = re.sub(r"([\\'])", r'\\\1', a)
+            a = "'" + re.sub(r"([\\'])", r'\\\1', a) + "'"
             b = a.translate(bash_slash)
             if a != b:
-                a = "$'" + b + "'"
-            else:
-                a = "'" + a + "'"
+                a = '$' + b
         if shown:
             shown += ' '
         shown += a
