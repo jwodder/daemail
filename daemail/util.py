@@ -57,11 +57,11 @@ def show_argv(*argv):
     # it doesn't even escape backslashes!  Hence, we're rolling our own.
 
     shown = ''
-    for a in argv:
+    for i,a in enumerate(argv):
         if isinstance(a, six.text_type):
             a = os.fsencode(a)
         a = a.decode('iso-8859-1')
-        if not re.match(r'^[-\w:+=.,/]+$', a):
+        if not re.match(r'^[-\w:+=.,/]+$', a) or (i == 0 and '=' in a):
             a = "'" + re.sub(r"([\\'])", r'\\\1', a) + "'"
             b = a.translate(bash_slash)
             if a != b:
