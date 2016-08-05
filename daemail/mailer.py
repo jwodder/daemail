@@ -5,6 +5,7 @@ import os
 import subprocess
 import traceback
 from   .          import USER_AGENT
+from   .errors    import InternalMailCmdError, ExternalMailCmdError
 from   .message   import DraftMessage
 from   .util      import mail_quote, rc_with_signal, show_argv
 
@@ -76,7 +77,7 @@ class CommandMailer(object):
                 msg.addtext('\nError Output:\n')
                 msg.addblobquote(results["stderr"], self.err_encoding, 'stderr')
                 msg.addtext('\n')
-        msg.send(self.mail_cmd)
+        self.send(msg)
 
     def subcmd(self, command, *args):
         params = {}
@@ -107,3 +108,16 @@ class CommandMailer(object):
             "stderr": err,
             #"pid": p.pid,
         }
+
+    def send(self, msg):
+        msgtext = msg.compile()
+        try:
+            p = subprocess.Popen(self.mail_cmd, shell=True,
+                                 stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT)
+            out, _ = p.communicate(msgtext)
+        except Exception as e:
+            raise InternalMailCmdError(msg, e, self.mail_cmd)
+        if p.returncode:
+            raise ExternalMailCmdError(msg, self.mail_cmd, p.returncode, out)

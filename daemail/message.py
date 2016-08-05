@@ -5,8 +5,6 @@ from   email.message          import Message
 from   email.mime.application import MIMEApplication
 from   email.mime.multipart   import MIMEMultipart
 from   email.mime.text        import MIMEText
-import subprocess
-from   .errors                import InternalMailCmdError, ExternalMailCmdError
 from   .util                  import mail_quote, mime_text
 
 utf8qp = email.charset.Charset('utf-8')
@@ -73,16 +71,3 @@ class DraftMessage(object):
             msg[k] = v
         return bytes(msg)
         # `bytes` is an alias for `str` in Python 2.6 and 2.7
-
-    def send(self, mail_cmd):
-        msg = self.compile()
-        try:
-            p = subprocess.Popen(mail_cmd, shell=True,
-                                 stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT)
-            out, _ = p.communicate(msg)
-        except Exception as e:
-            raise InternalMailCmdError(self, e, mail_cmd)
-        if p.returncode:
-            raise ExternalMailCmdError(self, mail_cmd, p.returncode, out)

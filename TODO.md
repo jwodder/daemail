@@ -16,6 +16,7 @@
 - Include the full traceback (quoted) when `InternalMailCmdError`s occur
 - Add docstrings
 - Use a nonempty default for `--logfile`?
+- Support executing the mail command without invoking a shell?
 
 - Try to write tests
     - Ensure this works in both Python 2 and Python 3
@@ -35,3 +36,4 @@
     - `--no-daemonize` (for debugging) ???
     - include environment variables in e-mail?
     - set the name to use for the stdout/stderr attachment?
+    - don't include `stdout` on success/failure
