@@ -3,6 +3,7 @@ import os
 import re
 import signal
 import six
+from   six.moves  import shlex_quote as quote
 
 def mail_quote(s):
     s = '> ' + re.sub(r'(\r(\n|(?!\n))|\n)(?=.)', '\n> ', s, flags=re.S)
@@ -40,32 +41,34 @@ bash_slash.update({
 
 def show_argv(*argv):
     r"""
-    Join -- and possibly escape & quote -- the elements of ``argv`` into a form
-    suitable for passing directly to a \*nix shell (specifically, Bash, but the
-    format should still be understandable to users of other shells).
+    Join -- and possibly escape & quote -- the elements of ``argv`` into a
+    pure-ASCII form suitable for passing directly to a \*nix shell.
+    Nonprintable characters are escaped in a format that is Bash-specific but
+    should still be understandable to users of other shells.
 
     The elements of ``argv`` are assumed to have been taken directly from
     `sys.argv` (possibly with a detour through `argparse`); specifically, in
     Python 2, they are assumed to be byte strings (encoding irrelevant), and in
     Python 3, they are assumed to be text strings decoded with `os.fsdecode`.
     """
-
-    # Just using `repr` for this isn't the best idea, as the quotes it adds
-    # around simple (e.g., alphanumeric) arguments are unnecessary (or, for
-    # strings like `"'$HOME'"`, just plain wrong).  `shlex.quote`, on the other
-    # hand, adds the right quotes at the right times, but that's all it does;
-    # it doesn't even escape backslashes!  Hence, we're rolling our own.
-
+    # Just using `repr` for this won't work, as the quotes it adds around
+    # simple (e.g., alphanumeric) arguments are unnecessary, and the double
+    # quotes it puts around strings like `"'$HOME'"` are just plain wrong.
     shown = ''
+    assigning = True
     for i,a in enumerate(argv):
         if isinstance(a, six.text_type):
             a = os.fsencode(a)
         a = a.decode('iso-8859-1')
-        if not re.match(r'^[-\w:+=.,/]+$', a) or (i == 0 and '=' in a):
-            a = "'" + re.sub(r"([\\'])", r'\\\1', a) + "'"
-            b = a.translate(bash_slash)
-            if a != b:
-                a = '$' + b
+        if re.search(r'[^\x20-\x7E]', a):
+            a = "$'"+re.sub(r"([\\'])", r'\\\1', a).translate(bash_slash)+"'"
+            assigning = False
+        else:
+            a = quote(a)
+            if assigning and re.match(r'^[A-Za-z_]\w*=', a):
+                a = "'" + a + "'"
+            else:
+                assigning = False
         if shown:
             shown += ' '
         shown += a
