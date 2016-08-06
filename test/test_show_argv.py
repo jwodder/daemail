@@ -71,7 +71,70 @@ def test_show_argv_comma():
 def test_show_argv_slash():
     assert show_argv("foo/bar") == "foo/bar"
 
-### TODO: Test escaping of all other punctuation
+def test_show_argv_exclamation():
+    assert show_argv("foo!bar") == "'foo!bar'"
+
+def test_show_argv_quote():
+    assert show_argv("foo\"bar") == "'foo\"bar'"
+
+def test_show_argv_hash():
+    assert show_argv("foo#bar") == "'foo#bar'"
+
+def test_show_argv_dollar():
+    assert show_argv("foo$bar") == "'foo$bar'"
+
+def test_show_argv_percent():
+    assert show_argv("foo%bar") == "foo%bar"
+
+def test_show_argv_ampersand():
+    assert show_argv("foo&bar") == "'foo&bar'"
+
+def test_show_argv_leftparen():
+    assert show_argv("foo(bar") == "'foo(bar'"
+
+def test_show_argv_rightparen():
+    assert show_argv("foo)bar") == "'foo)bar'"
+
+def test_show_argv_semicolon():
+    assert show_argv("foo;bar") == "'foo;bar'"
+
+def test_show_argv_lessthan():
+    assert show_argv("foo<bar") == "'foo<bar'"
+
+def test_show_argv_greaterthan():
+    assert show_argv("foo>bar") == "'foo>bar'"
+
+def test_show_argv_question():
+    assert show_argv("foo?bar") == "'foo?bar'"
+
+def test_show_argv_at():
+    assert show_argv("foo@bar") == "foo@bar"
+
+def test_show_argv_leftbracket():
+    assert show_argv("foo[bar") == "'foo[bar'"
+
+def test_show_argv_rightbracket():
+    assert show_argv("foo]bar") == "'foo]bar'"
+
+def test_show_argv_caret():
+    assert show_argv("foo^bar") == "'foo^bar'"
+
+def test_show_argv_backtick():
+    assert show_argv("foo`bar") == "'foo`bar'"
+
+def test_show_argv_leftbrace():
+    assert show_argv("foo{bar") == "'foo{bar'"
+
+def test_show_argv_rightbrace():
+    assert show_argv("foo}bar") == "'foo}bar'"
+
+def test_show_argv_vbar():
+    assert show_argv("foo|bar") == "'foo|bar'"
+
+def test_show_argv_tilde():
+    assert show_argv("foo~bar") == "'foo~bar'"
+
+### TODO: Test all escape characters
 
 if sys.version_info[0] >= 3:
     def test_show_argv_surrogateesc():
