@@ -17,6 +17,30 @@ def test_show_argv_2simple():
 def test_show_argv_null():
     assert show_argv("foo\0bar") == r"$'foo\x00bar'"
 
+def test_show_argv_bell():
+    assert show_argv("foo\abar") == r"$'foo\abar'"
+
+def test_show_argv_backspace():
+    assert show_argv("foo\bbar") == r"$'foo\bbar'"
+
+def test_show_argv_tab():
+    assert show_argv("foo\tbar") == r"$'foo\tbar'"
+
+def test_show_argv_linefeed():
+    assert show_argv("foo\nbar") == r"$'foo\nbar'"
+
+def test_show_argv_verticaltab():
+    assert show_argv("foo\vbar") == r"$'foo\vbar'"
+
+def test_show_argv_formfeed():
+    assert show_argv("foo\fbar") == r"$'foo\fbar'"
+
+def test_show_argv_return():
+    assert show_argv("foo\rbar") == r"$'foo\rbar'"
+
+def test_show_argv_escape():
+    assert show_argv("foo\x1Bbar") == r"$'foo\ebar'"
+
 def test_show_argv_space():
     assert show_argv('foo bar') == "'foo bar'"
 
@@ -134,7 +158,7 @@ def test_show_argv_rightbrace():
 def test_show_argv_tilde():
     assert show_argv("foo~bar") == "'foo~bar'"
 
-### TODO: Test control/non-printable characters
+### TODO: Test non-printable characters without single-letter escapes?
 ### TODO: Test non-simple arguments with equals signs
 
 if sys.version_info[0] >= 3:
