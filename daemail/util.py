@@ -37,6 +37,8 @@ bash_slash.update({
     0x0C: r'\f',
     0x0D: r'\r',
     0x1B: r'\e',
+    0x27: r"\'",
+    0x5C: r'\\',
 })
 
 def show_argv(*argv):
@@ -61,7 +63,7 @@ def show_argv(*argv):
             a = os.fsencode(a)
         a = a.decode('iso-8859-1')
         if re.search(r'[^\x20-\x7E]', a):
-            a = "$'"+re.sub(r"([\\'])", r'\\\1', a).translate(bash_slash)+"'"
+            a = "$'" + a.translate(bash_slash) + "'"
             assigning = False
         else:
             a = quote(a)

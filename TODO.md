@@ -37,3 +37,4 @@
     - include environment variables in e-mail?
     - set the name to use for the stdout/stderr attachment?
     - don't include `stdout` on success/failure
+    - setting the User-Agent?
