@@ -158,10 +158,23 @@ def test_show_argv_rightbrace():
 def test_show_argv_tilde():
     assert show_argv("foo~bar") == "'foo~bar'"
 
+def test_show_argv_delete():
+    assert show_argv('foo\x7Fbar') == r"$'foo\x7fbar'"
+
 ### TODO: Test non-printable characters without single-letter escapes?
 ### TODO: Test non-simple arguments with equals signs
 
-if sys.version_info[0] >= 3:
+if sys.version_info[0] == 2:
+    def test_show_argv_nbsp():
+        assert show_argv('foo\xA0bar') == r"$'foo\xa0bar'"
+
+    def test_show_argv_8bits():
+        assert show_argv('foo\xFFbar') == r"$'foo\xffbar'"
+
+    def test_show_argv_utf8():
+        assert show_argv('foo\xC3\xA9bar') == r"$'foo\xc3\xa9bar'"
+
+else:
     def test_show_argv_surrogateesc():
         assert show_argv('foo\udc80bar') == r"$'foo\x80bar'"
 
