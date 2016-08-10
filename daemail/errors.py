@@ -14,9 +14,9 @@ class ReraisedMailSendError(MailSendError):
         self.mail_cmd = mail_cmd
 
     def update_email(self):
-        self.msgaddtext('\nAdditionally, an exception occurred while trying to'
-                        ' send this e-mail with {0!r}:\n\n{1}'\
-                        .format(self.mail_cmd, mail_quote(str(self.cause))))
+        self.msg.addtext('\nAdditionally, an exception occurred while trying to'
+                         ' send this e-mail with {0!r}:\n\n{1}'\
+                         .format(self.mail_cmd, mail_quote(str(self.cause))))
 
 
 class MailCmdFailureError(MailSendError):
