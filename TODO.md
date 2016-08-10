@@ -13,7 +13,7 @@
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
 - Convert to a Python package and upload to PyPI?
-- Include the full traceback (quoted) when `InternalMailCmdError`s occur
+- Include the full traceback (quoted) when `ReraisedMailSendError`s occur
 - Add docstrings
 - Use a nonempty default for `--logfile`?
 - Support executing the mail command without invoking a shell?

@@ -5,7 +5,7 @@ import os
 import subprocess
 import traceback
 from   .          import USER_AGENT
-from   .errors    import InternalMailCmdError, ExternalMailCmdError
+from   .errors    import ReraisedMailSendError, MailCmdFailureError
 from   .message   import DraftMessage
 from   .util      import mail_quote, rc_with_signal, show_argv
 
@@ -118,6 +118,6 @@ class CommandMailer(object):
                                  stderr=subprocess.STDOUT)
             out, _ = p.communicate(msgtext)
         except Exception as e:
-            raise InternalMailCmdError(msg, e, self.mail_cmd)
+            raise ReraisedMailSendError(msg, e, self.mail_cmd)
         if p.returncode:
-            raise ExternalMailCmdError(msg, self.mail_cmd, p.returncode, out)
+            raise MailCmdFailureError(msg, self.mail_cmd, p.returncode, out)

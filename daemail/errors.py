@@ -2,11 +2,11 @@ from   __future__ import unicode_literals
 import locale
 from   .util      import mail_quote, rc_with_signal
 
-class MailCmdError(Exception):
+class MailSendError(Exception):
     pass
 
 
-class InternalMailCmdError(MailCmdError):
+class ReraisedMailSendError(MailSendError):
     # Raised in reponse to a Python exception
     def __init__(self, msg, cause, mail_cmd):
         self.msg = msg
@@ -15,11 +15,11 @@ class InternalMailCmdError(MailCmdError):
 
     def update_email(self):
         self.msgaddtext('\nAdditionally, an exception occurred while trying to'
-                        ' send this e-mail with ' + repr(self.mail_cmd) +
-                        ':\n\n' + mail_quote(str(self.cause)))
+                        ' send this e-mail with {0!r}:\n\n{1}'\
+                        .format(self.mail_cmd, mail_quote(str(self.cause))))
 
 
-class ExternalMailCmdError(MailCmdError):
+class MailCmdFailureError(MailSendError):
     # Raised if the mail command returned nonzero
     def __init__(self, msg, mail_cmd, rc, output):
         self.msg = msg

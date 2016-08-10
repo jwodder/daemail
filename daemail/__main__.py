@@ -6,7 +6,7 @@ import sys
 import traceback
 from   daemon     import DaemonContext  # python-daemon
 from   .          import __version__
-from   .errors    import MailCmdError
+from   .errors    import MailSendError
 from   .mailer    import CommandMailer
 
 def main():
@@ -65,7 +65,7 @@ def main():
         with DaemonContext(working_directory=args.chdir, umask=os.umask(0)):
             mailer.run(args.command, *args.args)
     except Exception as e:
-        if isinstance(e, MailCmdError):
+        if isinstance(e, MailSendError):
             e.update_email()
             with open(args.dead_letter, 'ab') as fp:
                 fp.write(e.msg.compile())
@@ -81,7 +81,7 @@ def main():
             print('Configuration:', vars(mailer), file=sys.stderr)
             print('Chdir:', repr(args.chdir), file=sys.stderr)
             print('Command:', [args.command] + args.args, file=sys.stderr)
-            if isinstance(e, MailCmdError):
+            if isinstance(e, MailSendError):
                 print('E-mail saved to',repr(args.dead_letter), file=sys.stderr)
             print('', file=sys.stderr)
         sys.exit(1)
