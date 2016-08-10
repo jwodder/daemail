@@ -20,7 +20,7 @@ def main():
                         help='Set encoding of stdout and stderr')
     parser.add_argument('-E', '--err-encoding', help='Set encoding of stderr',
                         metavar='ENCODING')
-    parser.add_argument('-f', '--sender', '--from',
+    parser.add_argument('-f', '--sender', '--from', dest='from_addr',
                         help='From: address of e-mail')
     parser.add_argument('-F', '--failure-only', action='store_true',
                         help='Only send e-mail if command returned nonzero')
@@ -38,7 +38,7 @@ def main():
                         help="Don't capture stderr")
     parser.add_argument('--split', action='store_true',
                         help='Capture stdout and stderr separately')
-    parser.add_argument('-t', '--to', '--recipient', '--rcpt',
+    parser.add_argument('-t', '--to', '--recipient', '--rcpt', dest='to_addr',
                         help='To: address of e-mail', metavar='RECIPIENT')
     parser.add_argument('-V', '--version', action='version',
                                            version='daemail ' + __version__)
@@ -50,14 +50,14 @@ def main():
     mailer = CommandMailer(
         encoding=args.encoding,
         err_encoding=args.err_encoding,
-        sender=args.sender,
+        from_addr=args.from_addr,
         failure_only=args.failure_only,
         mail_cmd=args.mail_cmd,
         nonempty=args.nonempty,
         no_stdout=args.no_stdout,
         no_stderr=args.no_stderr,
         split=args.split,
-        to=args.to,
+        to_addr=args.to_addr,
         utc=args.utc,
         mime_type=args.mime_type,
     )

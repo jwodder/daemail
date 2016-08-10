@@ -10,11 +10,12 @@ from   .message   import DraftMessage
 from   .util      import mail_quote, rc_with_signal, show_argv
 
 class CommandMailer(object):
-    def __init__(self, sender=None, to=None, failure_only=False, nonempty=False,
-                 mail_cmd=None, no_stdout=False, no_stderr=False, split=False,
-                 encoding=None, err_encoding=None, utc=False, mime_type=None):
-        self.sender = sender
-        self.to = to
+    def __init__(self, from_addr=None, to_addr=None, failure_only=False,
+                 nonempty=False, mail_cmd=None, no_stdout=False,
+                 no_stderr=False, split=False, encoding=None,
+                 err_encoding=None, utc=False, mime_type=None):
+        self.from_addr = from_addr
+        self.to_addr = to_addr
         self.failure_only = failure_only
         self.nonempty = nonempty
         self.mail_cmd = mail_cmd
@@ -25,8 +26,8 @@ class CommandMailer(object):
         self.err_encoding = err_encoding
         self.utc = utc
         self.mime_type = mime_type
-        if self.to is None:
-            self.to = os.getlogin()
+        if self.to_addr is None:
+            self.to_addr = os.getlogin()
         if self.mail_cmd is None:
             self.mail_cmd = 'sendmail -t'
         if self.encoding is None:
@@ -37,9 +38,9 @@ class CommandMailer(object):
     def run(self, command, *args):
         cmdstring = show_argv(command, *args)
         msg = DraftMessage()
-        if self.sender is not None:
-            msg.headers['From'] = self.sender
-        msg.headers['To'] = self.to
+        if self.from_addr is not None:
+            msg.headers['From'] = self.from_addr
+        msg.headers['To'] = self.to_addr
         msg.headers['User-Agent'] = USER_AGENT
         try:
             results = self.subcmd(command, *args)
