@@ -75,10 +75,9 @@ Options
   nonzero status
 
 - ``-l <logfile>``, ``--logfile <logfile>`` — If an unexpected error occurs
-  after daemonization that prevents the command from being run and/or any
-  e-mails from being sent, append a report to ``<logfile>``; defaults to
-  ``daemail.log`` in the current directory or the directory specified with
-  ``--chdir``
+  after daemonization that prevents any e-mails from being sent, append a
+  report to ``<logfile>``; defaults to ``daemail.log`` in the current directory
+  or the directory specified with ``--chdir``
 
 - ``-m <command>``, ``--mail-cmd <command>`` — Send e-mail by passing the
   message to ``<command>`` (executed via the shell) on stdin; default command:
