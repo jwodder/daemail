@@ -73,7 +73,7 @@ def main():
             # If no logfile was specified or this open() fails, die alone where
             # no one will ever know.
             sys.stderr = open(args.logfile, 'a')
-                ### What encoding do I use for this???
+                ### TODO: What encoding do I use for this???
             print(datetime.now().isoformat(), 'daemail', __version__,
                   'encountered an exception:', file=sys.stderr)
             traceback.print_exc()

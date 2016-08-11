@@ -1,22 +1,26 @@
 - Support using a config file (`~/.config/daemail.cfg`) for pre-specifying all
   options
 - Support sending directly using `smtplib`
-- Look into version requirements for `python-daemon`
-- Look into version requirements for `six`
-- Allow specifying multiple `--to`s on the command line?
-- Make logfile entries look like mbox entries?
 - Support format specifiers in the logfile and dead letter filenames
-- Don't log exceptions that result in dead letters?
-    - If such exceptions are logged, make their stringified forms informative
-      (i.e., by calling `super().__init__` with a helpful message)
-- Improve (or eliminate?) the configuration settings dump in the logfile
+- Support executing the mail command without invoking a shell?
+- Allow specifying multiple `--to`s on the command line?
+- Use a nonempty default for `--logfile`?
+- Look into version requirements for `python-daemon` and `six`
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
-- Convert to a Python package and upload to PyPI?
-- Include the full traceback (quoted) when `ReraisedMailSendError`s occur
 - Add docstrings
-- Use a nonempty default for `--logfile`?
-- Support executing the mail command without invoking a shell?
+- Upload to PyPI
+
+- Logging:
+    - Make logfile entries look like mbox entries?
+    - Don't log exceptions that result in dead letters?
+        - If such exceptions are logged, make their stringified forms
+          informative (i.e., by calling `super().__init__` with a helpful
+          message)
+    - Improve (or eliminate?) the configuration settings dump in the logfile
+    - Include the full traceback (quoted) when `ReraisedMailSendError`s occur
+    - Write error messages to stderr instead of the logfile if daemonization
+      fails
 
 - Try to write tests
     - Ensure this works in both Python 2 and Python 3
