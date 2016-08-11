@@ -4,7 +4,6 @@
 - Support format specifiers in the logfile and dead letter filenames
 - Support executing the mail command without invoking a shell?
 - Allow specifying multiple `--to`s on the command line?
-- Use a nonempty default for `--logfile`?
 - Look into version requirements for `python-daemon` and `six`
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
@@ -32,13 +31,14 @@
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
-    - Report exceptions encountered by daemail itself to the logfile rather
-      than e-mail or _vice versa_
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
     - `--no-daemonize` (for debugging) ???
     - include environment variables in e-mail?
-    - set the name to use for the stdout/stderr attachment?
+    - set the name to use for the stdout/stderr attachment
     - don't include `stdout` on success/failure
     - setting the User-Agent?
+    - log dead letters to the logfile?
+    - log successes to the logfile?
+    - (try to) e-mail fatal errors instead of writing them to the logfile?

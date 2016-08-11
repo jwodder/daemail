@@ -24,7 +24,7 @@ def main():
                         help='From: address of e-mail')
     parser.add_argument('-F', '--failure-only', action='store_true',
                         help='Only send e-mail if command returned nonzero')
-    parser.add_argument('-l', '--logfile',
+    parser.add_argument('-l', '--logfile', default='daemail.log',
                         help='Append unrecoverable errors to this file')
     parser.add_argument('-m', '--mail-cmd', default='sendmail -t',
                         metavar='COMMAND', help='Command for sending e-mail')
@@ -67,23 +67,22 @@ def main():
     except Exception as e:
         if isinstance(e, MailSendError):
             e.update_email()
+            ### TODO: Handle this `open` failing!
             with open(args.dead_letter, 'ab') as fp:
                 fp.write(e.msg.compile())
-        if args.logfile:
-            # If no logfile was specified or this open() fails, die alone where
-            # no one will ever know.
-            sys.stderr = open(args.logfile, 'a')
-                ### TODO: What encoding do I use for this???
-            print(datetime.now().isoformat(), 'daemail', __version__,
-                  'encountered an exception:', file=sys.stderr)
-            traceback.print_exc()
-            print('', file=sys.stderr)
-            print('Configuration:', vars(mailer), file=sys.stderr)
-            print('Chdir:', repr(args.chdir), file=sys.stderr)
-            print('Command:', [args.command] + args.args, file=sys.stderr)
-            if isinstance(e, MailSendError):
-                print('E-mail saved to',repr(args.dead_letter), file=sys.stderr)
-            print('', file=sys.stderr)
+        # If this open() fails, die alone where no one will ever know.
+        sys.stderr = open(args.logfile, 'a')
+            ### TODO: What encoding do I use for this???
+        print(datetime.now().isoformat(), 'daemail', __version__,
+              'encountered an exception:', file=sys.stderr)
+        traceback.print_exc()
+        print('', file=sys.stderr)
+        print('Configuration:', vars(mailer), file=sys.stderr)
+        print('Chdir:', repr(args.chdir), file=sys.stderr)
+        print('Command:', [args.command] + args.args, file=sys.stderr)
+        if isinstance(e, MailSendError):
+            print('E-mail saved to',repr(args.dead_letter), file=sys.stderr)
+        print('', file=sys.stderr)
         sys.exit(1)
 
 if __name__ == '__main__':
