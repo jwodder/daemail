@@ -5,20 +5,19 @@ import os
 import subprocess
 import traceback
 from   .          import USER_AGENT
-from   .errors    import ReraisedMailSendError, MailCmdFailureError
 from   .message   import DraftMessage
-from   .util      import mail_quote, rc_with_signal, show_argv
+from   .util      import MailCmdError, mail_quote, rc_with_signal, show_argv
 
 class CommandMailer(object):
-    def __init__(self, from_addr=None, to_addr=None, failure_only=False,
-                 nonempty=False, mail_cmd=None, no_stdout=False,
-                 no_stderr=False, split=False, encoding=None,
-                 err_encoding=None, utc=False, mime_type=None):
+    def __init__(self, sender, from_addr=None, to_addr=None, failure_only=False,
+                 nonempty=False, no_stdout=False, no_stderr=False, split=False,
+                 encoding=None, err_encoding=None, utc=False, mime_type=None,
+                 dead_letter='dead.letter'):
         self.from_addr = from_addr
         self.to_addr = to_addr
         self.failure_only = failure_only
         self.nonempty = nonempty
-        self.mail_cmd = mail_cmd
+        self.sender = sender
         self.no_stdout = no_stdout
         self.no_stderr = no_stderr
         self.split = split or mime_type is not None
@@ -26,10 +25,9 @@ class CommandMailer(object):
         self.err_encoding = err_encoding
         self.utc = utc
         self.mime_type = mime_type
+        self.dead_letter = dead_letter
         if self.to_addr is None:
             self.to_addr = os.getlogin()
-        if self.mail_cmd is None:
-            self.mail_cmd = 'sendmail -t'
         if self.encoding is None:
             self.encoding = locale.getpreferredencoding(True)
         if self.err_encoding is None:
@@ -78,7 +76,31 @@ class CommandMailer(object):
                 msg.addtext('\nError Output:\n')
                 msg.addblobquote(results["stderr"], self.err_encoding, 'stderr')
                 msg.addtext('\n')
-        self.send(msg)
+        msgbytes = msg.compile()
+        try:
+            self.sender.send(msgbytes)
+        except MailCmdError as e:
+            msg.addtext(
+                '\nAdditionally, the mail command {0!r} exited with return'
+                ' code {1} when asked to send this e-mail.\n'
+                .format(e.mail_cmd, rc_with_signal(e.rc))
+            )
+            if e.output:
+                msg.addtext('\nMail command output:\n')
+                msg.addblobquote(e.output, locale.getpreferredencoding(True),
+                                 'sendmail-output')
+            else:
+                msg.addtext('\nMail command output: none\n')
+        except Exception as e:
+            msg.addtext(
+                '\nAdditionally, an exception occurred while trying to send'
+                ' this e-mail:\n' + mail_quote(traceback.format_exc())
+            )
+        else:
+            return
+        ### TODO: Handle this `open` failing!
+        with open(self.dead_letter, 'ab') as fp:
+            fp.write(msg.compile())
 
     def subcmd(self, command, *args):
         params = {}
@@ -109,16 +131,3 @@ class CommandMailer(object):
             "stderr": err,
             #"pid": p.pid,
         }
-
-    def send(self, msg):
-        msgtext = msg.compile()
-        try:
-            p = subprocess.Popen(self.mail_cmd, shell=True,
-                                 stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT)
-            out, _ = p.communicate(msgtext)
-        except Exception as e:
-            raise ReraisedMailSendError(msg, e, self.mail_cmd)
-        if p.returncode:
-            raise MailCmdFailureError(msg, self.mail_cmd, p.returncode, out)

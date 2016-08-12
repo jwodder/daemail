@@ -5,6 +5,14 @@ import signal
 import six
 from   six.moves  import shlex_quote as quote
 
+class MailCmdError(Exception):
+    # Raised if the sendmail command returned nonzero
+    def __init__(self, mail_cmd, rc, output):
+        self.mail_cmd = mail_cmd
+        self.rc = rc
+        self.output = output
+        ### TODO: Invoke `super().__init__`
+
 def mail_quote(s):
     s = '> ' + re.sub(r'(\r(\n|(?!\n))|\n)(?=.)', '\n> ', s, flags=re.S)
     if not s.endswith("\n"):

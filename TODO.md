@@ -7,8 +7,14 @@
 - Look into version requirements for `python-daemon` and `six`
 - Add a note to the documentation about passing things to the command on stdin
   not being an option (or fix things so that it is an option?)
+- Document that relative `--dead-letter` and `--logfile` paths are always
+  resolved relative to `--chdir`
 - Add docstrings
 - Upload to PyPI
+- Add `python-dateutil` as an extra requirement so that the timezone name can
+  be included in timestamps
+- When an attempt to send over SMTP fails, should the SMTP host & username be
+  recorded in the dead letter?
 
 - Logging:
     - Make logfile entries look like mbox entries?

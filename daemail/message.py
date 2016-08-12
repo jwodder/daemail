@@ -69,5 +69,4 @@ class DraftMessage(object):
             msg = MIMEMultipart(_subparts=self._attached)
         for k,v in self.headers.items():
             msg[k] = v
-        return bytes(msg)
-        # `bytes` is an alias for `str` in Python 2.6 and 2.7
+        return bytes(msg)  # `bytes` is an alias for `str` in Python 2.6 and 2.7

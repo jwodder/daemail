@@ -6,7 +6,7 @@ import sys
 import traceback
 from   daemon     import DaemonContext  # python-daemon
 from   .          import __version__
-from   .errors    import MailSendError
+from   .          import senders
 from   .mailer    import CommandMailer
 
 def main():
@@ -36,6 +36,15 @@ def main():
                         help="Don't capture stdout")
     parser.add_argument('--no-stderr', action='store_true',
                         help="Don't capture stderr")
+
+    parser.add_argument('--smtp-host')
+    parser.add_argument('--smtp-port', type=int)
+    parser.add_argument('--smtp-username')
+    parser.add_argument('--smtp-password')
+    ### TODO: Make these mutually exclusive:
+    parser.add_argument('--smtp-ssl', action='store_true')
+    parser.add_argument('--smtp-starttls', action='store_true')
+
     parser.add_argument('--split', action='store_true',
                         help='Capture stdout and stderr separately')
     parser.add_argument('-t', '--to', '--recipient', '--rcpt', dest='to_addr',
@@ -47,12 +56,25 @@ def main():
     parser.add_argument('command')
     parser.add_argument('args', nargs=argparse.REMAINDER)
     args = parser.parse_args()
+
+    if args.smtp_host is not None:
+        if args.smtp_ssl:
+            cls = senders.SMTPSSender
+        elif args.smtp_starttls:
+            cls = senders.StartTLSSender
+        else:
+            cls = senders.SMTPSender
+        sender = cls(args.from_addr, args.to_addr, args.smtp_host,
+                     args.smtp_port, args.smtp_username, args.smtp_password)
+    else:
+        sender = senders.CommandSender(args.mail_cmd)
+
     mailer = CommandMailer(
         encoding=args.encoding,
         err_encoding=args.err_encoding,
         from_addr=args.from_addr,
         failure_only=args.failure_only,
-        mail_cmd=args.mail_cmd,
+        sender=sender,
         nonempty=args.nonempty,
         no_stdout=args.no_stdout,
         no_stderr=args.no_stderr,
@@ -61,15 +83,11 @@ def main():
         utc=args.utc,
         mime_type=args.mime_type,
     )
+
     try:
         with DaemonContext(working_directory=args.chdir, umask=os.umask(0)):
             mailer.run(args.command, *args.args)
-    except Exception as e:
-        if isinstance(e, MailSendError):
-            e.update_email()
-            ### TODO: Handle this `open` failing!
-            with open(args.dead_letter, 'ab') as fp:
-                fp.write(e.msg.compile())
+    except Exception:
         # If this open() fails, die alone where no one will ever know.
         sys.stderr = open(args.logfile, 'a')
             ### TODO: What encoding do I use for this???
@@ -80,8 +98,6 @@ def main():
         print('Configuration:', vars(mailer), file=sys.stderr)
         print('Chdir:', repr(args.chdir), file=sys.stderr)
         print('Command:', [args.command] + args.args, file=sys.stderr)
-        if isinstance(e, MailSendError):
-            print('E-mail saved to',repr(args.dead_letter), file=sys.stderr)
         print('', file=sys.stderr)
         sys.exit(1)
 
