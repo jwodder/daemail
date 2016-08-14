@@ -41,9 +41,9 @@ def main():
     parser.add_argument('--smtp-port', type=int)
     parser.add_argument('--smtp-username')
     parser.add_argument('--smtp-password')
-    ### TODO: Make these mutually exclusive:
-    parser.add_argument('--smtp-ssl', action='store_true')
-    parser.add_argument('--smtp-starttls', action='store_true')
+    smtp_ssl = parser.add_mutually_exclusive_group()
+    smtp_ssl.add_argument('--smtp-ssl', action='store_true')
+    smtp_ssl.add_argument('--smtp-starttls', action='store_true')
 
     parser.add_argument('--split', action='store_true',
                         help='Capture stdout and stderr separately')
