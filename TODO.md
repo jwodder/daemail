@@ -1,6 +1,5 @@
 - Support using a config file (`~/.config/daemail.cfg`) for pre-specifying all
   options
-- Support sending directly using `smtplib`
 - Support format specifiers in the logfile and dead letter filenames
 - Support executing the mail command without invoking a shell?
 - Allow specifying multiple `--to`s on the command line?
@@ -18,10 +17,6 @@
 
 - Logging:
     - Make logfile entries look like mbox entries?
-    - Don't log exceptions that result in dead letters?
-        - If such exceptions are logged, make their stringified forms
-          informative (i.e., by calling `super().__init__` with a helpful
-          message)
     - Improve (or eliminate?) the configuration settings dump in the logfile
     - Include the full traceback (quoted) when `ReraisedMailSendError`s occur
     - Write error messages to stderr instead of the logfile if daemonization
@@ -47,4 +42,8 @@
     - setting the User-Agent?
     - log dead letters to the logfile?
     - log successes to the logfile?
+    - log info/debugging messages to the logfile?
     - (try to) e-mail fatal errors instead of writing them to the logfile?
+    - setting the "realname" of the sender/recipient
+    - `--smtp-password-file`, so that the password doesn't have to be passed on
+      the command line
