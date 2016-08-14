@@ -74,10 +74,12 @@ Options
 - ``-F``, ``--failure-only`` — Only send an e-mail if the command exited with a
   nonzero status
 
-- ``-l <logfile>``, ``--logfile <logfile>`` — If an unexpected error occurs
-  after daemonization that prevents any e-mails from being sent, append a
-  report to ``<logfile>``; defaults to ``daemail.log`` in the current directory
-  or the directory specified with ``--chdir``
+- ``-l <logfile>``, ``--logfile <logfile>`` — If an unexpected & unhandleable
+  fatal error occurs after daemonization, append a report to ``<logfile>``;
+  defaults to ``daemail.log`` in the current directory or the directory
+  specified with ``--chdir``
+
+  - Such an error is a deficiency in the program; please report it!
 
 - ``-m <command>``, ``--mail-cmd <command>`` — Send e-mail by passing the
   message to ``<command>`` (executed via the shell) on stdin; default command:
