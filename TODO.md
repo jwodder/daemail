@@ -9,16 +9,19 @@
 - Document that relative `--dead-letter` and `--logfile` paths are always
   resolved relative to `--chdir`
 - Add docstrings
+    - Add a module docstring to `__init__.py`
 - Upload to PyPI
 - Add `python-dateutil` as an extra requirement so that the timezone name can
   be included in timestamps
 - When an attempt to send over SMTP fails, should the SMTP host & username be
   recorded in the dead letter?
+- `show_argv`: Show, say, an `é` in an argument as `é`, assuming it decodes
+  properly using the filesystem encoding (This could lead to problems with
+  non-ASCII control/non-printable characters)
 
 - Logging:
     - Make logfile entries look like mbox entries?
     - Improve (or eliminate?) the configuration settings dump in the logfile
-    - Include the full traceback (quoted) when `ReraisedMailSendError`s occur
     - Write error messages to stderr instead of the logfile if daemonization
       fails
 

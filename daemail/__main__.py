@@ -10,7 +10,7 @@ from   .          import senders
 from   .mailer    import CommandMailer
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog='daemail')
     parser.add_argument('--chdir', metavar='DIR', default=os.getcwd(),
                         help="Change to this directory before running")
     parser.add_argument('-D', '--dead-letter', metavar='FILE',
@@ -66,6 +66,10 @@ def main():
             cls = senders.SMTPSender
         sender = cls(args.from_addr, args.to_addr, args.smtp_host,
                      args.smtp_port, args.smtp_username, args.smtp_password)
+    elif any(a.startswith('smtp_') and getattr(args, a) is not None
+             for a in vars(args)):
+        raise SystemExit('daemail: --smtp-* options cannot be specified without'
+                         ' --smtp-host')
     else:
         sender = senders.CommandSender(args.mail_cmd)
 

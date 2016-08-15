@@ -12,8 +12,8 @@
 This is a Python script for running a command in the background and sending an
 e-mail with its output (by default, the combined stdout and stderr) once it's
 done.  It should work in both Python 2.7 and Python 3.2+, the only external
-dependencies being `the python-daemon module
-<https://pypi.python.org/pypi/python-daemon>`_ and the ubiquitous `six module
+dependencies being `the python-daemon package
+<https://pypi.python.org/pypi/python-daemon>`_ and the ubiquitous `six package
 <https://pypi.python.org/pypi/six>`_.
 
 
