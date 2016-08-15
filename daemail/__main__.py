@@ -66,7 +66,7 @@ def main():
             cls = senders.SMTPSender
         sender = cls(args.from_addr, args.to_addr, args.smtp_host,
                      args.smtp_port, args.smtp_username, args.smtp_password)
-    elif any(a.startswith('smtp_') and getattr(args, a) is not None
+    elif any(a.startswith('smtp_') and getattr(args, a) not in (None, False)
              for a in vars(args)):
         raise SystemExit('daemail: --smtp-* options cannot be specified without'
                          ' --smtp-host')
