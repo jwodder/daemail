@@ -14,7 +14,6 @@ def main():
     parser.add_argument('--chdir', metavar='DIR', default=os.getcwd(),
                         help="Change to this directory before running")
     parser.add_argument('-D', '--dead-letter', metavar='FILE',
-                        default='dead.letter',
                         help="Append undeliverable mail to this file")
     parser.add_argument('-e', '--encoding',
                         help='Set encoding of stdout and stderr')
@@ -89,6 +88,7 @@ def main():
         to_addr=args.to_addr,
         utc=args.utc,
         mime_type=args.mime_type,
+        dead_letter=args.dead_letter,
     )
 
     try:

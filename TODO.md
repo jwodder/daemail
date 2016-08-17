@@ -37,6 +37,9 @@
         - command output can/can't be decoded/is empty
         - mail command succeeds/fails/errors/is killed by a signal
         - mail command output can/can't be decoded/is empty
+    - Test handling of attachments containing "From " at the beginning of a
+      line (especially when writing to dead.letter) or a line with just a
+      period
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
