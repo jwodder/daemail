@@ -38,7 +38,11 @@ class SMTPSSender(SMTPSender):
 
 
 class CommandSender(object):
-    def __init__(self, mail_cmd='sendmail -t'):
+    def __init__(self, mail_cmd=None):
+        if mail_cmd is None:
+            # Set the default here (instead of in the method signature) so that
+            # `main` can pass `None` to the constructor and have it DWIM.
+            mail_cmd = 'sendmail -t'
         self.mail_cmd = mail_cmd
 
     def send(self, msgbytes):

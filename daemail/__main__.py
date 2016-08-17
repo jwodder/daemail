@@ -26,8 +26,8 @@ def main():
                         help='Only send e-mail if command returned nonzero')
     parser.add_argument('-l', '--logfile', default='daemail.log',
                         help='Append unrecoverable errors to this file')
-    parser.add_argument('-m', '--mail-cmd', default='sendmail -t',
-                        metavar='COMMAND', help='Command for sending e-mail')
+    parser.add_argument('-m', '--mail-cmd', metavar='COMMAND',
+                        help='Command for sending e-mail')
     parser.add_argument('-M', '--mime-type', '--mime',
                         help='Send output as attachment with given MIME type')
     parser.add_argument('-n', '--nonempty', action='store_true',
@@ -58,6 +58,9 @@ def main():
     args = parser.parse_args()
 
     if args.smtp_host is not None:
+        if args.mail_cmd is not None:
+            raise SystemExit('daemail: --mail-cmd and --smtp-host are mutually'
+                             ' exclusive')
         if args.smtp_ssl:
             cls = senders.SMTPSSender
         elif args.smtp_starttls:

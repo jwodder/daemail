@@ -18,6 +18,10 @@
 - `show_argv`: Show, say, an `é` in an argument as `é`, assuming it decodes
   properly using the filesystem encoding (This could lead to problems with
   non-ASCII control/non-printable characters)
+- Should the "From " line not be included when sending via SMTP? (or ever?)
+- Make argparse enforce the mutual-exclusivity of `--mail-cmd` and
+  `--smtp-host` instead of doing it manually?  (but then the usage summary will
+  look odd)
 
 - Logging:
     - Make logfile entries look like mbox entries?
@@ -27,6 +31,7 @@
 
 - Try to write tests
     - Ensure this works in both Python 2 and Python 3
+    - Use a mock Sender class
     - Combinations of possibilities to test:
         - command succeeds/fails/errors/is killed by a signal
         - command output can/can't be decoded/is empty
