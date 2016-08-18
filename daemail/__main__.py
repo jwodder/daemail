@@ -35,15 +35,19 @@ def main():
                         help="Don't capture stdout")
     parser.add_argument('--no-stderr', action='store_true',
                         help="Don't capture stderr")
-
-    parser.add_argument('--smtp-host')
-    parser.add_argument('--smtp-port', type=int)
-    parser.add_argument('--smtp-username')
-    parser.add_argument('--smtp-password')
+    parser.add_argument('--smtp-host', metavar='HOST',
+                        help='SMTP server through which to send e-mail')
+    parser.add_argument('--smtp-port', type=int, metavar='PORT',
+                        help='Connect to --smtp-host on this port')
+    parser.add_argument('--smtp-username', metavar='USERNAME',
+                        help='Username for authenticating with --smtp-host')
+    parser.add_argument('--smtp-password', metavar='PASSWORD',
+                        help='Password for authenticating with --smtp-host')
     smtp_ssl = parser.add_mutually_exclusive_group()
-    smtp_ssl.add_argument('--smtp-ssl', action='store_true')
-    smtp_ssl.add_argument('--smtp-starttls', action='store_true')
-
+    smtp_ssl.add_argument('--smtp-ssl', action='store_true',
+                          help='Use SMTPS protocol')
+    smtp_ssl.add_argument('--smtp-starttls', action='store_true',
+                          help='Use SMTP protocol with STARTTLS')
     parser.add_argument('--split', action='store_true',
                         help='Capture stdout and stderr separately')
     parser.add_argument('-t', '--to-addr', '--to', '--recipient', '--rcpt',

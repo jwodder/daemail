@@ -22,6 +22,8 @@
 - Make argparse enforce the mutual-exclusivity of `--mail-cmd` and
   `--smtp-host` instead of doing it manually?  (but then the usage summary will
   look odd)
+- Require `--to-addr` when sending via SMTP?
+- Eliminate some of the `--to-addr` and `--from-addr` synonyms?
 
 - Logging:
     - Make logfile entries look like mbox entries?
