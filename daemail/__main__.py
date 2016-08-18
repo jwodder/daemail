@@ -10,7 +10,10 @@ from   .          import senders
 from   .mailer    import CommandMailer
 
 def main():
-    parser = argparse.ArgumentParser(prog='daemail')
+    parser = argparse.ArgumentParser(
+        prog='daemail',
+        description='Daemonize a command and e-mail the results',
+    )
     parser.add_argument('--chdir', metavar='DIR', default=os.getcwd(),
                         help="Change to this directory before running")
     parser.add_argument('-D', '--dead-letter', metavar='FILE',
