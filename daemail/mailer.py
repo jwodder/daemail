@@ -105,6 +105,7 @@ class CommandMailer(object):
         ### TODO: Handle this `open` failing!
         with open(self.dead_letter, 'ab') as fp:
             fp.write(msg.compile())
+            fp.write('\n')
 
     def subcmd(self, command, *args):
         params = {}

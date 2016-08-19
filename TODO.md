@@ -12,6 +12,7 @@
 - Error if an SMTP password is supplied without a username
 - Redirect subcommand output to tempfiles instead of reading it all into
   memory?
+- Use a space instead of 'T' in timestamps?
 
 - Documentation:
     - Add a note to the documentation about passing things to the command on
@@ -39,6 +40,7 @@
     - Test handling of attachments containing "From " at the beginning of a
       line (especially when writing to dead.letter) or a line with just a
       period
+    - Set up Travis integration
 
 New Features
 ------------
