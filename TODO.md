@@ -13,6 +13,7 @@
 - Redirect subcommand output to tempfiles instead of reading it all into
   memory?
 - Use a space instead of 'T' in timestamps?
+- Use the `mailbox` module to write to `dead.letter`?
 
 - Documentation:
     - Add a note to the documentation about passing things to the command on
@@ -58,6 +59,7 @@ New Features
   password before daemonizing
 - Add `python-dateutil` as an extra requirement so that the timezone name can
   be included in timestamps
+- If opening the logfile and/or dead letter file fails, write to syslog?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
@@ -76,3 +78,4 @@ New Features
     - setting the "realname" of the sender/recipient
     - `--smtp-password-file`, so that the password doesn't have to be passed on
       the command line
+    - "Send" the e-mail by adding it to an mbox file?

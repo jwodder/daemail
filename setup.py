@@ -40,6 +40,7 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Operating System :: POSIX',
 
         'License :: OSI Approved :: MIT License',
         'Environment :: No Input/Output (Daemon)',
