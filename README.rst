@@ -34,6 +34,11 @@ Usage
             [-n|--nonempty]
             [--no-stdout]
             [--no-stderr]
+            [--smtp-host <host>]
+            [--smtp-port <port>]
+            [--smtp-username <username>]
+            [--smtp-password <password>]
+            [--smtp-ssl | --smtp-starttls]
             [--split]
             [-t|--to|--to-addr|--recipient|--rcpt <address>]
             [-Z|--utc]
@@ -56,16 +61,16 @@ Options
   |getpreferredencoding|_.  If decoding fails, the output will be attached to
   the e-mail as an ``application/octet-stream`` file.
 
-  - When ``--mime-type`` is also given, this option has no effect other than to
-    set the default value for ``--err-encoding``.
+  When ``--mime-type`` is also given, this option has no effect other than to
+  set the default value for ``--err-encoding``.
 
 - ``-E <encoding>``, ``--err-encoding <encoding>`` — Expect the stderr of
   ``<command>`` to be in the given encoding; defaults to the value specified
   via ``--encoding`` or its default.  If decoding fails, the stderr output will
   be attached to the e-mail as an ``application/octet-stream`` file.
 
-  - This option only has an effect when ``--split`` is given, either implicitly
-    or explicitly.
+  This option only has an effect when ``--split`` is given, either implicitly
+  or explicitly.
 
 - ``-f <address>``, ``--from <address>``, ``--from-addr <address>``, ``--sender
   <address>`` — Set the ``From:`` address of the e-mail.  If not specified,
@@ -83,8 +88,10 @@ Options
   - Such an error is a deficiency in the program; please report it!
 
 - ``-m <command>``, ``--mail-cmd <command>`` — Send e-mail by passing the
-  message to ``<command>`` (executed via the shell) on stdin; default command:
+  message on stdin to ``<command>`` (executed via the shell); default command:
   ``sendmail -t``
+
+  ``--mail-cmd`` and ``--smtp-host`` are mutually exclusive.
 
 - ``-M <mime-type>``, ``--mime-type <mime-type>``, ``--mime <mime-type>`` —
   Attach the standard output of ``<command>`` to the e-mail as an inline
@@ -98,6 +105,28 @@ Options
 - ``--no-stdout`` — Don't capture the command's stdout; implies ``--split``
 
 - ``--no-stderr`` — Don't capture the command's stderr; implies ``--split``
+
+- ``--smtp-host <host>`` — Send e-mail via SMTP, connecting to the given host.
+  When this option is not given, e-mail is instead sent using the command
+  specified via ``--mail-cmd`` or its default.
+
+  ``--smtp-host`` and ``--mail-cmd`` are mutually exclusive.
+
+  ``--smtp-host`` may be accompanied by the following options:
+
+  - ``--smtp-port <port>`` — Connect to ``<host>`` on the given port; defaults
+    to 25, or to 465 if ``--smtp-ssl`` is specified
+
+  - ``--smtp-username <username>`` — Authenticate to the SMTP server using the
+    given username; must be accompanied by ``--smtp-password``
+
+  - ``--smtp-password <username>`` — Authenticate to the SMTP server using the
+    given password
+
+  - ``--smtp-ssl`` — Use the SMTPS protocol to communicate with the server
+
+  - ``--smtp-starttls`` — Use the SMTP protocol with the STARTTLS extension to
+    communicate with the server
 
 - ``--split`` — Capture the command's stdout and stderr separately rather than
   as a single stream

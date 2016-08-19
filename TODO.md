@@ -24,6 +24,14 @@
   look odd)
 - Require `--to-addr` when sending via SMTP?
 - Eliminate some of the `--to-addr` and `--from-addr` synonyms?
+- Document how `--nonempty` interacts with `--no-stdout --no-stderr`
+- When running the subcommand, should daemail forward any & all signals
+  received to it?
+- If `--smtp-username` is given without `--smtp-password`, prompt for the
+  password before daemonizing
+- Error if an SMTP password is supplied without a username
+- Redirect subcommand output to tempfiles instead of reading it all into
+  memory?
 
 - Logging:
     - Make logfile entries look like mbox entries?
