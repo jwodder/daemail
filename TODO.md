@@ -1,37 +1,26 @@
-- Support using a config file (`~/.config/daemail.cfg`) for pre-specifying all
-  options
-- Support format specifiers in the logfile and dead letter filenames
-- Support executing the mail command without invoking a shell?
-- Allow specifying multiple `--to`s on the command line?
 - Look into version requirements for `python-daemon` and `six`
-- Add a note to the documentation about passing things to the command on stdin
-  not being an option (or fix things so that it is an option?)
-- Document that relative `--dead-letter` and `--logfile` paths are always
-  resolved relative to `--chdir`
-- Add docstrings
-    - Add a module docstring to `__init__.py`
 - Upload to PyPI
-- Add `python-dateutil` as an extra requirement so that the timezone name can
-  be included in timestamps
+    - Add an "Installation" section to the README
 - When an attempt to send over SMTP fails, should the SMTP host & username be
   recorded in the dead letter?
-- `show_argv`: Show, say, an `é` in an argument as `é`, assuming it decodes
-  properly using the filesystem encoding (This could lead to problems with
-  non-ASCII control/non-printable characters)
 - Should the "From " line not be included when sending via SMTP? (or ever?)
 - Make argparse enforce the mutual-exclusivity of `--mail-cmd` and
   `--smtp-host` instead of doing it manually?  (but then the usage summary will
   look odd)
 - Require `--to-addr` when sending via SMTP?
 - Eliminate some of the `--to-addr` and `--from-addr` synonyms?
-- Document how `--nonempty` interacts with `--no-stdout --no-stderr`
-- When running the subcommand, should daemail forward any & all signals
-  received to it?
-- If `--smtp-username` is given without `--smtp-password`, prompt for the
-  password before daemonizing
 - Error if an SMTP password is supplied without a username
 - Redirect subcommand output to tempfiles instead of reading it all into
   memory?
+
+- Documentation:
+    - Add a note to the documentation about passing things to the command on
+      stdin not being an option (or fix things so that it is an option?)
+    - Document that relative `--dead-letter` and `--logfile` paths are always
+      resolved relative to `--chdir`
+    - Document how `--nonempty` interacts with `--no-stdout --no-stderr`
+    - Add docstrings
+        - Add a module docstring to `__init__.py`
 
 - Logging:
     - Make logfile entries look like mbox entries?
@@ -50,6 +39,23 @@
     - Test handling of attachments containing "From " at the beginning of a
       line (especially when writing to dead.letter) or a line with just a
       period
+
+New Features
+------------
+- Support pre-specifying all options via an INI-style config file
+  (`~/.config/daemail.cfg`)
+- Support format specifiers in the logfile and dead letter filenames
+- Support executing the mail command without invoking a shell?
+- Allow specifying multiple `--to`s on the command line?
+- `show_argv`: Show, say, an `é` in an argument as `é`, assuming it decodes
+  properly using the filesystem encoding (This could lead to problems with
+  non-ASCII control/non-printable characters)
+- When running the subcommand, should daemail forward any & all signals
+  received to it?
+- If `--smtp-username` is given without `--smtp-password`, prompt for the
+  password before daemonizing
+- Add `python-dateutil` as an extra requirement so that the timezone name can
+  be included in timestamps
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
