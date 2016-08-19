@@ -26,7 +26,7 @@ Usage
             [-D|--dead-letter <file>]
             [-e|--encoding <encoding>]
             [-E|--err-encoding <encoding>]
-            [-f|--from|--from-addr|--sender <address>]
+            [-f|--from|--from-addr <address>]
             [-F|--failure-only]
             [-l|--logfile <logfile>]
             [-m|--mail-cmd <command>]
@@ -41,7 +41,7 @@ Usage
             [--smtp-ssl | --smtp-starttls]
             [--split]
             [-Z|--utc]
-            -t|--to|--to-addr|--recipient|--rcpt <address>
+            -t|--to|--to-addr <address>
             <command> [<arg> ...]
 
 Options
@@ -72,10 +72,10 @@ Options
   This option only has an effect when ``--split`` is given, either implicitly
   or explicitly.
 
-- ``-f <address>``, ``--from <address>``, ``--from-addr <address>``, ``--sender
-  <address>`` — Set the ``From:`` address of the e-mail.  If not specified,
-  ``daemail`` will not set the ``From:`` header and will expect the mail
-  command or SMTP server to do it instead.
+- ``-f <address>``, ``--from <address>``, ``--from-addr <address>`` — Set the
+  ``From:`` address of the e-mail.  If not specified, ``daemail`` will not set
+  the ``From:`` header and will expect the mail command or SMTP server to do it
+  instead.
 
 - ``-F``, ``--failure-only`` — Only send an e-mail if the command exited with a
   nonzero status
@@ -131,9 +131,8 @@ Options
 - ``--split`` — Capture the command's stdout and stderr separately rather than
   as a single stream
 
-- ``-t <address>``, ``--to <address>``, ``--to-addr <address>``, ``--recipient
-  <address>``, ``--rcpt <address>`` — Set the recipient of the e-mail; this
-  option is required
+- ``-t <address>``, ``--to <address>``, ``--to-addr <address>`` — Set the
+  recipient of the e-mail; this option is required
 
 - ``-Z``, ``--utc`` — Show start & end times in UTC instead of local time
 

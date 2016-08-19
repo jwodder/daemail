@@ -7,7 +7,6 @@
 - Make argparse enforce the mutual-exclusivity of `--mail-cmd` and
   `--smtp-host` instead of doing it manually?  (but then the usage summary will
   look odd)
-- Eliminate some of the `--to-addr` and `--from-addr` synonyms?
 - Error if an SMTP password is supplied without a username
 - Redirect subcommand output to tempfiles instead of reading it all into
   memory?

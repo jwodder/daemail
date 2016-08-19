@@ -21,7 +21,7 @@ setup(
     license='MIT',
     author='John Thorvald Wodder II',
     author_email='daemail@varonathe.org',
-    keywords='daemon email background output notifications',
+    keywords='daemon email e-mail mail smtp background output notifications',
     description='Daemonize a command and e-mail the results',
     long_description=long_desc,
     url='https://github.com/jwodder/daemail',
