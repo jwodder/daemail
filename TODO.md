@@ -7,7 +7,6 @@
 - Make argparse enforce the mutual-exclusivity of `--mail-cmd` and
   `--smtp-host` instead of doing it manually?  (but then the usage summary will
   look odd)
-- Require `--to-addr` when sending via SMTP?
 - Eliminate some of the `--to-addr` and `--from-addr` synonyms?
 - Error if an SMTP password is supplied without a username
 - Redirect subcommand output to tempfiles instead of reading it all into
@@ -42,6 +41,10 @@
       line (especially when writing to dead.letter) or a line with just a
       period
     - Set up Travis integration
+        - Include running both pyflakes and pyflakes3
+    - `show_argv`:
+        - Test non-printable characters without single-letter escapes?
+        - Test non-simple arguments with equals signs
 
 New Features
 ------------

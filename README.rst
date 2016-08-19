@@ -40,8 +40,8 @@ Usage
             [--smtp-password <password>]
             [--smtp-ssl | --smtp-starttls]
             [--split]
-            [-t|--to|--to-addr|--recipient|--rcpt <address>]
             [-Z|--utc]
+            -t|--to|--to-addr|--recipient|--rcpt <address>
             <command> [<arg> ...]
 
 Options
@@ -132,8 +132,8 @@ Options
   as a single stream
 
 - ``-t <address>``, ``--to <address>``, ``--to-addr <address>``, ``--recipient
-  <address>``, ``--rcpt <address>`` — Set the recipient of the e-mail; defaults
-  to the current user (no host)
+  <address>``, ``--rcpt <address>`` — Set the recipient of the e-mail; this
+  option is required
 
 - ``-Z``, ``--utc`` — Show start & end times in UTC instead of local time
 

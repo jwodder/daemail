@@ -54,7 +54,8 @@ def main():
     parser.add_argument('--split', action='store_true',
                         help='Capture stdout and stderr separately')
     parser.add_argument('-t', '--to-addr', '--to', '--recipient', '--rcpt',
-                        help='To: address of e-mail', metavar='RECIPIENT')
+                        help='To: address of e-mail', metavar='RECIPIENT',
+                        required=True)
     parser.add_argument('-V', '--version', action='version',
                                            version='daemail ' + __version__)
     parser.add_argument('-Z', '--utc', action='store_true',

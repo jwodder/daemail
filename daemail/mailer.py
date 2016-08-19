@@ -1,7 +1,6 @@
 from   __future__ import unicode_literals
 from   datetime   import datetime
 import locale
-import os
 import subprocess
 import traceback
 from   .          import USER_AGENT
@@ -9,7 +8,7 @@ from   .message   import DraftMessage
 from   .util      import MailCmdError, mail_quote, rc_with_signal, show_argv
 
 class CommandMailer(object):
-    def __init__(self, sender, from_addr=None, to_addr=None, failure_only=False,
+    def __init__(self, sender, to_addr, from_addr=None, failure_only=False,
                  nonempty=False, no_stdout=False, no_stderr=False, split=False,
                  encoding=None, err_encoding=None, utc=False, mime_type=None,
                  dead_letter=None):
@@ -26,8 +25,6 @@ class CommandMailer(object):
         self.utc = utc
         self.mime_type = mime_type
         self.dead_letter = dead_letter
-        if self.to_addr is None:
-            self.to_addr = os.getlogin()
         if self.encoding is None:
             self.encoding = locale.getpreferredencoding(True)
         if self.err_encoding is None:
