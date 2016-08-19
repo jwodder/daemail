@@ -63,6 +63,8 @@ New Features
 - Add `python-dateutil` as an extra requirement so that the timezone name can
   be included in timestamps
 - If opening the logfile and/or dead letter file fails, write to syslog?
+- Support format specifiers in `--mail-cmd` for interpolating the To & From
+  addresses
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)

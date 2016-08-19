@@ -3,22 +3,19 @@ import subprocess
 from   .util import MailCmdError
 
 class SMTPSender(object):
-    def __init__(self, from_addr, to_addr, host, port=None,
-                       username=None, password=None):
+    def __init__(self, host, port=None, username=None, password=None):
         if username is not None and password is None:
             raise ValueError('Username supplied without password')
-        self.from_addr = from_addr
-        self.to_addr = to_addr
         self.host = host
         self.port = port
         self.username = username
         self.password = password
 
-    def send(self, msgbytes):
+    def send(self, msgbytes, from_addr, to_addr):
         server = self.connect()
         if self.username is not None:
             server.login(self.username, self.password)
-        server.sendmail(self.from_addr, [self.to_addr], msgbytes)
+        server.sendmail(from_addr, [to_addr], msgbytes)
         server.quit()
 
     def connect(self):
@@ -45,7 +42,7 @@ class CommandSender(object):
             mail_cmd = 'sendmail -t'
         self.mail_cmd = mail_cmd
 
-    def send(self, msgbytes):
+    def send(self, msgbytes, _from, _to):
         p = subprocess.Popen(self.mail_cmd, shell=True,
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,

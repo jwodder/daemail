@@ -79,7 +79,7 @@ class CommandMailer(object):
                 msg.addtext('\n')
         msgbytes = msg.compile()
         try:
-            self.sender.send(msgbytes)
+            self.sender.send(msgbytes, self.from_addr, self.to_addr)
         except MailCmdError as e:
             msg.addtext(
                 '\nAdditionally, the mail command {0!r} exited with return'

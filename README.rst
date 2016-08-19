@@ -75,7 +75,7 @@ Options
 - ``-f <address>``, ``--from <address>``, ``--from-addr <address>``, ``--sender
   <address>`` — Set the ``From:`` address of the e-mail.  If not specified,
   ``daemail`` will not set the ``From:`` header and will expect the mail
-  command to do it instead.
+  command or SMTP server to do it instead.
 
 - ``-F``, ``--failure-only`` — Only send an e-mail if the command exited with a
   nonzero status
