@@ -1,11 +1,16 @@
 from   __future__ import unicode_literals
 from   datetime   import datetime
 import locale
+import platform
 import subprocess
 import traceback
-from   .          import USER_AGENT
+from   .          import __version__
 from   .message   import DraftMessage
 from   .util      import MailCmdError, mail_quote, rc_with_signal, show_argv
+
+USER_AGENT = 'daemail {} ({} {})'.format(
+    __version__, platform.python_implementation(), platform.python_version()
+)
 
 class CommandMailer(object):
     def __init__(self, sender, to_addr, from_addr=None, failure_only=False,

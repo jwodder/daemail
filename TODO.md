@@ -12,6 +12,7 @@
   memory?
 - Use a space instead of 'T' in timestamps?
 - Use the `mailbox` module to write to `dead.letter`?
+- Support Python 2.6?
 
 - Documentation:
     - Add a note to the documentation about passing things to the command on
