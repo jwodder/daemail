@@ -3,7 +3,6 @@
     - Add an "Installation" section to the README
 - When an attempt to send over SMTP fails, should the SMTP host & username be
   recorded in the dead letter?
-- Should the "From " line not be included when sending via SMTP? (or ever?)
 - Make argparse enforce the mutual-exclusivity of `--mail-cmd` and
   `--smtp-host` instead of doing it manually?  (but then the usage summary will
   look odd)
@@ -11,7 +10,7 @@
 - Redirect subcommand output to tempfiles instead of reading it all into
   memory?
 - Use a space instead of 'T' in timestamps?
-- Use the `mailbox` module to write to `dead.letter`?
+- Use the `mailbox` module to write to `dead.letter`
 - Support Python 2.6?
 
 - Documentation:

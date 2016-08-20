@@ -5,6 +5,7 @@ from   email.message          import Message
 from   email.mime.application import MIMEApplication
 from   email.mime.multipart   import MIMEMultipart
 from   email.mime.text        import MIMEText
+from   six                    import PY2
 from   .util                  import mail_quote, mime_text
 
 utf8qp = email.charset.Charset('utf-8')
@@ -69,4 +70,7 @@ class DraftMessage(object):
             msg = MIMEMultipart(_subparts=self._attached)
         for k,v in self.headers.items():
             msg[k] = v
-        return bytes(msg)  # `bytes` is an alias for `str` in Python 2.6 and 2.7
+        if PY2:
+            return msg.as_string(unixfrom=False)
+        else:
+            return msg.as_bytes(unixfrom=False)
