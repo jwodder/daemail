@@ -11,7 +11,9 @@ class MailCmdError(Exception):
         self.mail_cmd = mail_cmd
         self.rc = rc
         self.output = output
-        ### TODO: Invoke `super().__init__`
+        super(MailCmdError, self).__init__(
+            '{0!r}: command exited with return code {1}'.format(mail_cmd, rc)
+        )
 
 def mail_quote(s):
     s = '> ' + re.sub(r'(\r(\n|(?!\n))|\n)(?=.)', '\n> ', s, flags=re.S)
