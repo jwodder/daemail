@@ -6,12 +6,12 @@
 - Make argparse enforce the mutual-exclusivity of `--mail-cmd` and
   `--smtp-host` instead of doing it manually?  (but then the usage summary will
   look odd)
-- Error if an SMTP password is supplied without a username
 - Redirect subcommand output to tempfiles instead of reading it all into
   memory?
 - Use a space instead of 'T' in timestamps?
 - Use the `mailbox` module to write to `dead.letter`
 - Support Python 2.6?
+- Add the `-i` option to the default sendmail command?
 
 - Documentation:
     - Add a note to the documentation about passing things to the command on

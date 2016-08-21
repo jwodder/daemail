@@ -6,6 +6,8 @@ class SMTPSender(object):
     def __init__(self, host, port=None, username=None, password=None):
         if username is not None and password is None:
             raise ValueError('Username supplied without password')
+        elif username is None and password is not None:
+            raise ValueError('Password supplied without username')
         self.host = host
         self.port = port
         self.username = username
