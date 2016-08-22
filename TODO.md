@@ -10,7 +10,6 @@
   memory?
 - Use a space instead of 'T' in timestamps?
 - Use the `mailbox` module to write to `dead.letter`
-- Support Python 2.6?
 - Add the `-i` option to the default sendmail command?
 
 - Documentation:
@@ -59,8 +58,8 @@ New Features
   received to it?
 - If `--smtp-username` is given without `--smtp-password`, prompt for the
   password before daemonizing
-- Add `python-dateutil` as an extra requirement so that the timezone name can
-  be included in timestamps
+- Add `python-dateutil` as an extra requirement so that the local timezone
+  name/offset can be included in timestamps
 - If opening the logfile and/or dead letter file fails, write to syslog?
 - Support format specifiers in `--mail-cmd` for interpolating the To & From
   addresses

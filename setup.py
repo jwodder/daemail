@@ -35,8 +35,10 @@ setup(
         #'Development Status :: 5 - Production/Stable',
 
         'Programming Language :: Python :: 2',
+        # python-daemon doesn't support 2.6.
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
