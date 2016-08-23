@@ -11,15 +11,17 @@
 - Use a space instead of 'T' in timestamps?
 - Use the `mailbox` module to write to `dead.letter`
 - Add the `-i` option to the default sendmail command?
+- What happens if the `chdir` fails while daemonizing?  Should that be handled
+  somehow?
 
 - Documentation:
     - Add a note to the documentation about passing things to the command on
       stdin not being an option (or fix things so that it is an option?)
-    - Document that relative `--dead-letter` and `--logfile` paths are always
-      resolved relative to `--chdir`
     - Document how `--nonempty` interacts with `--no-stdout --no-stderr`
     - Add docstrings
         - Add a module docstring to `__init__.py`
+    - Document that the command must run in the foreground (i.e., must not be a
+      daemon itself) ?
 
 - Logging:
     - Make logfile entries look like mbox entries?

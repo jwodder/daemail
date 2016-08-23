@@ -48,12 +48,12 @@ Options
 -------
 
 - ``--chdir <directory>`` — Change to ``<directory>`` before running
-  ``<command>``
+  ``<command>``; defaults to the current directory
 
 - ``-D <file>``, ``--dead-letter <file>`` — If an error occurs when trying to
   send, append the e-mail (including a description of the error) to ``<file>``;
-  defaults to ``dead.letter`` in the current directory or the directory
-  specified with ``--chdir``
+  defaults to ``dead.letter``.  The file path is resolved relative to the
+  directory specified with ``--chdir`` or its default.
 
 - ``-e <encoding>``, ``--encoding <encoding>`` — Expect the stdout (and stderr,
   if ``--split`` is not in effect) of ``<command>`` to be in the given
@@ -82,8 +82,8 @@ Options
 
 - ``-l <logfile>``, ``--logfile <logfile>`` — If an unexpected & unhandleable
   fatal error occurs after daemonization, append a report to ``<logfile>``;
-  defaults to ``daemail.log`` in the current directory or the directory
-  specified with ``--chdir``
+  defaults to ``daemail.log``.  The file path is resolved relative to the
+  directory specified with ``--chdir`` or its default.
 
   - Such an error is a deficiency in the program; please report it!
 
