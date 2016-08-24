@@ -20,8 +20,6 @@
     - Document how `--nonempty` interacts with `--no-stdout --no-stderr`
     - Add docstrings
         - Add a module docstring to `__init__.py`
-    - Document that the command must run in the foreground (i.e., must not be a
-      daemon itself) ?
 
 - Logging:
     - Make logfile entries look like mbox entries?
