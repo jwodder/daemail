@@ -116,6 +116,9 @@ def test_show_argv_equals_plain_equals():
 def test_show_argv_plain_equals():
     assert show_argv("foo", 'bar=baz') == r"foo bar=baz"
 
+def test_show_argv_chained_equals():
+    assert show_argv('foo=bar=quux', 'glarch') == r"'foo=bar=quux' glarch"
+
 def test_show_argv_greaterthan():
     assert show_argv("foo>bar") == "'foo>bar'"
 

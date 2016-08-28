@@ -73,7 +73,6 @@ class CommandMailer(object):
                     msg.addmimeblob(results["stdout"], self.mime_type, 'stdout')
                 else:
                     msg.addblobquote(results["stdout"], self.encoding, 'stdout')
-                msg.addtext('\n')
             elif results["stdout"] is not None:
                 msg.addtext('\nOutput: none\n')
             if results["stderr"]:
@@ -81,7 +80,6 @@ class CommandMailer(object):
                 # bother saying "Error Output: none".
                 msg.addtext('\nError Output:\n')
                 msg.addblobquote(results["stderr"], self.err_encoding, 'stderr')
-                msg.addtext('\n')
         msgbytes = msg.compile()
         try:
             self.sender.send(msgbytes, self.from_addr, self.to_addr)
