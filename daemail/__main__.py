@@ -45,8 +45,13 @@ def main():
                         help='Connect to --smtp-host on this port')
     parser.add_argument('--smtp-username', metavar='USERNAME',
                         help='Username for authenticating with --smtp-host')
-    parser.add_argument('--smtp-password', metavar='PASSWORD',
-                        help='Password for authenticating with --smtp-host')
+    smtp_pass = parser.add_mutually_exclusive_group()
+    smtp_pass.add_argument('--smtp-password', metavar='PASSWORD',
+                           help='Password for authenticating with --smtp-host')
+    smtp_pass.add_argument('--smtp-password-file', metavar='FILE',
+                           type=argparse.FileType('r'),
+                           help='File containing password for authenticating'
+                                ' with --smtp-host')
     smtp_ssl = parser.add_mutually_exclusive_group()
     smtp_ssl.add_argument('--smtp-ssl', action='store_true',
                           help='Use SMTPS protocol')
@@ -74,6 +79,9 @@ def main():
             cls = senders.StartTLSSender
         else:
             cls = senders.SMTPSender
+        if args.smtp_password_file is not None:
+            with args.smtp_password_file as fp:
+                args.smtp_password = fp.read().rstrip('\r\n')
         if args.smtp_username is not None and args.smtp_password is None:
             args.smtp_password = getpass('SMTP password: ')
         sender = cls(args.smtp_host, args.smtp_port, args.smtp_username,

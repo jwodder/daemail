@@ -38,7 +38,7 @@ Usage
             [--smtp-host <host>]
             [--smtp-port <port>]
             [--smtp-username <username>]
-            [--smtp-password <password>]
+            [--smtp-password <password> | --smtp-password-file <file>]
             [--smtp-ssl | --smtp-starttls]
             [--split]
             [-Z|--utc]
@@ -48,8 +48,8 @@ Usage
 Options
 -------
 
-- ``--chdir <directory>`` — Change to ``<directory>`` before running
-  ``<command>``; defaults to the current directory
+- ``--chdir <directory>`` — Change to ``<directory>`` after daemonizing but
+  before running ``<command>``; defaults to the current directory
 
 - ``-D <file>``, ``--dead-letter <file>`` — If an error occurs when trying to
   send, append the e-mail (including a description of the error) to ``<file>``;
@@ -119,12 +119,16 @@ Options
     to 25, or to 465 if ``--smtp-ssl`` is specified
 
   - ``--smtp-username <username>`` — Authenticate to the SMTP server using the
-    given username
+    given username.  If ``--smtp-username`` is supplied but neither
+    ``--smtp-password`` nor ``--smtp-password-file`` is, ``daemail`` will
+    prompt the user for the SMTP password before daemonizing.
 
-  - ``--smtp-password <username>`` — Authenticate to the SMTP server using the
-    given password.  If ``--smtp-username`` is supplied but ``--smtp-password``
-    is not, ``daemail`` will prompt the user for the SMTP password before
-    daemonizing.
+  - ``--smtp-password <password>`` — Authenticate to the SMTP server using the
+    given password
+
+  - ``--smtp-password-file <file>`` — Authenticate to the SMTP server using the
+    contents of the given file (after stripping trailing newlines) as the
+    password
 
   - ``--smtp-ssl`` — Use the SMTPS protocol to communicate with the server
 

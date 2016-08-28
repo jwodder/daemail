@@ -29,6 +29,8 @@
 
 - Try to write tests
     - Ensure this works in both Python 2 and Python 3
+        - Test handling of non-ASCII characters in `--smtp-password-file` in
+          both Python 2 and Python 3
     - Use a mock Sender class
     - Combinations of possibilities to test:
         - command succeeds/fails/errors/is killed by a signal
@@ -78,7 +80,5 @@ New Features
     - log info/debugging messages to the logfile?
     - (try to) e-mail fatal errors instead of writing them to the logfile?
     - setting the "realname" of the sender/recipient
-    - `--smtp-password-file`, so that the password doesn't have to be passed on
-      the command line
     - "Send" the e-mail by adding it to an mbox file?
     - `--stdin <file>`?
