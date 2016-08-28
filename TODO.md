@@ -9,7 +9,6 @@
 - Redirect subcommand output to tempfiles instead of reading it all into
   memory?
 - Use a space instead of 'T' in timestamps?
-- Use the `mailbox` module to write to `dead.letter`
 - Add the `-i` option to the default sendmail command?
 - What happens if the `chdir` fails while daemonizing?  Should that be handled
   somehow?
@@ -49,19 +48,19 @@
 
 New Features
 ------------
+- Add `python-dateutil` as an extra requirement so that the local timezone
+  name/offset can be included in timestamps
+- If opening the logfile and/or dead letter file fails, write to syslog?
 - Support pre-specifying all options via an INI-style config file
   (`~/.config/daemail.cfg`)
 - Support format specifiers in the logfile and dead letter filenames
-- Support executing the mail command without invoking a shell?
-- Allow specifying multiple `--to`s on the command line?
+- Allow specifying multiple `--to`s (and `--cc`s and `--bcc`s?) on the command
+  line
 - `show_argv`: Show, say, an `é` in an argument as `é`, assuming it decodes
   properly using the filesystem encoding (This could lead to problems with
   non-ASCII control/non-printable characters)
 - When running the subcommand, should daemail forward any & all signals
   received to it?
-- Add `python-dateutil` as an extra requirement so that the local timezone
-  name/offset can be included in timestamps
-- If opening the logfile and/or dead letter file fails, write to syslog?
 - Support format specifiers in `--mail-cmd` for interpolating the To & From
   addresses
 

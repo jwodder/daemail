@@ -24,7 +24,7 @@ Usage
 ::
 
     daemail [--chdir <directory>]
-            [-D|--dead-letter <file>]
+            [-D|--dead-letter <mbox>]
             [-e|--encoding <encoding>]
             [-E|--err-encoding <encoding>]
             [-f|--from|--from-addr <address>]
@@ -51,10 +51,11 @@ Options
 - ``--chdir <directory>`` — Change to ``<directory>`` after daemonizing but
   before running ``<command>``; defaults to the current directory
 
-- ``-D <file>``, ``--dead-letter <file>`` — If an error occurs when trying to
-  send, append the e-mail (including a description of the error) to ``<file>``;
-  defaults to ``dead.letter``.  The file path is resolved relative to the
-  directory specified with ``--chdir`` or its default.
+- ``-D <mbox>``, ``--dead-letter <mbox>`` — If an error occurs when trying to
+  send, append the e-mail (including a description of the error) to the file
+  ``<mbox>``; defaults to ``dead.letter``.  The file path is resolved relative
+  to the directory specified with ``--chdir`` or its default.  If the file does
+  not already exist, it must be a valid mbox file.
 
 - ``-e <encoding>``, ``--encoding <encoding>`` — Expect the stdout (and stderr,
   if ``--split`` is not in effect) of ``<command>`` to be in the given

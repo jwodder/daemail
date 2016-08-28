@@ -1,6 +1,7 @@
 from   __future__ import unicode_literals
 from   datetime   import datetime
 import locale
+import mailbox
 import platform
 import subprocess
 import traceback
@@ -102,10 +103,11 @@ class CommandMailer(object):
             )
         else:
             return
-        ### TODO: Handle this `open` failing!
-        with open(self.dead_letter, 'ab') as fp:
-            fp.write(msg.compile())
-            fp.write('\n')
+        ### TODO: Handle failures here!
+        deadbox = mailbox.mbox(self.dead_letter)
+        deadbox.lock()
+        deadbox.add(msg.compile())
+        deadbox.close()
 
     def subcmd(self, command, *args):
         params = {}

@@ -17,7 +17,7 @@ def main():
     )
     parser.add_argument('--chdir', metavar='DIR', default=os.getcwd(),
                         help="Change to this directory before running")
-    parser.add_argument('-D', '--dead-letter', metavar='FILE',
+    parser.add_argument('-D', '--dead-letter', metavar='MBOX',
                         help="Append undeliverable mail to this file")
     parser.add_argument('-e', '--encoding',
                         help='Set encoding of stdout and stderr')
