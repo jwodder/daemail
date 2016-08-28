@@ -69,7 +69,7 @@ def main():
             raise SystemExit('daemail: --mail-cmd and --smtp-host are mutually'
                              ' exclusive')
         if args.smtp_ssl:
-            cls = senders.SMTPSSender
+            cls = senders.SMTP_SSLSender
         elif args.smtp_starttls:
             cls = senders.StartTLSSender
         else:

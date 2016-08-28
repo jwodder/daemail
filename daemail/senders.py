@@ -31,7 +31,7 @@ class StartTLSSender(SMTPSender):
         return server
 
 
-class SMTPSSender(SMTPSender):
+class SMTP_SSLSender(SMTPSender):
     def connect(self):
         return smtplib.SMTP_SSL(self.host, self.port)
 
