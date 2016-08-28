@@ -12,13 +12,16 @@
 - Add the `-i` option to the default sendmail command?
 - What happens if the `chdir` fails while daemonizing?  Should that be handled
   somehow?
+- Rename `--mail-cmd` to `--sendmail`?
 
 - Documentation:
     - Add a note to the documentation about passing things to the command on
       stdin not being an option (or fix things so that it is an option?)
-    - Document how `--nonempty` interacts with `--no-stdout --no-stderr`
     - Add docstrings
         - Add a module docstring to `__init__.py`
+    - Include an example e-mail in the README
+    - Add basic usage examples (using `--mime-type`/attachments, using
+      `--encoding`, using `--smtp-host`, etc.) to the README
 
 - Logging:
     - Make logfile entries look like mbox entries?
@@ -53,6 +56,8 @@ New Features
 - If opening the logfile and/or dead letter file fails, write to syslog?
 - Support pre-specifying all options via an INI-style config file
   (`~/.config/daemail.cfg`)
+    - This will require implementing `--no-split`, `--no-utc`, etc. options for
+      overriding config file options on the command line
 - Support format specifiers in the logfile and dead letter filenames
 - Allow specifying multiple `--to`s (and `--cc`s and `--bcc`s?) on the command
   line
@@ -74,9 +79,11 @@ New Features
     - set the name to use for the stdout/stderr attachment
     - don't include `stdout` on success/failure
     - setting the User-Agent?
-    - log dead letters to the logfile?
-    - log successes to the logfile?
-    - log info/debugging messages to the logfile?
+    - Log dead letters to the logfile?
+    - Log successes to the logfile?
+    - Log info/debugging messages to the logfile?
+    - Log e-mails not sent due to `--failure-only` or `--nonempty` to the
+      logfile?
     - (try to) e-mail fatal errors instead of writing them to the logfile?
     - setting the "realname" of the sender/recipient
     - "Send" the e-mail by adding it to an mbox file?

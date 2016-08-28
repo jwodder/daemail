@@ -79,8 +79,8 @@ Options
   the ``From:`` header and will expect the mail command or SMTP server to do it
   instead.
 
-- ``-F``, ``--failure-only`` — Only send an e-mail if the command exited with a
-  nonzero status
+- ``-F``, ``--failure-only`` — Only send an e-mail if the command failed to run
+  or exited with a nonzero status
 
 - ``-l <logfile>``, ``--logfile <logfile>`` — If an unexpected & unhandleable
   fatal error occurs after daemonization, append a report to ``<logfile>``;
@@ -98,11 +98,11 @@ Options
 - ``-M <mime-type>``, ``--mime-type <mime-type>``, ``--mime <mime-type>`` —
   Attach the standard output of ``<command>`` to the e-mail as an inline
   attachment with the given MIME type.  The MIME type may include parameters,
-  e.g., ``--mime-type "application/json; charset=utf-16"``.  Implies
-  ``--split``.
+  e.g., ``--mime-type "text/html; charset=utf-16"``.  Implies ``--split``.
 
 - ``-n``, ``--nonempty`` — Do not send an e-mail if the command exited
-  successfully with no output
+  successfully and both the command's stdout & stderr were empty or not
+  captured
 
 - ``--no-stdout`` — Don't capture the command's stdout; implies ``--split``
 
