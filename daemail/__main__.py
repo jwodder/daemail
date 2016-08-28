@@ -1,6 +1,7 @@
 from   __future__ import print_function, unicode_literals
 import argparse
 from   datetime   import datetime
+from   getpass    import getpass
 import os
 import sys
 import traceback
@@ -73,6 +74,8 @@ def main():
             cls = senders.StartTLSSender
         else:
             cls = senders.SMTPSender
+        if args.smtp_username is not None and args.smtp_password is None:
+            args.smtp_password = getpass('SMTP password: ')
         sender = cls(args.smtp_host, args.smtp_port, args.smtp_username,
                      args.smtp_password)
     elif any(a.startswith('smtp_') and getattr(args, a) not in (None, False)

@@ -43,6 +43,7 @@
     - `show_argv`:
         - Test non-printable characters without single-letter escapes?
         - Test non-simple arguments with equals signs
+    - Do data-driven testing of e-mail composition
 
 New Features
 ------------
@@ -56,8 +57,6 @@ New Features
   non-ASCII control/non-printable characters)
 - When running the subcommand, should daemail forward any & all signals
   received to it?
-- If `--smtp-username` is given without `--smtp-password`, prompt for the
-  password before daemonizing
 - Add `python-dateutil` as an extra requirement so that the local timezone
   name/offset can be included in timestamps
 - If opening the logfile and/or dead letter file fails, write to syslog?
@@ -82,3 +81,4 @@ New Features
     - `--smtp-password-file`, so that the password doesn't have to be passed on
       the command line
     - "Send" the e-mail by adding it to an mbox file?
+    - `--stdin <file>`?

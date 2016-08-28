@@ -119,10 +119,12 @@ Options
     to 25, or to 465 if ``--smtp-ssl`` is specified
 
   - ``--smtp-username <username>`` — Authenticate to the SMTP server using the
-    given username; must be accompanied by ``--smtp-password``
+    given username
 
   - ``--smtp-password <username>`` — Authenticate to the SMTP server using the
-    given password
+    given password.  If ``--smtp-username`` is supplied but ``--smtp-password``
+    is not, ``daemail`` will prompt the user for the SMTP password before
+    daemonizing.
 
   - ``--smtp-ssl`` — Use the SMTPS protocol to communicate with the server
 
