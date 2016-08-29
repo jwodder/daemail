@@ -1,6 +1,4 @@
-- Look into version requirements for `python-daemon` and `six`
-- Upload to PyPI
-    - Add an "Installation" section to the README
+- Look into minimum version requirements for `python-daemon`
 - When an attempt to send over SMTP fails, should the SMTP host & username be
   recorded in the dead letter?
 - Make argparse enforce the mutual-exclusivity of `--mail-cmd` and
@@ -22,6 +20,7 @@
     - Include an example e-mail in the README
     - Add basic usage examples (using `--mime-type`/attachments, using
       `--encoding`, using `--smtp-host`, etc.) to the README
+    - Add an "Installation" section to the README
 
 - Logging:
     - Make logfile entries look like mbox entries?
