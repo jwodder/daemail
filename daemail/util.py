@@ -1,4 +1,5 @@
 from   __future__ import unicode_literals
+from   datetime   import datetime
 import os
 import re
 import signal
@@ -85,3 +86,15 @@ def show_argv(*argv):
             shown += ' '
         shown += a
     return shown
+
+def nowstamp(utc=False):
+    try:
+        import dateutil.tz
+    except ImportError:
+        if utc:
+            return str(datetime.utcnow()) + 'Z'
+        else:
+            return str(datetime.now())
+    else:
+        tz = dateutil.tz.tzutc() if utc else dateutil.tz.tzlocal()
+        return str(datetime.now(tz))

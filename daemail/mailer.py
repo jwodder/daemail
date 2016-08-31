@@ -1,5 +1,4 @@
 from   __future__ import unicode_literals
-from   datetime   import datetime
 import locale
 import mailbox
 import platform
@@ -7,7 +6,8 @@ import subprocess
 import traceback
 from   .          import __version__
 from   .message   import DraftMessage
-from   .util      import MailCmdError, mail_quote, rc_with_signal, show_argv
+from   .util      import MailCmdError, mail_quote, nowstamp, rc_with_signal, \
+                            show_argv
 
 USER_AGENT = 'daemail {} ({} {})'.format(
     __version__, platform.python_implementation(), platform.python_version()
@@ -118,18 +118,12 @@ class CommandMailer(object):
             }
         else:
             params = {"stdout": subprocess.PIPE, "stderr": subprocess.STDOUT}
-        if self.utc:
-            start = datetime.utcnow().isoformat() + 'Z'
-        else:
-            start = datetime.now().isoformat()
+        start = nowstamp(self.utc)
         p = subprocess.Popen((command,) + args, **params)
         # The command's output is all going to be in memory at some point
         # anyway, so why not start with `communicate`?
         out, err = p.communicate()
-        if self.utc:
-            end = datetime.utcnow().isoformat() + 'Z'
-        else:
-            end = datetime.now().isoformat()
+        end = nowstamp(self.utc)
         return {
             "rc": p.returncode,
             "start": start,

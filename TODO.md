@@ -6,7 +6,6 @@
   look odd)
 - Redirect subcommand output to tempfiles instead of reading it all into
   memory?
-- Use a space instead of 'T' in timestamps?
 - Add the `-i` option to the default sendmail command?
 - What happens if the `chdir` fails while daemonizing?  Should that be handled
   somehow?
@@ -50,8 +49,6 @@
 
 New Features
 ------------
-- Add `python-dateutil` as an extra requirement so that the local timezone
-  name/offset can be included in timestamps
 - If opening the logfile and/or dead letter file fails, write to syslog?
 - Support pre-specifying all options via an INI-style config file
   (`~/.config/daemail.cfg`)

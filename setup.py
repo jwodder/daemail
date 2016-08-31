@@ -30,6 +30,10 @@ setup(
     install_requires=['python-daemon', 'six>=1.8.0,<2'],
     tests_require=['pytest>=2.8,<3'],
 
+    extras_require={
+        'dateutil': ['python-dateutil'],
+    },
+
     classifiers=[
         'Development Status :: 4 - Beta',
         #'Development Status :: 5 - Production/Stable',
