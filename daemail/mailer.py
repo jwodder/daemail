@@ -1,11 +1,11 @@
 from   __future__ import unicode_literals
 import locale
-import mailbox
 import platform
 import subprocess
 import traceback
 from   .          import __version__
 from   .message   import DraftMessage
+from   .senders   import MboxSender
 from   .util      import MailCmdError, mail_quote, nowstamp, rc_with_signal, \
                             show_argv
 
@@ -104,10 +104,8 @@ class CommandMailer(object):
         else:
             return
         ### TODO: Handle failures here!
-        deadbox = mailbox.mbox(self.dead_letter)
-        deadbox.lock()
-        deadbox.add(msg.compile())
-        deadbox.close()
+        MboxSender(self.dead_letter)\
+            .send(msg.compile(), self.from_addr, self.to_addr)
 
     def subcmd(self, command, *args):
         params = {}

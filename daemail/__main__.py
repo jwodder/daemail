@@ -29,8 +29,6 @@ def main():
                         help='Only send e-mail if command returned nonzero')
     parser.add_argument('-l', '--logfile', default='daemail.log',
                         help='Append unrecoverable errors to this file')
-    parser.add_argument('-m', '--mail-cmd', metavar='COMMAND',
-                        help='Command for sending e-mail')
     parser.add_argument('-M', '--mime-type', '--mime',
                         help='Send output as attachment with given MIME type')
     parser.add_argument('-n', '--nonempty', action='store_true',
@@ -39,8 +37,22 @@ def main():
                         help="Don't capture stdout")
     parser.add_argument('--no-stderr', action='store_true',
                         help="Don't capture stderr")
-    parser.add_argument('--smtp-host', metavar='HOST',
+    parser.add_argument('--split', action='store_true',
+                        help='Capture stdout and stderr separately')
+    parser.add_argument('-t', '--to-addr', '--to', metavar='RECIPIENT',
+                        help='To: address of e-mail', required=True)
+    parser.add_argument('-V', '--version', action='version',
+                                           version='daemail ' + __version__)
+    parser.add_argument('-Z', '--utc', action='store_true',
+                        help='Use UTC timestamps')
+
+    sendarg = parser.add_mutually_exclusive_group()
+    sendarg.add_argument('-m', '--mail-cmd', metavar='COMMAND',
+                        help='Command for sending e-mail')
+    sendarg.add_argument('--mbox', help='Append e-mail to this mbox file')
+    sendarg.add_argument('--smtp-host', metavar='HOST',
                         help='SMTP server through which to send e-mail')
+
     parser.add_argument('--smtp-port', type=int, metavar='PORT',
                         help='Connect to --smtp-host on this port')
     parser.add_argument('--smtp-username', metavar='USERNAME',
@@ -57,22 +69,12 @@ def main():
                           help='Use SMTPS protocol')
     smtp_ssl.add_argument('--smtp-starttls', action='store_true',
                           help='Use SMTP protocol with STARTTLS')
-    parser.add_argument('--split', action='store_true',
-                        help='Capture stdout and stderr separately')
-    parser.add_argument('-t', '--to-addr', '--to', metavar='RECIPIENT',
-                        help='To: address of e-mail', required=True)
-    parser.add_argument('-V', '--version', action='version',
-                                           version='daemail ' + __version__)
-    parser.add_argument('-Z', '--utc', action='store_true',
-                        help='Use UTC timestamps')
+
     parser.add_argument('command')
     parser.add_argument('args', nargs=argparse.REMAINDER)
     args = parser.parse_args()
 
     if args.smtp_host is not None:
-        if args.mail_cmd is not None:
-            raise SystemExit('daemail: --mail-cmd and --smtp-host are mutually'
-                             ' exclusive')
         if args.smtp_ssl:
             cls = senders.SMTP_SSLSender
         elif args.smtp_starttls:
@@ -90,6 +92,8 @@ def main():
              for a in vars(args)):
         raise SystemExit('daemail: --smtp-* options cannot be specified without'
                          ' --smtp-host')
+    elif args.mbox is not None:
+        sender = senders.MboxSender(args.mbox)
     else:
         sender = senders.CommandSender(args.mail_cmd)
 

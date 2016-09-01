@@ -1,3 +1,4 @@
+import mailbox
 import smtplib
 import subprocess
 from   .util import MailCmdError
@@ -52,3 +53,14 @@ class CommandSender(object):
         out, _ = p.communicate(msgbytes)
         if p.returncode:
             raise MailCmdError(self.mail_cmd, p.returncode, out)
+
+
+class MboxSender(object):
+    def __init__(self, filename):
+        self.filename = filename
+
+    def send(self, msgbytes, _from, _to):
+        deadbox = mailbox.mbox(self.filename)
+        deadbox.lock()
+        deadbox.add(msgbytes)
+        deadbox.close()

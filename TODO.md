@@ -1,15 +1,16 @@
 - Look into minimum version requirements for `python-daemon`
 - When an attempt to send over SMTP fails, should the SMTP host & username be
   recorded in the dead letter?
-- Make argparse enforce the mutual-exclusivity of `--mail-cmd` and
-  `--smtp-host` instead of doing it manually?  (but then the usage summary will
-  look odd)
 - Redirect subcommand output to tempfiles instead of reading it all into
   memory?
 - Add the `-i` option to the default sendmail command?
 - What happens if the `chdir` fails while daemonizing?  Should that be handled
   somehow?
 - Rename `--mail-cmd` to `--sendmail`?
+- Add a CHANGELOG?
+- Should the dead letter and/or logfile path be resolved relative to the
+  working directory in which daemail was started?
+- Should `--to-addr` be required when sending to an mbox?
 
 - Documentation:
     - Add a note to the documentation about passing things to the command on
@@ -39,7 +40,7 @@
         - mail command output can/can't be decoded/is empty
     - Test handling of attachments containing "From " at the beginning of a
       line (especially when writing to dead.letter) or a line with just a
-      period
+      period (Can either of these happen?)
     - Set up Travis integration
         - Include running both pyflakes and pyflakes3
     - `show_argv`:
@@ -64,6 +65,8 @@ New Features
   received to it?
 - Support format specifiers in `--mail-cmd` for interpolating the To & From
   addresses
+- Should the `dead_letter` parameter of `CommandMailer` be a sender object
+  instead of filepath?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
@@ -82,5 +85,4 @@ New Features
       logfile?
     - (try to) e-mail fatal errors instead of writing them to the logfile?
     - setting the "realname" of the sender/recipient
-    - "Send" the e-mail by adding it to an mbox file?
     - `--stdin <file>`?
