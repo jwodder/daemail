@@ -23,7 +23,7 @@ Usage
 
 ::
 
-    daemail [--chdir <directory>]
+    daemail [-C|--chdir <directory>]
             [-D|--dead-letter <mbox>]
             [-e|--encoding <encoding>]
             [-E|--err-encoding <encoding>]
@@ -56,8 +56,9 @@ where ``<send options>`` is one of::
 Options
 -------
 
-- ``--chdir <directory>`` — Change to ``<directory>`` after daemonizing but
-  before running ``<command>``; defaults to the current directory
+- ``-C <directory>``, ``--chdir <directory>`` — Change to ``<directory>`` after
+  daemonizing but before running ``<command>``; defaults to the current
+  directory
 
 - ``-D <mbox>``, ``--dead-letter <mbox>`` — If an error occurs when trying to
   send, append the e-mail (including a description of the error) to the file

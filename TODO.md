@@ -11,7 +11,6 @@
 - Should the dead letter, mbox, and/or logfile path be resolved relative to the
   working directory in which daemail was started?
 - Should `--to-addr` be required when sending to an mbox?
-- Give `--chdir` a `-C` short form
 
 - Documentation:
     - Add a note to the documentation about passing things to the command on

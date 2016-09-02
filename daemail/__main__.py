@@ -15,7 +15,7 @@ def main():
         prog='daemail',
         description='Daemonize a command and e-mail the results',
     )
-    parser.add_argument('--chdir', metavar='DIR', default=os.getcwd(),
+    parser.add_argument('-C', '--chdir', metavar='DIR', default=os.getcwd(),
                         help="Change to this directory before running")
     parser.add_argument('-D', '--dead-letter', metavar='MBOX',
                         help="Append undeliverable mail to this file")
