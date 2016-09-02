@@ -30,20 +30,28 @@ Usage
             [-f|--from|--from-addr <address>]
             [-F|--failure-only]
             [-l|--logfile <logfile>]
-            [-m|--mail-cmd <command>]
             [-M|--mime-type|--mime <mime-type>]
             [-n|--nonempty]
             [--no-stdout]
             [--no-stderr]
-            [--smtp-host <host>]
-            [--smtp-port <port>]
-            [--smtp-username <username>]
-            [--smtp-password <password> | --smtp-password-file <file>]
-            [--smtp-ssl | --smtp-starttls]
             [--split]
             [-Z|--utc]
             -t|--to|--to-addr <address>
+            [<send options>]
             <command> [<arg> ...]
+
+where ``<send options>`` is one of::
+
+    -m|--mail-cmd <command>  # default
+
+    --mbox <mbox>
+
+    --smtp-host <host>
+        [--smtp-port <port>]
+        [--smtp-username <username>]
+        [--smtp-password <password> | --smtp-password-file <file>]
+        [--smtp-ssl | --smtp-starttls]
+
 
 Options
 -------
@@ -91,9 +99,12 @@ Options
 
 - ``-m <command>``, ``--mail-cmd <command>`` — Send e-mail by passing the
   message on stdin to ``<command>`` (executed via the shell); default command:
-  ``sendmail -t``
+  ``sendmail -t``.  This is the default if neither ``--mbox`` nor
+  ``--smtp-host`` is specified.
 
-  ``--mail-cmd`` and ``--smtp-host`` are mutually exclusive.
+- ``--mbox <mbox>`` — "Send" e-mail by appending it to the mbox file
+  ``<mbox>``.  The file path is resolved relative to the directory specified
+  with ``--chdir`` or its default.
 
 - ``-M <mime-type>``, ``--mime-type <mime-type>``, ``--mime <mime-type>`` —
   Attach the standard output of ``<command>`` to the e-mail as an inline
@@ -109,11 +120,6 @@ Options
 - ``--no-stderr`` — Don't capture the command's stderr; implies ``--split``
 
 - ``--smtp-host <host>`` — Send e-mail via SMTP, connecting to the given host.
-  When this option is not given, e-mail is instead sent using the command
-  specified via ``--mail-cmd`` or its default.
-
-  ``--smtp-host`` and ``--mail-cmd`` are mutually exclusive.
-
   ``--smtp-host`` may be accompanied by the following options:
 
   - ``--smtp-port <port>`` — Connect to ``<host>`` on the given port; defaults
