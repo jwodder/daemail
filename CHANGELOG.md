@@ -7,6 +7,8 @@ v0.4.0 (in development)
 
 - Gave `--chdir` a `-C` short form
 
+- Added the `-i` option to the default `sendmail` command
+
 
 v0.3.0 (2016-08-28)
 -------------------

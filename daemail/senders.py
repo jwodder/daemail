@@ -42,7 +42,7 @@ class CommandSender(object):
         if mail_cmd is None:
             # Set the default here (instead of in the method signature) so that
             # `main` can pass `None` to the constructor and have it DWIM.
-            mail_cmd = 'sendmail -t'
+            mail_cmd = 'sendmail -i -t'
         self.mail_cmd = mail_cmd
 
     def send(self, msgbytes, _from, _to):

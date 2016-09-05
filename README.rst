@@ -100,7 +100,7 @@ Options
 
 - ``-m <command>``, ``--mail-cmd <command>`` — Send e-mail by passing the
   message on stdin to ``<command>`` (executed via the shell); default command:
-  ``sendmail -t``.  This is the default if neither ``--mbox`` nor
+  ``sendmail -i -t``.  This is the default if neither ``--mbox`` nor
   ``--smtp-host`` is specified.
 
 - ``--mbox <mbox>`` — "Send" e-mail by appending it to the mbox file
