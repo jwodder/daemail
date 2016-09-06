@@ -9,6 +9,10 @@ v0.4.0 (in development)
 
 - Added the `-i` option to the default `sendmail` command
 
+- `--dead-letter` and `--logfile` (and `--mbox`) are now resolved relative to
+  the directory in which daemail was started, not the directory specified with
+  `--chdir`
+
 
 v0.3.0 (2016-08-28)
 -------------------

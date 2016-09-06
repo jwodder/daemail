@@ -14,10 +14,10 @@ USER_AGENT = 'daemail {} ({} {})'.format(
 )
 
 class CommandMailer(object):
-    def __init__(self, sender, to_addr, from_addr=None, failure_only=False,
-                 nonempty=False, no_stdout=False, no_stderr=False, split=False,
-                 encoding=None, err_encoding=None, utc=False, mime_type=None,
-                 dead_letter=None):
+    def __init__(self, sender, dead_letter, to_addr, from_addr=None,
+                 failure_only=False, nonempty=False, no_stdout=False,
+                 no_stderr=False, split=False, encoding=None,
+                 err_encoding=None, utc=False, mime_type=None):
         self.from_addr = from_addr
         self.to_addr = to_addr
         self.failure_only = failure_only
@@ -35,10 +35,6 @@ class CommandMailer(object):
             self.encoding = locale.getpreferredencoding(True)
         if self.err_encoding is None:
             self.err_encoding = self.encoding
-        if self.dead_letter is None:
-            # Set the default here (instead of in the method signature) so that
-            # `main` can pass `None` to the constructor and have it DWIM.
-            self.dead_letter = 'dead.letter'
 
     def run(self, command, *args):
         cmdstring = show_argv(command, *args)

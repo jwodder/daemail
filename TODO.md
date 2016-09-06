@@ -6,9 +6,8 @@
 - What happens if the `chdir` fails while daemonizing?  Should that be handled
   somehow?
 - Rename `--mail-cmd` to `--sendmail`?
-- Should the dead letter, mbox, and/or logfile path be resolved relative to the
-  working directory in which daemail was started?
 - Should `--to-addr` not be required when sending to an mbox?
+- Execute `--mail-cmd` in the directory in which daemail was started?
 
 - Documentation:
     - Add a note to the documentation about passing things to the command on

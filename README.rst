@@ -62,9 +62,8 @@ Options
 
 - ``-D <mbox>``, ``--dead-letter <mbox>`` — If an error occurs when trying to
   send, append the e-mail (including a description of the error) to the file
-  ``<mbox>``; defaults to ``dead.letter``.  The file path is resolved relative
-  to the directory specified with ``--chdir`` or its default.  If the file
-  already exists, it must be a valid mbox file.
+  ``<mbox>``; defaults to ``dead.letter``.  If the file already exists, it must
+  be a valid mbox file.
 
 - ``-e <encoding>``, ``--encoding <encoding>`` — Expect the stdout (and stderr,
   if ``--split`` is not in effect) of ``<command>`` to be in the given
@@ -93,19 +92,17 @@ Options
 
 - ``-l <logfile>``, ``--logfile <logfile>`` — If an unexpected & unhandleable
   fatal error occurs after daemonization, append a report to ``<logfile>``;
-  defaults to ``daemail.log``.  The file path is resolved relative to the
-  directory specified with ``--chdir`` or its default.
+  defaults to ``daemail.log``
 
   - Such an error is a deficiency in the program; please report it!
 
 - ``-m <command>``, ``--mail-cmd <command>`` — Send e-mail by passing the
-  message on stdin to ``<command>`` (executed via the shell); default command:
-  ``sendmail -i -t``.  This is the default if neither ``--mbox`` nor
-  ``--smtp-host`` is specified.
+  message on stdin to ``<command>`` (executed via the shell, in the directory
+  specified with ``--chdir`` or its default); default command: ``sendmail -i
+  -t``.  This is the default if neither ``--mbox`` nor ``--smtp-host`` is
+  specified.
 
-- ``--mbox <mbox>`` — "Send" e-mail by appending it to the mbox file
-  ``<mbox>``.  The file path is resolved relative to the directory specified
-  with ``--chdir`` or its default.
+- ``--mbox <mbox>`` — "Send" e-mail by appending it to the mbox file ``<mbox>``
 
 - ``-M <mime-type>``, ``--mime-type <mime-type>``, ``--mime <mime-type>`` —
   Attach the standard output of ``<command>`` to the e-mail as an inline

@@ -3,6 +3,7 @@ import argparse
 from   datetime   import datetime
 from   getpass    import getpass
 import os
+import os.path
 import sys
 import traceback
 from   daemon     import DaemonContext  # python-daemon
@@ -11,13 +12,15 @@ from   .          import senders
 from   .mailer    import CommandMailer
 
 def main():
+    pwd = os.getcwd()
     parser = argparse.ArgumentParser(
         prog='daemail',
         description='Daemonize a command and e-mail the results',
     )
-    parser.add_argument('-C', '--chdir', metavar='DIR', default=os.getcwd(),
+    parser.add_argument('-C', '--chdir', metavar='DIR', default=pwd,
                         help="Change to this directory before running")
     parser.add_argument('-D', '--dead-letter', metavar='MBOX',
+                        default='dead.letter',
                         help="Append undeliverable mail to this file")
     parser.add_argument('-e', '--encoding',
                         help='Set encoding of stdout and stderr')
@@ -93,7 +96,7 @@ def main():
         raise SystemExit('daemail: --smtp-* options cannot be specified without'
                          ' --smtp-host')
     elif args.mbox is not None:
-        sender = senders.MboxSender(args.mbox)
+        sender = senders.MboxSender(os.path.join(pwd, args.mbox))
     else:
         sender = senders.CommandSender(args.mail_cmd)
 
@@ -110,7 +113,7 @@ def main():
         to_addr=args.to_addr,
         utc=args.utc,
         mime_type=args.mime_type,
-        dead_letter=args.dead_letter,
+        dead_letter=os.path.join(pwd, args.dead_letter),
     )
 
     try:
@@ -118,7 +121,7 @@ def main():
             mailer.run(args.command, *args.args)
     except Exception:
         # If this open() fails, die alone where no one will ever know.
-        sys.stderr = open(args.logfile, 'a')
+        sys.stderr = open(os.path.join(pwd, args.logfile), 'a')
             ### TODO: What encoding do I use for this???
         print(datetime.now().isoformat(), 'daemail', __version__,
               'encountered an exception:', file=sys.stderr)
