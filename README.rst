@@ -13,9 +13,22 @@
 script for running a normally-foreground command in the background and sending
 an e-mail with its output (by default, the combined stdout and stderr) once
 it's done.  It should work in both Python 2.7 and Python 3.2+, the only
-external dependencies being `the python-daemon package
-<https://pypi.python.org/pypi/python-daemon>`_ and the ubiquitous `six package
-<https://pypi.python.org/pypi/six>`_.
+external dependencies being the `python-daemon
+<https://pypi.python.org/pypi/python-daemon>`_ package and the ubiquitous `six
+<https://pypi.python.org/pypi/six>`_ package.
+
+
+Installation
+============
+
+Just use `pip <https://pip.pypa.io/>`_ (You have pip, right?) to install
+``daemail`` and its dependencies::
+
+    pip install daemail
+
+Though not required, if you also choose to install the `python-dateutil
+<https://pypi.python.org/pypi/python-dateutil>`_ package, ``daemail`` will use
+it to determine the timezone offset to show in timestamps.
 
 
 Usage

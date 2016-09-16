@@ -17,7 +17,6 @@
     - Include an example e-mail in the README
     - Add basic usage examples (using `--mime-type`/attachments, using
       `--encoding`, using `--smtp-host`, etc.) to the README
-    - Add an "Installation" section to the README
 
 - Logging:
     - Make logfile entries look like mbox entries?
@@ -61,7 +60,7 @@ New Features
 - When running the subcommand, should daemail forward any & all signals
   received to it?
 - Support format specifiers in `--mail-cmd` for interpolating the To & From
-  addresses
+  addresses (and subject?)
 - Should the `dead_letter` parameter of `CommandMailer` be a sender object
   instead of filepath?
 
@@ -83,3 +82,4 @@ New Features
     - (try to) e-mail fatal errors instead of writing them to the logfile?
     - setting the "realname" of the sender/recipient
     - `--stdin <file>`?
+    - certificates to use with SSL over SMTP
