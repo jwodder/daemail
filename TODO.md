@@ -13,7 +13,6 @@
     - Add a note to the documentation about passing things to the command on
       stdin not being an option (or fix things so that it is an option?)
     - Add docstrings
-        - Add a module docstring to `__init__.py`
     - Include an example e-mail in the README
     - Add basic usage examples (using `--mime-type`/attachments, using
       `--encoding`, using `--smtp-host`, etc.) to the README
