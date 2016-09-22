@@ -8,6 +8,7 @@
 - Rename `--mail-cmd` to `--sendmail`?
 - Should `--to-addr` not be required when sending to an mbox?
 - Execute `--mail-cmd` in the directory in which daemail was started?
+- Look into handling of encoding issues with SMTP passwords
 
 - Documentation:
     - Add a note to the documentation about passing things to the command on
@@ -62,13 +63,14 @@ New Features
   addresses (and subject?)
 - Should the `dead_letter` parameter of `CommandMailer` be a sender object
   instead of filepath?
+- Support for Gmail's OAuth?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
-    - `--no-daemonize` (for debugging) ???
+    - `--no-daemonize` (for debugging)
     - include environment variables in e-mail?
     - set the name to use for the stdout/stderr attachment
     - don't include `stdout` on success/failure

@@ -1,13 +1,15 @@
-.. |repostatus| image:: http://www.repostatus.org/badges/latest/active.svg
+.. image:: http://www.repostatus.org/badges/latest/active.svg
     :target: http://www.repostatus.org/#active
     :alt: Project Status: Active - The project has reached a stable, usable
           state and is being actively developed.
 
-.. |license| image:: https://img.shields.io/github/license/jwodder/daemail.svg?maxAge=2592000
+.. image:: https://img.shields.io/github/license/jwodder/daemail.svg?maxAge=2592000
     :target: https://opensource.org/licenses/MIT
     :alt: MIT License
 
-|repostatus| |license|
+`GitHub <https://github.com/jwodder/daemail>`_
+| `PyPI <https://pypi.python.org/pypi/daemail>`_
+| `Issues <https://github.com/jwodder/daemail/issues>`_
 
 ``daemail`` (pronounced "DEE-mayl", like "e-mail" but with a D) is a Python
 script for running a normally-foreground command in the background and sending
@@ -145,8 +147,7 @@ Options
     given password
 
   - ``--smtp-password-file <file>`` — Authenticate to the SMTP server using the
-    contents of the given file (after stripping trailing newlines) as the
-    password
+    contents of the given file (without final line ending) as the password
 
   - ``--smtp-ssl`` — Use the SMTPS protocol to communicate with the server
 

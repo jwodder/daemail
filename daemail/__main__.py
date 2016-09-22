@@ -86,7 +86,13 @@ def main():
             cls = senders.SMTPSender
         if args.smtp_password_file is not None:
             with args.smtp_password_file as fp:
-                args.smtp_password = fp.read().rstrip('\r\n')
+                password = fp.read()
+            # Remove no more than one line ending sequence:
+            if password.endswith('\n'):
+                password = password[:-1]
+            if password.endswith('\r'):
+                password = password[:-1]
+            args.smtp_password = password
         if args.smtp_username is not None and args.smtp_password is None:
             args.smtp_password = getpass('SMTP password: ')
         sender = cls(args.smtp_host, args.smtp_port, args.smtp_username,
