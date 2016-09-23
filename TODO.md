@@ -73,6 +73,7 @@ New Features
     - `--no-daemonize` (for debugging)
     - include environment variables in e-mail?
     - set the name to use for the stdout/stderr attachment
+        - Use `mimetypes` to determine the MIME type from the filename?
     - don't include `stdout` on success/failure
     - setting the User-Agent?
     - Log dead letters to the logfile?

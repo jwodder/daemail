@@ -17,10 +17,7 @@ class MailCmdError(Exception):
         )
 
 def mail_quote(s):
-    s = '> ' + re.sub(r'(\r(\n|(?!\n))|\n)(?=.)', '\n> ', s, flags=re.S)
-    if not s.endswith("\n"):
-        s += "\n"
-    return s
+    return ''.join('> ' + line + '\n' for line in (s or '\n').splitlines())
 
 def mime_text(msg):
     # Even if you say `decode=True`, get_payload still returns a `bytes` object
