@@ -3,7 +3,8 @@ from   datetime   import datetime
 import os
 import re
 import signal
-import six
+import time
+from   six        import text_type
 from   six.moves  import shlex_quote as quote
 
 class MailCmdError(Exception):
@@ -67,7 +68,7 @@ def show_argv(*argv):
     shown = ''
     assigning = True
     for i,a in enumerate(argv):
-        if isinstance(a, six.text_type):
+        if isinstance(a, text_type):
             a = os.fsencode(a)
         a = a.decode('iso-8859-1')
         if re.search(r'[^\x20-\x7E]', a):
@@ -85,13 +86,19 @@ def show_argv(*argv):
     return shown
 
 def nowstamp(utc=False):
-    try:
-        import dateutil.tz
-    except ImportError:
-        if utc:
-            return str(datetime.utcnow()) + 'Z'
-        else:
-            return str(datetime.now())
+    if utc:
+        return str(datetime.utcnow()) + 'Z'
     else:
-        tz = dateutil.tz.tzutc() if utc else dateutil.tz.tzlocal()
-        return str(datetime.now(tz))
+        now = time.time()
+        stamp = str(datetime.fromtimestamp(now))
+        if time.localtime(now).tm_isdst:
+            offset = time.altzone
+        else:
+            offset = time.timezone
+        if offset <= 0:
+            stamp += '+'
+            offset *= -1
+        else:
+            stamp += '-'
+        stamp += '{:02}:{:02}'.format(*divmod(offset // 60, 60))
+        return stamp

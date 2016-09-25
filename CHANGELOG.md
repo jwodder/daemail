@@ -1,7 +1,6 @@
 v0.4.0 (in development)
 -----------------------
-- Local timestamps will now include the local timezone offset if
-  [`python-dateutil`](https://dateutil.readthedocs.io) is installed
+- Local timestamps will now include the timezone offset
 
 - Added an `--mbox` option for "sending" e-mails to a local mbox file
 

@@ -28,10 +28,6 @@ Just use `pip <https://pip.pypa.io/>`_ (You have pip, right?) to install
 
     pip install daemail
 
-Though not required, if you also choose to install the `python-dateutil
-<https://pypi.python.org/pypi/python-dateutil>`_ package, ``daemail`` will use
-it to determine the timezone offset to show in timestamps.
-
 
 Usage
 =====
