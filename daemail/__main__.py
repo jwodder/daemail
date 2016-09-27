@@ -51,7 +51,8 @@ def main():
 
     sendarg = parser.add_mutually_exclusive_group()
     sendarg.add_argument('-s', '--sendmail', metavar='COMMAND',
-                        help='Command for sending e-mail')
+                         default='sendmail -i -t',
+                         help='Command for sending e-mail')
     sendarg.add_argument('--mbox', help='Append e-mail to this mbox file')
     sendarg.add_argument('--smtp-host', metavar='HOST',
                         help='SMTP server through which to send e-mail')

@@ -38,11 +38,7 @@ class SMTP_SSLSender(SMTPSender):
 
 
 class CommandSender(object):
-    def __init__(self, sendmail=None):
-        if sendmail is None:
-            # Set the default here (instead of in the method signature) so that
-            # `main` can pass `None` to the constructor and have it DWIM.
-            sendmail = 'sendmail -i -t'
+    def __init__(self, sendmail):
         self.sendmail = sendmail
 
     def send(self, msgbytes, _from, _to):
