@@ -45,7 +45,7 @@ Usage
             [-n|--nonempty]
             [--no-stdout]
             [--no-stderr]
-            [--split]
+            [-S|--split]
             [-Z|--utc]
             -t|--to|--to-addr <address>
             [<send options>]
@@ -150,8 +150,8 @@ Options
   - ``--smtp-starttls`` — Use the SMTP protocol with the STARTTLS extension to
     communicate with the server
 
-- ``--split`` — Capture the command's stdout and stderr separately rather than
-  as a single stream
+- ``-S``, ``--split`` — Capture the command's stdout and stderr separately
+  rather than as a single stream
 
 - ``-t <address>``, ``--to <address>``, ``--to-addr <address>`` — Set the
   recipient of the e-mail; this option is required

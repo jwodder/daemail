@@ -6,6 +6,8 @@ v0.4.0 (in development)
 
 - Gave `--chdir` a `-C` short form
 
+- Gave `--split` an `-S` short form
+
 - Added the `-i` option to the default `sendmail` command
 
 - `--dead-letter` and `--logfile` (and `--mbox`) are now resolved relative to

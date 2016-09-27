@@ -40,7 +40,7 @@ def main():
                         help="Don't capture stdout")
     parser.add_argument('--no-stderr', action='store_true',
                         help="Don't capture stderr")
-    parser.add_argument('--split', action='store_true',
+    parser.add_argument('-S', '--split', action='store_true',
                         help='Capture stdout and stderr separately')
     parser.add_argument('-t', '--to-addr', '--to', metavar='RECIPIENT',
                         help='To: address of e-mail', required=True)
