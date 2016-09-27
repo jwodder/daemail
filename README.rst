@@ -53,7 +53,7 @@ Usage
 
 where ``<send options>`` is one of::
 
-    -m|--mail-cmd <command>  # default
+    -s|--sendmail <command>  # default
 
     --mbox <mbox>
 
@@ -107,7 +107,7 @@ Options
 
   - Such an error is a deficiency in the program; please report it!
 
-- ``-m <command>``, ``--mail-cmd <command>`` — Send e-mail by passing the
+- ``-s <command>``, ``--sendmail <command>`` — Send e-mail by passing the
   message on stdin to ``<command>`` (executed via the shell, in the directory
   specified with ``--chdir`` or its default); default command: ``sendmail -i
   -t``.  This is the default if neither ``--mbox`` nor ``--smtp-host`` is

@@ -9,12 +9,12 @@ from   six.moves  import shlex_quote as quote
 
 class MailCmdError(Exception):
     # Raised if the sendmail command returned nonzero
-    def __init__(self, mail_cmd, rc, output):
-        self.mail_cmd = mail_cmd
+    def __init__(self, sendmail, rc, output):
+        self.sendmail = sendmail
         self.rc = rc
         self.output = output
         super(MailCmdError, self).__init__(
-            '{0!r}: command exited with return code {1}'.format(mail_cmd, rc)
+            '{!r}: command exited with return code {}'.format(sendmail, rc)
         )
 
 def mail_quote(s):

@@ -16,6 +16,8 @@ v0.4.0 (in development)
   `--smtp-password-file` (for the unlikely case in which the password ends with
   a newline)
 
+- Renamed `-m`/`--mail-cmd` to `-s`/`--sendmail`
+
 
 v0.3.0 (2016-08-28)
 -------------------

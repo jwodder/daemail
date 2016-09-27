@@ -84,7 +84,7 @@ class CommandMailer(object):
             msg.addtext(
                 '\nAdditionally, the mail command {0!r} exited with return'
                 ' code {1} when asked to send this e-mail.\n'
-                .format(e.mail_cmd, rc_with_signal(e.rc))
+                .format(e.sendmail, rc_with_signal(e.rc))
             )
             if e.output:
                 msg.addtext('\nMail command output:\n')

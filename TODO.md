@@ -5,9 +5,8 @@
   memory?
 - What happens if the `chdir` fails while daemonizing?  Should that be handled
   somehow?
-- Rename `--mail-cmd` to `--sendmail`?
 - Should `--to-addr` not be required when sending to an mbox?
-- Execute `--mail-cmd` in the directory in which daemail was started?
+- Execute `--sendmail` in the directory in which daemail was started?
 - Look into handling of encoding issues with SMTP passwords
 
 - Documentation:
@@ -59,7 +58,7 @@ New Features
   non-ASCII control/non-printable characters)
 - When running the subcommand, should daemail forward any & all signals
   received to it?
-- Support format specifiers in `--mail-cmd` for interpolating the To & From
+- Support format specifiers in `--sendmail` for interpolating the To & From
   addresses (and subject?)
 - Should the `dead_letter` parameter of `CommandMailer` be a sender object
   instead of filepath?

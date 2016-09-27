@@ -38,21 +38,21 @@ class SMTP_SSLSender(SMTPSender):
 
 
 class CommandSender(object):
-    def __init__(self, mail_cmd=None):
-        if mail_cmd is None:
+    def __init__(self, sendmail=None):
+        if sendmail is None:
             # Set the default here (instead of in the method signature) so that
             # `main` can pass `None` to the constructor and have it DWIM.
-            mail_cmd = 'sendmail -i -t'
-        self.mail_cmd = mail_cmd
+            sendmail = 'sendmail -i -t'
+        self.sendmail = sendmail
 
     def send(self, msgbytes, _from, _to):
-        p = subprocess.Popen(self.mail_cmd, shell=True,
+        p = subprocess.Popen(self.sendmail, shell=True,
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
         out, _ = p.communicate(msgbytes)
         if p.returncode:
-            raise MailCmdError(self.mail_cmd, p.returncode, out)
+            raise MailCmdError(self.sendmail, p.returncode, out)
 
 
 class MboxSender(object):
