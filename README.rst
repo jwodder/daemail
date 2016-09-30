@@ -159,5 +159,18 @@ Options
 - ``-Z``, ``--utc`` — Show start & end times in UTC instead of local time
 
 
+Caveats
+=======
+- Input cannot be piped to the command, as standard input is closed when
+  daemonizing.  If you really need to pass data on standard input, run a
+  shell, e.g.::
+
+    daemail bash -c 'command < file'
+
+  or::
+
+    daemail bash -c 'command | other-command'
+
+
 .. |getpreferredencoding| replace:: ``locale.getpreferredencoding``
 .. _getpreferredencoding: https://docs.python.org/3/library/locale.html#locale.getpreferredencoding

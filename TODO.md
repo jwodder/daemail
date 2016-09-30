@@ -10,8 +10,6 @@
 - Look into handling of encoding issues with SMTP passwords
 
 - Documentation:
-    - Add a note to the documentation about passing things to the command on
-      stdin not being an option (or fix things so that it is an option?)
     - Add docstrings
     - Include an example e-mail in the README
     - Add basic usage examples (using `--mime-type`/attachments, using
@@ -24,6 +22,8 @@
       fails
 
 - Try to write tests
+    - Set up Travis integration
+        - Include running both pyflakes and pyflakes3
     - Ensure this works in both Python 2 and Python 3
         - Test handling of non-ASCII characters in `--smtp-password-file` in
           both Python 2 and Python 3
@@ -36,8 +36,6 @@
     - Test handling of attachments containing "From " at the beginning of a
       line (especially when writing to dead.letter) or a line with just a
       period (Can either of these happen?)
-    - Set up Travis integration
-        - Include running both pyflakes and pyflakes3
     - `show_argv`:
         - Test non-printable characters without single-letter escapes?
         - Test non-simple arguments with equals signs
@@ -63,6 +61,8 @@ New Features
 - Should the `dead_letter` parameter of `CommandMailer` be a sender object
   instead of filepath?
 - Support for Gmail's OAuth?
+- Support reading stdin before daemonzing and passing the contents to the
+  command?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
