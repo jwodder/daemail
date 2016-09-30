@@ -70,6 +70,7 @@ New Features
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
     - `--no-daemonize` (for debugging)
+        - Also add an option for teeing the output?
     - include environment variables in e-mail?
     - set the name to use for the stdout/stderr attachment
         - Use `mimetypes` to determine the MIME type from the filename?

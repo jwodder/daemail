@@ -33,3 +33,5 @@ For implementing later: Configurable subject & body templates
     Should the `{merged}`, `{stdin}`, and `{stderr}` variables automatically
     have trailing newlines (or embedded newlines?) stripped when used in the
     subject?  Or should they not be allowed in the subject in the first place?
+
+- Implement this via Jinja templates???
