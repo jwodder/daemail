@@ -67,7 +67,7 @@ def show_argv(*argv):
     # quotes it puts around strings like `"'$HOME'"` are just plain wrong.
     shown = ''
     assigning = True
-    for i,a in enumerate(argv):
+    for a in argv:
         if isinstance(a, text_type):
             a = os.fsencode(a)
         a = a.decode('iso-8859-1')

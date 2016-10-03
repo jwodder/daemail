@@ -10,6 +10,7 @@
 - Look into handling of encoding issues with SMTP passwords
 - Check handling of non-ASCII e-mail addresses
 - Try to drastically simplify CommandMailer's constructor
+- Drop support for Python 2?
 
 - Documentation:
     - Add docstrings
