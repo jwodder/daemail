@@ -20,6 +20,9 @@ v0.4.0 (in development)
 
 - Renamed `-m`/`--mail-cmd` to `-s`/`--sendmail`
 
+- Added `--from-name` and `--to-name` options for setting the "real name" of
+  the sender & recipient
+
 
 v0.3.0 (2016-08-28)
 -------------------

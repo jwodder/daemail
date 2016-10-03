@@ -1,12 +1,13 @@
-from   __future__ import unicode_literals
+from   __future__  import unicode_literals
+from   email.utils import formataddr
 import locale
 import platform
 import subprocess
 import traceback
-from   .          import __version__
-from   .message   import DraftMessage
-from   .senders   import MboxSender
-from   .util      import MailCmdError, mail_quote, nowstamp, rc_with_signal, \
+from   .           import __version__
+from   .message    import DraftMessage
+from   .senders    import MboxSender
+from   .util       import MailCmdError, mail_quote, nowstamp, rc_with_signal, \
                             show_argv
 
 USER_AGENT = 'daemail {} ({} {})'.format(
@@ -14,12 +15,15 @@ USER_AGENT = 'daemail {} ({} {})'.format(
 )
 
 class CommandMailer(object):
-    def __init__(self, sender, dead_letter, to_addr, from_addr=None,
+    def __init__(self, sender, dead_letter, to_addr, to_name=None,
+                 from_addr=None, from_name=None,
                  failure_only=False, nonempty=False, no_stdout=False,
                  no_stderr=False, split=False, encoding=None,
                  err_encoding=None, utc=False, mime_type=None):
         self.from_addr = from_addr
+        self.from_name = from_name
         self.to_addr = to_addr
+        self.to_name = to_name
         self.failure_only = failure_only
         self.nonempty = nonempty
         self.sender = sender
@@ -40,8 +44,8 @@ class CommandMailer(object):
         cmdstring = show_argv(command, *args)
         msg = DraftMessage()
         if self.from_addr is not None:
-            msg.headers['From'] = self.from_addr
-        msg.headers['To'] = self.to_addr
+            msg.headers['From'] = formataddr((self.from_name, self.from_addr))
+        msg.headers['To'] = formataddr((self.to_name, self.to_addr))
         msg.headers['User-Agent'] = USER_AGENT
         try:
             results = self.subcmd(command, *args)

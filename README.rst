@@ -39,6 +39,7 @@ Usage
             [-e|--encoding <encoding>]
             [-E|--err-encoding <encoding>]
             [-f|--from|--from-addr <address>]
+            [--from-name <name>]
             [-F|--failure-only]
             [-l|--logfile <logfile>]
             [-M|--mime-type|--mime <mime-type>]
@@ -48,6 +49,7 @@ Usage
             [-S|--split]
             [-Z|--utc]
             -t|--to|--to-addr <address>
+            [--to-name <name>]
             [<send options>]
             <command> [<arg> ...]
 
@@ -97,6 +99,9 @@ Options
   ``From:`` address of the e-mail.  If not specified, ``daemail`` will not set
   the ``From:`` header and will expect the mail command or SMTP server to do it
   instead.
+
+- ``--from-name <name>`` — Set the "real name" to show next to the ``From:``
+  address
 
 - ``-F``, ``--failure-only`` — Only send an e-mail if the command failed to run
   or exited with a nonzero status
@@ -155,6 +160,9 @@ Options
 
 - ``-t <address>``, ``--to <address>``, ``--to-addr <address>`` — Set the
   recipient of the e-mail; this option is required
+
+- ``--to-name <name>`` — Set the "real name" to show next to the ``To:``
+  address
 
 - ``-Z``, ``--utc`` — Show start & end times in UTC instead of local time
 

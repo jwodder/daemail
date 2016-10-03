@@ -8,6 +8,8 @@
 - Should `--to-addr` not be required when sending to an mbox?
 - Execute `--sendmail` in the directory in which daemail was started?
 - Look into handling of encoding issues with SMTP passwords
+- Check handling of non-ASCII e-mail addresses
+- Try to drastically simplify CommandMailer's constructor
 
 - Documentation:
     - Add docstrings
@@ -75,13 +77,11 @@ New Features
     - set the name to use for the stdout/stderr attachment
         - Use `mimetypes` to determine the MIME type from the filename?
     - don't include `stdout` on success/failure
-    - setting the User-Agent?
     - Log dead letters to the logfile?
     - Log successes to the logfile?
     - Log info/debugging messages to the logfile?
     - Log e-mails not sent due to `--failure-only` or `--nonempty` to the
       logfile?
     - (try to) e-mail fatal errors instead of writing them to the logfile?
-    - setting the "realname" of the sender/recipient
     - `--stdin <file>`?
     - certificates to use with SSL over SMTP

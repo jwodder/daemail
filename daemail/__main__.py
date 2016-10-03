@@ -28,6 +28,7 @@ def main():
                         metavar='ENCODING')
     parser.add_argument('-f', '--from-addr', '--from',
                         help='From: address of e-mail')
+    parser.add_argument('--from-name', help='name to use in From: address')
     parser.add_argument('-F', '--failure-only', action='store_true',
                         help='Only send e-mail if command returned nonzero')
     parser.add_argument('-l', '--logfile', default='daemail.log',
@@ -44,6 +45,7 @@ def main():
                         help='Capture stdout and stderr separately')
     parser.add_argument('-t', '--to-addr', '--to', metavar='RECIPIENT',
                         help='To: address of e-mail', required=True)
+    parser.add_argument('--to-name', help='name to use in To: address')
     parser.add_argument('-V', '--version', action='version',
                                            version='daemail ' + __version__)
     parser.add_argument('-Z', '--utc', action='store_true',
@@ -111,6 +113,7 @@ def main():
         encoding=args.encoding,
         err_encoding=args.err_encoding,
         from_addr=args.from_addr,
+        from_name=args.from_name,
         failure_only=args.failure_only,
         sender=sender,
         nonempty=args.nonempty,
@@ -118,6 +121,7 @@ def main():
         no_stderr=args.no_stderr,
         split=args.split,
         to_addr=args.to_addr,
+        to_name=args.to_name,
         utc=args.utc,
         mime_type=args.mime_type,
         dead_letter=os.path.join(pwd, args.dead_letter),
