@@ -26,7 +26,6 @@
 
 - Try to write tests
     - Set up Travis integration
-        - Include running both pyflakes and pyflakes3
     - Ensure this works in both Python 2 and Python 3
         - Test handling of non-ASCII characters in `--smtp-password-file` in
           both Python 2 and Python 3
@@ -66,6 +65,7 @@ New Features
 - Support for Gmail's OAuth?
 - Support reading stdin before daemonzing and passing the contents to the
   command?
+- Support reading the SMTP username & password from `~/.netrc`?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
