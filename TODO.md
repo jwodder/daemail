@@ -62,7 +62,7 @@ New Features
   addresses (and subject?)
 - Should the `dead_letter` parameter of `CommandMailer` be a sender object
   instead of filepath?
-- Support for Gmail's OAuth?
+- Support for Gmail's OAuth?  (Save for a much later version)
 - Support reading stdin before daemonzing and passing the contents to the
   command?
 - Support reading the SMTP username & password from `~/.netrc`?

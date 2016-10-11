@@ -1,5 +1,15 @@
 v0.4.0 (in development)
 -----------------------
+- **Breaking**: `--dead-letter` and `--logfile` (and `--mbox`) are now resolved
+  relative to the directory in which daemail was started, not the directory
+  specified with `--chdir`
+
+- **Breaking**: No more than one line ending sequence will be removed from
+  `--smtp-password-file` (for the unlikely case in which the password ends with
+  a newline)
+
+- **Breaking**: Renamed `-m`/`--mail-cmd` to `-s`/`--sendmail`
+
 - Local timestamps will now include the timezone offset
 
 - Added an `--mbox` option for "sending" e-mails to a local mbox file
@@ -9,16 +19,6 @@ v0.4.0 (in development)
 - Gave `--split` an `-S` short form
 
 - Added the `-i` option to the default `sendmail` command
-
-- `--dead-letter` and `--logfile` (and `--mbox`) are now resolved relative to
-  the directory in which daemail was started, not the directory specified with
-  `--chdir`
-
-- No more than one line ending sequence will be removed from
-  `--smtp-password-file` (for the unlikely case in which the password ends with
-  a newline)
-
-- Renamed `-m`/`--mail-cmd` to `-s`/`--sendmail`
 
 - Added `--from-name` and `--to-name` options for setting the "real name" of
   the sender & recipient
