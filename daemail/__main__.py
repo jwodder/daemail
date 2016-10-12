@@ -1,6 +1,5 @@
 from   __future__ import print_function, unicode_literals
 import argparse
-from   datetime   import datetime
 from   getpass    import getpass
 import os
 import os.path
@@ -10,6 +9,7 @@ from   daemon     import DaemonContext  # python-daemon
 from   .          import __version__
 from   .          import senders
 from   .mailer    import CommandMailer
+from   .util      import nowstamp
 
 def main():
     pwd = os.getcwd()
@@ -137,8 +137,8 @@ def main():
         # If this open() fails, die alone where no one will ever know.
         sys.stderr = open(os.path.join(pwd, args.logfile), 'a')
             ### TODO: What encoding do I use for this???
-        print(datetime.now().isoformat(), 'daemail', __version__,
-              'encountered an exception:', file=sys.stderr)
+        print(nowstamp, 'daemail', __version__, 'encountered an exception:',
+              file=sys.stderr)
         traceback.print_exc()
         print('', file=sys.stderr)
         print('Configuration:', vars(mailer), file=sys.stderr)
