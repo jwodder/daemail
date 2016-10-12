@@ -27,7 +27,7 @@ setup(
     url='https://github.com/jwodder/daemail',
 
     setup_requires=['pytest-runner>=2.0,<3'],
-    install_requires=['python-daemon', 'six>=1.8.0,<2'],
+    install_requires=['python-daemon>=2.0,<3', 'six>=1.8.0,<2'],
     tests_require=['pytest>=2.8,<3'],
 
     classifiers=[

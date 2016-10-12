@@ -1,4 +1,3 @@
-- Look into minimum version requirements for `python-daemon`
 - When an attempt to send over SMTP fails, should the SMTP host & username be
   recorded in the dead letter?
 - Redirect subcommand output to tempfiles instead of reading it all into
