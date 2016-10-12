@@ -37,7 +37,7 @@ Usage
     daemail [-C|--chdir <directory>]
             [-D|--dead-letter <mbox>]
             [-e|--encoding <encoding>]
-            [-E|--err-encoding <encoding>]
+            [-E|--stderr-encoding <encoding>]
             [-f|--from|--from-addr <address>]
             [--from-name <name>]
             [-F|--failure-only]
@@ -47,6 +47,7 @@ Usage
             [--no-stdout]
             [--no-stderr]
             [-S|--split]
+            [--stdout-filename <filename>]
             [-Z|--utc]
             -t|--to|--to-addr <address>
             [--to-name <name>]
@@ -82,15 +83,16 @@ Options
   if ``--split`` is not in effect) of ``<command>`` to be in the given
   encoding; defaults to the preferred encoding returned by Python's
   |getpreferredencoding|_.  If decoding fails, the output will be attached to
-  the e-mail as an ``application/octet-stream`` file.
+  the e-mail as an ``application/octet-stream`` file named "``stdout``".
 
-  When ``--mime-type`` is also given, this option has no effect other than to
-  set the default value for ``--err-encoding``.
+  When ``--mime-type`` or ``--stdout-filename`` is also given, this option has
+  no effect other than to set the default value for ``--stderr-encoding``.
 
-- ``-E <encoding>``, ``--err-encoding <encoding>`` — Expect the stderr of
+- ``-E <encoding>``, ``--stderr-encoding <encoding>`` — Expect the stderr of
   ``<command>`` to be in the given encoding; defaults to the value specified
   via ``--encoding`` or its default.  If decoding fails, the stderr output will
-  be attached to the e-mail as an ``application/octet-stream`` file.
+  be attached to the e-mail as an ``application/octet-stream`` file named
+  "``stderr``".
 
   This option only has an effect when ``--split`` is given, either implicitly
   or explicitly.
@@ -123,7 +125,9 @@ Options
 - ``-M <mime-type>``, ``--mime-type <mime-type>``, ``--mime <mime-type>`` —
   Attach the standard output of ``<command>`` to the e-mail as an inline
   attachment with the given MIME type.  The MIME type may include parameters,
-  e.g., ``--mime-type "text/html; charset=utf-16"``.  Implies ``--split``.
+  e.g., ``--mime-type "text/html; charset=utf-16"``.  If ``--stdout-filename``
+  is not also supplied, the attachment is named "``stdout``".  Implies
+  ``--split``.
 
 - ``-n``, ``--nonempty`` — Do not send an e-mail if the command exited
   successfully and both the command's stdout & stderr were empty or not
@@ -157,6 +161,12 @@ Options
 
 - ``-S``, ``--split`` — Capture the command's stdout and stderr separately
   rather than as a single stream
+
+- ``--stdout-filename <filename>`` — Attach the standard output of
+  ``<command>`` to the e-mail as an inline attachment with the given filename.
+  If ``--mime-type`` is not also supplied, the MIME type of the attachment is
+  deduced from the file extension, falling back to ``application/octet-stream``
+  for unknown extensions.  Implies ``--split``.
 
 - ``-t <address>``, ``--to <address>``, ``--to-addr <address>`` — Set the
   recipient of the e-mail; this option is required

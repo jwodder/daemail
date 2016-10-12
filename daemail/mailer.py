@@ -1,6 +1,7 @@
 from   __future__  import unicode_literals
 from   email.utils import formataddr
 import locale
+import mimetypes
 import platform
 import subprocess
 import traceback
@@ -19,7 +20,20 @@ class CommandMailer(object):
                  from_addr=None, from_name=None,
                  failure_only=False, nonempty=False, no_stdout=False,
                  no_stderr=False, split=False, encoding=None,
-                 err_encoding=None, utc=False, mime_type=None):
+                 stderr_encoding=None, utc=False, mime_type=None,
+                 stdout_filename=None):
+        if encoding is None:
+            encoding = locale.getpreferredencoding(True)
+        if stderr_encoding is None:
+            stderr_encoding = encoding
+        if stdout_filename is not None:
+            if mime_type is None:
+                mime_type = mimetypes.guess_type(stdout_filename, False)[0] or \
+                    'application/octet-stream'
+            split = True
+        elif mime_type is not None:
+            stdout_filename = 'stdout'
+            split = True
         self.from_addr = from_addr
         self.from_name = from_name
         self.to_addr = to_addr
@@ -29,16 +43,13 @@ class CommandMailer(object):
         self.sender = sender
         self.no_stdout = no_stdout
         self.no_stderr = no_stderr
-        self.split = split or mime_type is not None
+        self.split = split
         self.encoding = encoding
-        self.err_encoding = err_encoding
+        self.stderr_encoding = stderr_encoding
         self.utc = utc
         self.mime_type = mime_type
+        self.stdout_filename = stdout_filename
         self.dead_letter = dead_letter
-        if self.encoding is None:
-            self.encoding = locale.getpreferredencoding(True)
-        if self.err_encoding is None:
-            self.err_encoding = self.encoding
 
     def run(self, command, *args):
         cmdstring = show_argv(command, *args)
@@ -71,7 +82,8 @@ class CommandMailer(object):
             if results["stdout"]:
                 msg.addtext('\nOutput:\n')
                 if self.mime_type is not None:
-                    msg.addmimeblob(results["stdout"], self.mime_type, 'stdout')
+                    msg.addmimeblob(results["stdout"], self.mime_type,
+                                    self.stdout_filename)
                 else:
                     msg.addblobquote(results["stdout"], self.encoding, 'stdout')
             elif results["stdout"] is not None:
@@ -80,7 +92,8 @@ class CommandMailer(object):
                 # If stderr was captured separately but is still empty, don't
                 # bother saying "Error Output: none".
                 msg.addtext('\nError Output:\n')
-                msg.addblobquote(results["stderr"], self.err_encoding, 'stderr')
+                msg.addblobquote(results["stderr"], self.stderr_encoding,
+                                 'stderr')
         msgbytes = msg.compile()
         try:
             self.sender.send(msgbytes, self.from_addr, self.to_addr)

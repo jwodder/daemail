@@ -23,8 +23,8 @@ def main():
                         default='dead.letter',
                         help="Append undeliverable mail to this file")
     parser.add_argument('-e', '--encoding',
-                        help='Set encoding of stdout and stderr')
-    parser.add_argument('-E', '--err-encoding', help='Set encoding of stderr',
+                        help='Encoding of stdout and stderr')
+    parser.add_argument('-E', '--stderr-encoding', help='Encoding of stderr',
                         metavar='ENCODING')
     parser.add_argument('-f', '--from-addr', '--from',
                         help='From: address of e-mail')
@@ -43,6 +43,8 @@ def main():
                         help="Don't capture stderr")
     parser.add_argument('-S', '--split', action='store_true',
                         help='Capture stdout and stderr separately')
+    parser.add_argument('--stdout-filename', metavar='FILENAME',
+                        help='Send output as attachment with given filename')
     parser.add_argument('-t', '--to-addr', '--to', metavar='RECIPIENT',
                         help='To: address of e-mail', required=True)
     parser.add_argument('--to-name', help='name to use in To: address')
@@ -111,7 +113,7 @@ def main():
 
     mailer = CommandMailer(
         encoding=args.encoding,
-        err_encoding=args.err_encoding,
+        stderr_encoding=args.stderr_encoding,
         from_addr=args.from_addr,
         from_name=args.from_name,
         failure_only=args.failure_only,
@@ -124,6 +126,7 @@ def main():
         to_name=args.to_name,
         utc=args.utc,
         mime_type=args.mime_type,
+        stdout_filename=args.stdout_filename,
         dead_letter=os.path.join(pwd, args.dead_letter),
     )
 

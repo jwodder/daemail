@@ -10,7 +10,10 @@ v0.4.0 (in development)
 
 - **Breaking**: Renamed `-m`/`--mail-cmd` to `-s`/`--sendmail`
 
-- Local timestamps will now include the timezone offset
+- **Breaking**: Renamed `--err-encoding` to `--stderr-encoding` (The `-E` short
+  option remains unchanged)
+
+- Local timestamps now include the timezone offset
 
 - Added an `--mbox` option for "sending" e-mails to a local mbox file
 
@@ -22,6 +25,9 @@ v0.4.0 (in development)
 
 - Added `--from-name` and `--to-name` options for setting the "real name" of
   the sender & recipient
+
+- Added a `--stdout-filename` option for specifying the name (and default MIME
+  type) of the stdout attachment
 
 
 v0.3.0 (2016-08-28)

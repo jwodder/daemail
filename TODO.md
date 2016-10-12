@@ -16,7 +16,8 @@
     - Add docstrings
     - Include an example e-mail in the README
     - Add basic usage examples (using `--mime-type`/attachments, using
-      `--encoding`, using `--smtp-host`, etc.) to the README
+      `--encoding`, using `--smtp-host`, explanation of `--split`, etc.) to the
+      README
 
 - Logging:
     - Make logfile entries look like mbox entries?
@@ -66,6 +67,7 @@ New Features
 - Support reading stdin before daemonzing and passing the contents to the
   command?
 - Support reading the SMTP username & password from `~/.netrc`?
+- Use the `encoding` value returned by `mimetypes.guess_type`?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
@@ -75,8 +77,6 @@ New Features
     - `--no-daemonize` (for debugging)
         - Also add an option for teeing the output?
     - include environment variables in e-mail?
-    - set the name to use for the stdout/stderr attachment
-        - Use `mimetypes` to determine the MIME type from the filename?
     - don't include `stdout` on success/failure
     - Log dead letters to the logfile?
     - Log successes to the logfile?
@@ -86,3 +86,6 @@ New Features
     - (try to) e-mail fatal errors instead of writing them to the logfile?
     - `--stdin <file>`?
     - certificates to use with SSL over SMTP
+    - `--stderr-filename`
+    - `--stderr-mime-type`? (but when is stderr not plain text?)
+    - Combine stdout and stderr in the same attachment?
