@@ -136,8 +136,9 @@ def main():
     except Exception:
         # If this open() fails, die alone where no one will ever know.
         sys.stderr = open(os.path.join(pwd, args.logfile), 'a')
-            ### TODO: What encoding do I use for this???
-        print(nowstamp, 'daemail', __version__, 'encountered an exception:',
+            # This will be a bytes stream in Python 2 (with Unicode strings
+            # implicitly encoded upon printing) and a text stream in Python 3.
+        print(nowstamp(), 'daemail', __version__, 'encountered an exception:',
               file=sys.stderr)
         traceback.print_exc()
         print('', file=sys.stderr)
