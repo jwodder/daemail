@@ -180,8 +180,8 @@ Options
 Caveats
 =======
 - Input cannot be piped to the command, as standard input is closed when
-  daemonizing.  If you really need to pass data on standard input, run a
-  shell, e.g.::
+  daemonizing.  If you really need to pass data on standard input, run a shell,
+  e.g.::
 
     daemail bash -c 'command < file'
 

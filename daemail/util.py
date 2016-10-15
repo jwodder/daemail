@@ -102,3 +102,7 @@ def nowstamp(utc=False):
             stamp += '-'
         stamp += '{:02}:{:02}'.format(*divmod(offset // 60, 60))
         return stamp
+
+def multiline822(s):
+    return re.sub('^', '  ', re.sub('^$', '.', s.strip('\r\n'), flags=re.M),
+                  flags=re.M)

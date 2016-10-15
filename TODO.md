@@ -19,7 +19,6 @@
       README
 
 - Logging:
-    - Make logfile entries look like mbox entries?
     - Improve (or eliminate?) the configuration settings dump in the logfile
     - Write error messages to stderr instead of the logfile if daemonization
       fails
@@ -88,3 +87,4 @@ New Features
     - `--stderr-filename`
     - `--stderr-mime-type`? (but when is stderr not plain text?)
     - Combine stdout and stderr in the same attachment?
+    - Force stderr to be included/attached even if it's empty?

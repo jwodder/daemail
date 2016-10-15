@@ -9,7 +9,7 @@ from   daemon     import DaemonContext  # python-daemon
 from   .          import __version__
 from   .          import senders
 from   .mailer    import CommandMailer
-from   .util      import nowstamp
+from   .util      import multiline822, nowstamp, show_argv
 
 def main():
     pwd = os.getcwd()
@@ -138,13 +138,13 @@ def main():
         sys.stderr = open(os.path.join(pwd, args.logfile), 'a')
             # This will be a bytes stream in Python 2 (with Unicode strings
             # implicitly encoded upon printing) and a text stream in Python 3.
-        print(nowstamp(), 'daemail', __version__, 'encountered an exception:',
-              file=sys.stderr)
-        traceback.print_exc()
-        print('', file=sys.stderr)
+        print('daemail:', __version__, file=sys.stderr)
+        print('Command:', show_argv(args.command, *args.args), file=sys.stderr)
+        print('Date:', nowstamp(), file=sys.stderr)
         print('Configuration:', vars(mailer), file=sys.stderr)
         print('Chdir:', repr(args.chdir), file=sys.stderr)
-        print('Command:', [args.command] + args.args, file=sys.stderr)
+        print('Traceback:', file=sys.stderr)
+        print(multiline822(traceback.format_exc()), file=sys.stderr)
         print('', file=sys.stderr)
         sys.exit(1)
 
