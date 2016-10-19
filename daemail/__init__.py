@@ -1,4 +1,6 @@
 """
+Daemonize a command and e-mail the results
+
 ``daemail`` (pronounced "DEE-mayl", like "e-mail" but with a D) is a Python
 script for running a normally-foreground command in the background and
 e-mailing its output (by default, the combined stdout and stderr) once it's

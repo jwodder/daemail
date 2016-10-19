@@ -10,6 +10,10 @@
 - Check handling of non-ASCII e-mail addresses
 - Try to drastically simplify CommandMailer's constructor
 - Drop support for Python 2?
+- Customize the message above the traceback for failures sending via SMTP or
+  mbox, not just sendmail
+- Call `locale.getpreferredencoding(True)` once at the beginning of the program
+  and then call it without arguments elsewhere?
 
 - Documentation:
     - Add docstrings
