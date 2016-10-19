@@ -3,6 +3,8 @@
     :alt: Project Status: Active - The project has reached a stable, usable
           state and is being actively developed.
 
+.. image:: https://img.shields.io/pypi/pyversions/daemail.svg
+
 .. image:: https://img.shields.io/github/license/jwodder/daemail.svg?maxAge=2592000
     :target: https://opensource.org/licenses/MIT
     :alt: MIT License
