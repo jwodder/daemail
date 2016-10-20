@@ -97,28 +97,30 @@ class CommandMailer(object):
         msgbytes = msg.compile()
         try:
             self.sender.send(msgbytes, self.from_addr, self.to_addr)
-        except MailCmdError as e:
-            msg.addtext(
-                '\nAdditionally, the mail command {0!r} exited with return'
-                ' code {1} when asked to send this e-mail.\n'
-                .format(e.sendmail, rc_with_signal(e.rc))
-            )
-            if e.output:
-                msg.addtext('\nMail command output:\n')
-                msg.addblobquote(e.output, locale.getpreferredencoding(True),
-                                 'sendmail-output')
-            else:
-                msg.addtext('\nMail command output: none\n')
         except Exception as e:
             msg.addtext(
-                '\nAdditionally, an exception occurred while trying to send'
-                ' this e-mail:\n' + mail_quote(traceback.format_exc())
+                '\nAdditionally, an error occurred while trying to send'
+                ' this e-mail:\n\n'
             )
-        else:
-            return
-        ### TODO: Handle failures here!
-        MboxSender(self.dead_letter)\
-            .send(msg.compile(), self.from_addr, self.to_addr)
+            for k,v in self.sender.about():
+                msg.addtext('{}: {}\n'.format(k,v))
+            if isinstance(e, MailCmdError):
+                msg.addtext('Exit Status: {}\n'.format(rc_with_signal(e.rc)))
+                if e.output:
+                    msg.addtext('\nOutput:\n')
+                    msg.addblobquote(
+                        e.output,
+                        locale.getpreferredencoding(True),
+                        'sendmail-output',
+                    )
+                else:
+                    msg.addtext('\nOutput: none\n')
+            else:
+                msg.addtext('\nError Traceback:\n')
+                msg.addtext(mail_quote(traceback.format_exc()))
+            ### TODO: Handle failures here!
+            MboxSender(self.dead_letter)\
+                .send(msg.compile(), self.from_addr, self.to_addr)
 
     def subcmd(self, command, *args):
         params = {}

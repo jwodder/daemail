@@ -1,5 +1,3 @@
-- When an attempt to send over SMTP fails, should the SMTP host & username be
-  recorded in the dead letter?
 - Redirect subcommand output to tempfiles instead of reading it all into
   memory?
 - What happens if the `chdir` fails while daemonizing?  Should that be handled
@@ -10,8 +8,6 @@
 - Check handling of non-ASCII e-mail addresses
 - Try to drastically simplify CommandMailer's constructor
 - Drop support for Python 2?
-- Customize the message above the traceback for failures sending via SMTP or
-  mbox, not just sendmail
 - Call `locale.getpreferredencoding(True)` once at the beginning of the program
   and then call it without arguments elsewhere?
 
