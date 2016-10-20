@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import pytest
 from   daemail.util import show_argv
 
 def test_show_argv_nothing():
@@ -164,20 +165,23 @@ def test_show_argv_tilde():
 def test_show_argv_delete():
     assert show_argv('foo\x7Fbar') == r"$'foo\x7fbar'"
 
-if sys.version_info[0] == 2:
-    def test_show_argv_nbsp():
-        assert show_argv('foo\xA0bar') == r"$'foo\xa0bar'"
+@pytest.mark.skipif(sys.version_info[0]>2, reason='argv is text in Python 3')
+def test_show_argv_nbsp():
+    assert show_argv('foo\xA0bar') == r"$'foo\xa0bar'"
 
-    def test_show_argv_8bits():
-        assert show_argv('foo\xFFbar') == r"$'foo\xffbar'"
+@pytest.mark.skipif(sys.version_info[0]>2, reason='argv is text in Python 3')
+def test_show_argv_8bits():
+    assert show_argv('foo\xFFbar') == r"$'foo\xffbar'"
 
-    def test_show_argv_utf8():
-        assert show_argv('foo\xC3\xA9bar') == r"$'foo\xc3\xa9bar'"
+@pytest.mark.skipif(sys.version_info[0]>2, reason='argv is text in Python 3')
+def test_show_argv_utf8():
+    assert show_argv('foo\xC3\xA9bar') == r"$'foo\xc3\xa9bar'"
 
-else:
-    def test_show_argv_surrogateesc():
-        assert show_argv('foo\udc80bar') == r"$'foo\x80bar'"
+@pytest.mark.skipif(sys.version_info[0]<3, reason='argv is bytes in Python 2')
+def test_show_argv_surrogateesc():
+    assert show_argv('foo\udc80bar') == r"$'foo\x80bar'"
 
-    def test_show_argv_unicode():
-        ### TODO: Assumes sys.getfilesystemencoding() == 'utf-8'
-        assert show_argv('fooébar') == r"$'foo\xc3\xa9bar'"
+@pytest.mark.skipif(sys.version_info[0]<3, reason='argv is bytes in Python 2')
+def test_show_argv_unicode():
+    ### TODO: Assumes sys.getfilesystemencoding() == 'utf-8'
+    assert show_argv('fooébar') == r"$'foo\xc3\xa9bar'"
