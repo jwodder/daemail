@@ -29,6 +29,8 @@ v0.4.0 (in development)
 - Added a `--stdout-filename` option for specifying the name (and default MIME
   type) of the stdout attachment
 
+- Improvements to error message formatting
+
 
 v0.3.0 (2016-08-28)
 -------------------

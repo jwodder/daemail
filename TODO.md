@@ -10,6 +10,7 @@
 - Drop support for Python 2?
 - Call `locale.getpreferredencoding(True)` once at the beginning of the program
   and then call it without arguments elsewhere?
+- Require `--from-addr` when sending over unauthenticated SMTP?
 
 - Documentation:
     - Add docstrings
@@ -64,7 +65,6 @@ New Features
 - Support for Gmail's OAuth?  (Save for a much later version)
 - Support reading stdin before daemonzing and passing the contents to the
   command?
-- Support reading the SMTP username & password from `~/.netrc`?
 - Use the `encoding` value returned by `mimetypes.guess_type`?
 
 - Options to add:
@@ -88,3 +88,4 @@ New Features
     - `--stderr-mime-type`? (but when is stderr not plain text?)
     - Combine stdout and stderr in the same attachment?
     - Force stderr to be included/attached even if it's empty?
+    - Ignore nonexistent .netrc files?

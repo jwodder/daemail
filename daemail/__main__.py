@@ -1,6 +1,7 @@
 from   __future__ import print_function, unicode_literals
 import argparse
 from   getpass    import getpass
+import netrc
 import os
 import os.path
 import sys
@@ -37,6 +38,9 @@ def main():
                         help='Send output as attachment with given MIME type')
     parser.add_argument('-n', '--nonempty', action='store_true',
                         help='Only send e-mail if there was output or failure')
+    netrcarg = parser.add_mutually_exclusive_group()
+    netrcarg.add_argument('--netrc', action='store_true')
+    netrcarg.add_argument('--netrc-file')
     parser.add_argument('--no-stdout', action='store_true',
                         help="Don't capture stdout")
     parser.add_argument('--no-stderr', action='store_true',
@@ -89,6 +93,8 @@ def main():
             cls = senders.StartTLSSender
         else:
             cls = senders.SMTPSender
+        username = args.smtp_username
+        password = args.smtp_password
         if args.smtp_password_file is not None:
             with args.smtp_password_file as fp:
                 password = fp.read()
@@ -97,11 +103,19 @@ def main():
                 password = password[:-1]
             if password.endswith('\r'):
                 password = password[:-1]
-            args.smtp_password = password
-        if args.smtp_username is not None and args.smtp_password is None:
-            args.smtp_password = getpass('SMTP password: ')
-        sender = cls(args.smtp_host, args.smtp_port, args.smtp_username,
-                     args.smtp_password)
+        if password is None and (args.netrc or args.netrc_file is not None):
+            nrc = netrc.netrc(None if args.netrc else args.netrc_file)
+            login = nrc.authenticators(args.smtp_host)
+            if login is not None:
+                if username is not None:
+                    if login[0] is None or login[0] == username:
+                        password = login[2]
+                elif login[0] is not None:
+                    username = login[0]
+                    password = login[2]
+        if username is not None and password is None:
+            password = getpass('SMTP password: ')
+        sender = cls(args.smtp_host, args.smtp_port, username, password)
     elif any(a.startswith('smtp_') and getattr(args, a) not in (None, False)
              for a in vars(args)):
         raise SystemExit('daemail: --smtp-* options cannot be specified without'
