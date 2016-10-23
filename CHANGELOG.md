@@ -29,6 +29,9 @@ v0.4.0 (in development)
 - Added a `--stdout-filename` option for specifying the name (and default MIME
   type) of the stdout attachment
 
+- Added `--netrc` and `--netrc-file` options for reading the SMTP username &
+  password from a netrc file
+
 - Improvements to error message formatting
 
 

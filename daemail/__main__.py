@@ -38,9 +38,6 @@ def main():
                         help='Send output as attachment with given MIME type')
     parser.add_argument('-n', '--nonempty', action='store_true',
                         help='Only send e-mail if there was output or failure')
-    netrcarg = parser.add_mutually_exclusive_group()
-    netrcarg.add_argument('--netrc', action='store_true')
-    netrcarg.add_argument('--netrc-file')
     parser.add_argument('--no-stdout', action='store_true',
                         help="Don't capture stdout")
     parser.add_argument('--no-stderr', action='store_true',
@@ -69,6 +66,7 @@ def main():
                         help='Connect to --smtp-host on this port')
     parser.add_argument('--smtp-username', metavar='USERNAME',
                         help='Username for authenticating with --smtp-host')
+
     smtp_pass = parser.add_mutually_exclusive_group()
     smtp_pass.add_argument('--smtp-password', metavar='PASSWORD',
                            help='Password for authenticating with --smtp-host')
@@ -76,6 +74,11 @@ def main():
                            type=argparse.FileType('r'),
                            help='File containing password for authenticating'
                                 ' with --smtp-host')
+    smtp_pass.add_argument('--netrc', action='store_true',
+                           help='Fetch SMTP password from ~/.netrc file')
+    smtp_pass.add_argument('--netrc-file',
+                           help='Fetch SMTP password from given netrc file')
+
     smtp_ssl = parser.add_mutually_exclusive_group()
     smtp_ssl.add_argument('--smtp-ssl', action='store_true',
                           help='Use SMTPS protocol')
@@ -96,6 +99,7 @@ def main():
         username = args.smtp_username
         password = args.smtp_password
         if args.smtp_password_file is not None:
+            assert password is None
             with args.smtp_password_file as fp:
                 password = fp.read()
             # Remove no more than one line ending sequence:
@@ -103,7 +107,8 @@ def main():
                 password = password[:-1]
             if password.endswith('\r'):
                 password = password[:-1]
-        if password is None and (args.netrc or args.netrc_file is not None):
+        elif args.netrc or args.netrc_file is not None:
+            assert password is None
             nrc = netrc.netrc(None if args.netrc else args.netrc_file)
             login = nrc.authenticators(args.smtp_host)
             if login is not None:
@@ -116,7 +121,8 @@ def main():
         if username is not None and password is None:
             password = getpass('SMTP password: ')
         sender = cls(args.smtp_host, args.smtp_port, username, password)
-    elif any(a.startswith('smtp_') and getattr(args, a) not in (None, False)
+    elif any(a.startswith(('smtp_', 'netrc')) and 
+                getattr(args, a) not in (None, False)
              for a in vars(args)):
         raise SystemExit('daemail: --smtp-* options cannot be specified without'
                          ' --smtp-host')

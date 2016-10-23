@@ -65,7 +65,7 @@ where ``<send options>`` is one of::
     --smtp-host <host>
         [--smtp-port <port>]
         [--smtp-username <username>]
-        [--smtp-password <password> | --smtp-password-file <file>]
+        [--smtp-password <password> | --smtp-password-file <file> | --netrc | --netrc-file <file>]
         [--smtp-ssl | --smtp-starttls]
 
 
@@ -146,15 +146,23 @@ Options
     to 25, or to 465 if ``--smtp-ssl`` is specified
 
   - ``--smtp-username <username>`` — Authenticate to the SMTP server using the
-    given username.  If ``--smtp-username`` is supplied but neither
-    ``--smtp-password`` nor ``--smtp-password-file`` is, ``daemail`` will
-    prompt the user for the SMTP password before daemonizing.
+    given username.  If a username is supplied (either on the command line or
+    in a netrc file) but no password is, ``daemail`` will prompt the user for
+    the SMTP password before daemonizing.
 
   - ``--smtp-password <password>`` — Authenticate to the SMTP server using the
     given password
 
   - ``--smtp-password-file <file>`` — Authenticate to the SMTP server using the
-    contents of the given file (without final line ending) as the password
+    contents of the given file (after removing the final line ending) as the
+    password
+
+  - ``--netrc`` — Fetch the SMTP username and/or password from ``~/.netrc``.
+    If ``--smtp-username`` specifies a different username for the host than is
+    given in the netrc file, the netrc file is ignored.
+
+  - ``--netrc-file <file>`` — Like ``--netrc``, but use the given file instead
+    of ``~/.netrc``
 
   - ``--smtp-ssl`` — Use the SMTPS protocol to communicate with the server
 
