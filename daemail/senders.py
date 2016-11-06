@@ -83,4 +83,4 @@ class MboxSender(object):
 
     def about(self):
         yield ('Method', 'mbox')
-        yield ('Mbox File', self.filename)
+        yield ('Mbox-File', self.filename)

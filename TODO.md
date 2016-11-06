@@ -3,14 +3,15 @@
 - What happens if the `chdir` fails while daemonizing?  Should that be handled
   somehow?
 - Should `--to-addr` not be required when sending to an mbox?
+- Require `--from-addr` when sending over unauthenticated SMTP?
 - Execute `--sendmail` in the directory in which daemail was started?
 - Look into handling of encoding issues with SMTP passwords
-- Check handling of non-ASCII e-mail addresses
+- Check handling of non-ASCII e-mail addresses and realnames
 - Try to drastically simplify CommandMailer's constructor
-- Drop support for Python 2?
 - Call `locale.getpreferredencoding(True)` once at the beginning of the program
   and then call it without arguments elsewhere?
-- Require `--from-addr` when sending over unauthenticated SMTP?
+- Mail-quote the sending method pseudo-headers in dead letters?
+- Make the internal API suitable for public exposure
 
 - Documentation:
     - Add docstrings
@@ -56,13 +57,11 @@ New Features
 - `show_argv`: Show, say, an `é` in an argument as `é`, assuming it decodes
   properly using the filesystem encoding (This could lead to problems with
   non-ASCII control/non-printable characters)
-- When running the subcommand, should daemail forward any & all signals
-  received to it?
 - Support format specifiers in `--sendmail` for interpolating the To & From
   addresses (and subject?)
 - Should the `dead_letter` parameter of `CommandMailer` be a sender object
   instead of filepath?
-- Support for Gmail's OAuth?  (Save for a much later version)
+- Support for Gmail's OAuth  (Save for a much later version)
 - Support reading stdin before daemonzing and passing the contents to the
   command?
 - Use the `encoding` value returned by `mimetypes.guess_type`?
@@ -89,3 +88,6 @@ New Features
     - Combine stdout and stderr in the same attachment?
     - Force stderr to be included/attached even if it's empty?
     - Ignore nonexistent .netrc files?
+    - Create a pidfile for the command and/or daemail?
+    - `--forward`: while running the subcommand, forward any & all signals
+      daemail receives to it
