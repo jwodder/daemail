@@ -1,5 +1,5 @@
-v0.4.0 (in development)
------------------------
+v0.4.0 (2016-11-05)
+-------------------
 - **Breaking**: `--dead-letter` and `--logfile` (and `--mbox`) are now resolved
   relative to the directory in which daemail was started, not the directory
   specified with `--chdir`
