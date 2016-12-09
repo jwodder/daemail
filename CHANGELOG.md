@@ -1,3 +1,9 @@
+v0.5.0 (in development)
+-----------------------
+- If an error occurs during daemonization (e.g., because the `--chdir` argument
+  is not a directory), a normal error traceback will be printed to stderr
+  instead of writing a report to the logfile.
+
 v0.4.0 (2016-11-05)
 -------------------
 - **Breaking**: `--dead-letter` and `--logfile` (and `--mbox`) are now resolved

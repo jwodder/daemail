@@ -1,7 +1,12 @@
 - Redirect subcommand output to tempfiles instead of reading it all into
   memory?
-- What happens if the `chdir` fails while daemonizing?  Should that be handled
-  somehow?
+    - Send large output as compressed attachments?
+    - If compression fails (or if the compressed file exceeds a given limit on
+      maximum attachment size), keep the file around and include its filepath
+      in the e-mail
+    - Add an option for redirecting output to a file (`/dev/null`?) but not
+      sending it anyway, for those rare cases where the command behaves
+      differently if its output is closed
 - Should `--to-addr` not be required when sending to an mbox?
 - Require `--from-addr` when sending over unauthenticated SMTP?
 - Execute `--sendmail` in the directory in which daemail was started?
@@ -12,6 +17,7 @@
   and then call it without arguments elsewhere?
 - Mail-quote the sending method pseudo-headers in dead letters?
 - Make the internal API suitable for public exposure
+- Improve the configuration settings dump in the logfile
 
 - Documentation:
     - Add docstrings
@@ -19,11 +25,6 @@
     - Add basic usage examples (using `--mime-type`/attachments, using
       `--encoding`, using `--smtp-host`, explanation of `--split`, etc.) to the
       README
-
-- Logging:
-    - Improve (or eliminate?) the configuration settings dump in the logfile
-    - Write error messages to stderr instead of the logfile if daemonization
-      fails
 
 - Try to write tests
     - Set up Travis integration
@@ -62,9 +63,12 @@ New Features
 - Should the `dead_letter` parameter of `CommandMailer` be a sender object
   instead of filepath?
 - Support for Gmail's OAuth  (Save for a much later version)
+    - cf. <https://developers.google.com/gmail/api/quickstart/python>
 - Support reading stdin before daemonzing and passing the contents to the
   command?
 - Use the `encoding` value returned by `mimetypes.guess_type`?
+- Support reading a shell script (or script for a given interpreter) from
+  stdin?
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
@@ -91,3 +95,6 @@ New Features
     - Create a pidfile for the command and/or daemail?
     - `--forward`: while running the subcommand, forward any & all signals
       daemail receives to it
+    - Send output to a given (non-temporary) file instead of adding it to the
+      e-mail
+    - Wait to run at a certain time à la `at(1)`?

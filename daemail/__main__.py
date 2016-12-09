@@ -1,16 +1,17 @@
-from   __future__ import print_function, unicode_literals
+from   __future__    import print_function, unicode_literals
 import argparse
-from   getpass    import getpass
+from   getpass       import getpass
 import netrc
 import os
 import os.path
 import sys
 import traceback
-from   daemon     import DaemonContext  # python-daemon
-from   .          import __version__
-from   .          import senders
-from   .mailer    import CommandMailer
-from   .util      import multiline822, nowstamp, show_argv
+from   daemon        import DaemonContext  # python-daemon
+from   daemon.daemon import DaemonError
+from   .             import __version__
+from   .             import senders
+from   .mailer       import CommandMailer
+from   .util         import multiline822, nowstamp, show_argv
 
 def main():
     pwd = os.getcwd()
@@ -121,7 +122,7 @@ def main():
         if username is not None and password is None:
             password = getpass('SMTP password: ')
         sender = cls(args.smtp_host, args.smtp_port, username, password)
-    elif any(a.startswith(('smtp_', 'netrc')) and 
+    elif any(a.startswith(('smtp_', 'netrc')) and
                 getattr(args, a) not in (None, False)
              for a in vars(args)):
         raise SystemExit('daemail: --smtp-* options cannot be specified without'
@@ -153,7 +154,11 @@ def main():
     try:
         with DaemonContext(working_directory=args.chdir, umask=os.umask(0)):
             mailer.run(args.command, *args.args)
+    except DaemonError:
+        # Daemonization failed; report errors normally
+        raise
     except Exception:
+        # Daemonization succeeded but mailer failed; report errors to logfile
         # If this open() fails, die alone where no one will ever know.
         sys.stderr = open(os.path.join(pwd, args.logfile), 'a')
             # This will be a bytes stream in Python 2 (with Unicode strings
