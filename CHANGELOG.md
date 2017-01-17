@@ -4,6 +4,14 @@ v0.5.0 (in development)
   is not a directory), a normal error traceback will be printed to stderr
   instead of writing a report to the logfile.
 
+- `--to-addr` can now be specified on the command line multiple times in order
+  to send to multiple addresses
+
+- Arguments to `--to-addr` and `--from-addr` can now be in the form "`Real Name
+  <address@example.com>`".  `--to-name` and `--from-name` are now deprecated
+  and will be removed in a future version.
+
+
 v0.4.0 (2016-11-05)
 -------------------
 - **Breaking**: `--dead-letter` and `--logfile` (and `--mbox`) are now resolved

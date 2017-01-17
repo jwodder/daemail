@@ -41,7 +41,6 @@ Usage
             [-e|--encoding <encoding>]
             [-E|--stderr-encoding <encoding>]
             [-f|--from|--from-addr <address>]
-            [--from-name <name>]
             [-F|--failure-only]
             [-l|--logfile <logfile>]
             [-M|--mime-type|--mime <mime-type>]
@@ -51,8 +50,7 @@ Usage
             [-S|--split]
             [--stdout-filename <filename>]
             [-Z|--utc]
-            -t|--to|--to-addr <address>
-            [--to-name <name>]
+            -t|--to|--to-addr <address>  [-t|--to|--to-addr <address> ...]
             [<send options>]
             <command> [<arg> ...]
 
@@ -100,12 +98,13 @@ Options
   or explicitly.
 
 - ``-f <address>``, ``--from <address>``, ``--from-addr <address>`` — Set the
-  ``From:`` address of the e-mail.  If not specified, ``daemail`` will not set
-  the ``From:`` header and will expect the mail command or SMTP server to do it
-  instead.
+  ``From:`` address of the e-mail.  The address may be given in either the form
+  "``address@example.com``" or "``Real Name <address@example.com>``."  If not
+  specified, ``daemail`` will not set the ``From:`` header and will expect the
+  mail command or SMTP server to do it instead.
 
-- ``--from-name <name>`` — Set the "real name" to show next to the ``From:``
-  address
+- ``--from-name <name>`` — Deprecated; set the "real name" in the argument to
+  ``--from-addr`` instead
 
 - ``-F``, ``--failure-only`` — Only send an e-mail if the command failed to run
   or exited with a nonzero status
@@ -179,10 +178,14 @@ Options
   for unknown extensions.  Implies ``--split``.
 
 - ``-t <address>``, ``--to <address>``, ``--to-addr <address>`` — Set the
-  recipient of the e-mail; this option is required
+  recipient of the e-mail.  The address may be given in either the form
+  "``address@example.com``" or "``Real Name <address@example.com>``."
 
-- ``--to-name <name>`` — Set the "real name" to show next to the ``To:``
-  address
+  - This option is required.  It may be given multiple times in order to
+    specify multiple recipients.
+
+- ``--to-name <name>`` — Deprecated; set the "real name" in the argument to
+  ``--to-addr`` instead
 
 - ``-Z``, ``--utc`` — Show start & end times in UTC instead of local time
 
