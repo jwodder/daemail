@@ -16,8 +16,7 @@ USER_AGENT = 'daemail {} ({} {})'.format(
 )
 
 class CommandMailer(object):
-    def __init__(self, sender, dead_letter, to_addr, to_name=None,
-                 from_addr=None, from_name=None,
+    def __init__(self, sender, dead_letter, to_addrs, from_addr=None,
                  failure_only=False, nonempty=False, no_stdout=False,
                  no_stderr=False, split=False, encoding=None,
                  stderr_encoding=None, utc=False, mime_type=None,
@@ -35,9 +34,7 @@ class CommandMailer(object):
             stdout_filename = 'stdout'
             split = True
         self.from_addr = from_addr
-        self.from_name = from_name
-        self.to_addr = to_addr
-        self.to_name = to_name
+        self.to_addrs = to_addrs
         self.failure_only = failure_only
         self.nonempty = nonempty
         self.sender = sender
@@ -55,8 +52,8 @@ class CommandMailer(object):
         cmdstring = show_argv(command, *args)
         msg = DraftMessage()
         if self.from_addr is not None:
-            msg.headers['From'] = formataddr((self.from_name, self.from_addr))
-        msg.headers['To'] = formataddr((self.to_name, self.to_addr))
+            msg.headers['From'] = formataddr(self.from_addr)
+        msg.headers['To'] = ', '.join(map(formataddr, self.to_addrs))
         msg.headers['User-Agent'] = USER_AGENT
         try:
             results = self.subcmd(command, *args)
@@ -96,7 +93,7 @@ class CommandMailer(object):
                                  'stderr')
         msgbytes = msg.compile()
         try:
-            self.sender.send(msgbytes, self.from_addr, self.to_addr)
+            self.sender.send(msgbytes, self.from_addr, self.to_addrs)
         except Exception as e:
             msg.addtext(
                 '\nAdditionally, an error occurred while trying to send'
@@ -120,7 +117,7 @@ class CommandMailer(object):
                 msg.addtext(mail_quote(traceback.format_exc()))
             ### TODO: Handle failures here!
             MboxSender(self.dead_letter)\
-                .send(msg.compile(), self.from_addr, self.to_addr)
+                .send(msg.compile(), self.from_addr, self.to_addrs)
 
     def subcmd(self, command, *args):
         params = {}

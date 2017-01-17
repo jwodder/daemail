@@ -11,7 +11,7 @@ from   daemon.daemon import DaemonError
 from   .             import __version__
 from   .             import senders
 from   .mailer       import CommandMailer
-from   .util         import multiline822, nowstamp, show_argv
+from   .util         import addr_arg, multiline822, nowstamp, show_argv
 
 def main():
     pwd = os.getcwd()
@@ -28,7 +28,7 @@ def main():
                         help='Encoding of stdout and stderr')
     parser.add_argument('-E', '--stderr-encoding', help='Encoding of stderr',
                         metavar='ENCODING')
-    parser.add_argument('-f', '--from-addr', '--from',
+    parser.add_argument('-f', '--from-addr', '--from', type=addr_arg,
                         help='From: address of e-mail')
     parser.add_argument('--from-name', help='name to use in From: address')
     parser.add_argument('-F', '--failure-only', action='store_true',
@@ -48,7 +48,8 @@ def main():
     parser.add_argument('--stdout-filename', metavar='FILENAME',
                         help='Send output as attachment with given filename')
     parser.add_argument('-t', '--to-addr', '--to', metavar='RECIPIENT',
-                        help='To: address of e-mail', required=True)
+                        type=addr_arg, action='append', required=True,
+                        help='To: address of e-mail')
     parser.add_argument('--to-name', help='name to use in To: address')
     parser.add_argument('-V', '--version', action='version',
                                            version='daemail ' + __version__)
@@ -125,26 +126,38 @@ def main():
     elif any(a.startswith(('smtp_', 'netrc')) and
                 getattr(args, a) not in (None, False)
              for a in vars(args)):
-        raise SystemExit('daemail: --smtp-* options cannot be specified without'
-                         ' --smtp-host')
+        sys.exit('daemail: --smtp-* options cannot be specified without'
+                 ' --smtp-host')
     elif args.mbox is not None:
         sender = senders.MboxSender(os.path.join(pwd, args.mbox))
     else:
         sender = senders.CommandSender(args.sendmail)
 
+    if args.from_name is not None and args.from_addr is not None:
+        if args.from_addr[0] == '':
+            args.from_addr = (args.from_name, args.from_addr[1])
+        else:
+            sys.exit('daemail: --from-name cannot be used when --from-addr'
+                     ' includes a realname')
+
+    if args.to_name is not None:
+        if len(args.to_addr) == 1 and args.to_addr[0][0] == '':
+            args.to_addr[0] = (args.to_name, args.to_addr[0][1])
+        else:
+            sys.exit('daemail: --to-name can only be used with a single'
+                     ' --to-addr without a realname')
+
     mailer = CommandMailer(
         encoding=args.encoding,
         stderr_encoding=args.stderr_encoding,
         from_addr=args.from_addr,
-        from_name=args.from_name,
         failure_only=args.failure_only,
         sender=sender,
         nonempty=args.nonempty,
         no_stdout=args.no_stdout,
         no_stderr=args.no_stderr,
         split=args.split,
-        to_addr=args.to_addr,
-        to_name=args.to_name,
+        to_addrs=args.to_addr,
         utc=args.utc,
         mime_type=args.mime_type,
         stdout_filename=args.stdout_filename,

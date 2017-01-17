@@ -8,7 +8,6 @@
       sending it anyway, for those rare cases where the command behaves
       differently if its output is closed
 - Should `--to-addr` not be required when sending to an mbox?
-- Require `--from-addr` when sending over unauthenticated SMTP?
 - Execute `--sendmail` in the directory in which daemail was started?
 - Look into handling of encoding issues with SMTP passwords
 - Check handling of non-ASCII e-mail addresses and realnames
@@ -18,6 +17,8 @@
 - Mail-quote the sending method pseudo-headers in dead letters?
 - Make the internal API suitable for public exposure
 - Improve the configuration settings dump in the logfile
+- Test against and indicate support for Python 3.6
+- Use `email.generator.DecodedGenerator` for handling blob attachments?
 
 - Documentation:
     - Add docstrings
@@ -52,9 +53,8 @@ New Features
   (`~/.config/daemail.cfg`)
     - This will require implementing `--no-split`, `--no-utc`, etc. options for
       overriding config file options on the command line
+    - cf. the config file options used by rss2email
 - Support format specifiers in the logfile and dead letter filenames
-- Allow specifying multiple `--to`s (and `--cc`s and `--bcc`s?) on the command
-  line
 - `show_argv`: Show, say, an `é` in an argument as `é`, assuming it decodes
   properly using the filesystem encoding (This could lead to problems with
   non-ASCII control/non-printable characters)
@@ -69,6 +69,7 @@ New Features
 - Use the `encoding` value returned by `mimetypes.guess_type`?
 - Support reading a shell script (or script for a given interpreter) from
   stdin?
+- Support sending via IMAP? (cf. rss2email)
 
 - Options to add:
     - `-H`, `--header` — set additional mail headers? (`action='append'`)
@@ -97,4 +98,4 @@ New Features
       daemail receives to it
     - Send output to a given (non-temporary) file instead of adding it to the
       e-mail
-    - Wait to run at a certain time à la `at(1)`?
+    - `--cc`? `--bcc`?

@@ -1,11 +1,13 @@
-from   __future__ import unicode_literals
-from   datetime   import datetime
+from   __future__  import unicode_literals
+import argparse
+from   datetime    import datetime
+from   email.utils import parseaddr
 import os
 import re
 import signal
 import time
-from   six        import text_type
-from   six.moves  import shlex_quote as quote
+from   six         import text_type
+from   six.moves   import shlex_quote as quote
 
 class MailCmdError(Exception):
     # Raised if the sendmail command returned nonzero
@@ -106,3 +108,9 @@ def nowstamp(utc=False):
 def multiline822(s):
     return re.sub('^', '  ', re.sub('^$', '.', s.strip('\r\n'), flags=re.M),
                   flags=re.M)
+
+def addr_arg(s):
+    realname, addr = parseaddr(s)
+    if addr == '':
+        raise argparse.ArgumentTypeError('{!r}: invalid address'.format(s))
+    return (realname, addr)

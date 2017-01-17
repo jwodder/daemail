@@ -16,11 +16,11 @@ class SMTPSender(object):
         self.username = username
         self.password = password
 
-    def send(self, msgbytes, from_addr, to_addr):
+    def send(self, msgbytes, from_addr, to_addrs):
         server = self.connect()
         if self.username is not None:
             server.login(self.username, self.password)
-        server.sendmail(from_addr, [to_addr], msgbytes)
+        server.sendmail(from_addr, to_addrs, msgbytes)
         server.quit()
 
     def connect(self):
