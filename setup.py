@@ -28,7 +28,7 @@ setup(
 
     setup_requires=['pytest-runner>=2.0,<3'],
     install_requires=['python-daemon>=2.0,<3', 'six>=1.8.0,<2'],
-    tests_require=['pytest>=2.8,<3'],
+    tests_require=['pytest>=2.8,<3', 'pytest-flakes>=1.0,<2'],
 
     classifiers=[
         'Development Status :: 4 - Beta',
