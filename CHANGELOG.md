@@ -1,5 +1,5 @@
-v0.5.0 (in development)
------------------------
+v0.5.0 (2017-02-05)
+-------------------
 - If an error occurs during daemonization (e.g., because the `--chdir` argument
   is not a directory), a normal error traceback will be printed to stderr
   instead of writing a report to the logfile.
