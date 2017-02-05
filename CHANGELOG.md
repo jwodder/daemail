@@ -1,3 +1,8 @@
+v0.6.0 (in development)
+-----------------------
+- **Breaking**: Removed `--to-name` and `--from-name` (deprecated in v0.5.0)
+
+
 v0.5.0 (2017-02-05)
 -------------------
 - If an error occurs during daemonization (e.g., because the `--chdir` argument

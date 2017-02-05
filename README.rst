@@ -104,9 +104,6 @@ Options
   specified, ``daemail`` will not set the ``From:`` header and will expect the
   mail command or SMTP server to do it instead.
 
-- ``--from-name <name>`` — Deprecated; set the "real name" in the argument to
-  ``--from-addr`` instead
-
 - ``-F``, ``--failure-only`` — Only send an e-mail if the command failed to run
   or exited with a nonzero status
 
@@ -184,9 +181,6 @@ Options
 
   - This option is required.  It may be given multiple times in order to
     specify multiple recipients.
-
-- ``--to-name <name>`` — Deprecated; set the "real name" in the argument to
-  ``--to-addr`` instead
 
 - ``-Z``, ``--utc`` — Show start & end times in UTC instead of local time
 

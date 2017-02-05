@@ -30,7 +30,6 @@ def main():
                         metavar='ENCODING')
     parser.add_argument('-f', '--from-addr', '--from', type=addr_arg,
                         help='From: address of e-mail')
-    parser.add_argument('--from-name', help='name to use in From: address')
     parser.add_argument('-F', '--failure-only', action='store_true',
                         help='Only send e-mail if command returned nonzero')
     parser.add_argument('-l', '--logfile', default='daemail.log',
@@ -50,7 +49,6 @@ def main():
     parser.add_argument('-t', '--to-addr', '--to', metavar='RECIPIENT',
                         type=addr_arg, action='append', required=True,
                         help='To: address of e-mail')
-    parser.add_argument('--to-name', help='name to use in To: address')
     parser.add_argument('-V', '--version', action='version',
                                            version='daemail ' + __version__)
     parser.add_argument('-Z', '--utc', action='store_true',
@@ -132,20 +130,6 @@ def main():
         sender = senders.MboxSender(os.path.join(pwd, args.mbox))
     else:
         sender = senders.CommandSender(args.sendmail)
-
-    if args.from_name is not None and args.from_addr is not None:
-        if args.from_addr[0] == '':
-            args.from_addr = (args.from_name, args.from_addr[1])
-        else:
-            sys.exit('daemail: --from-name cannot be used when --from-addr'
-                     ' includes a realname')
-
-    if args.to_name is not None:
-        if len(args.to_addr) == 1 and args.to_addr[0][0] == '':
-            args.to_addr[0] = (args.to_name, args.to_addr[0][1])
-        else:
-            sys.exit('daemail: --to-name can only be used with a single'
-                     ' --to-addr without a realname')
 
     mailer = CommandMailer(
         encoding=args.encoding,
