@@ -1,12 +1,14 @@
 *.egg
 *.egg-info/
 *.pyc
-.cache
-.eggs
-.tox
+.cache/
+.coverage
+.eggs/
+.tox/
 __pycache__/
 build/
 daemail.log
 dead.letter
 dist/
+docs/_build/
 venv/
