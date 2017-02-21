@@ -19,6 +19,8 @@
 - Improve the configuration settings dump in the logfile
 - Test against and indicate support for Python 3.6
 - Use `email.generator.DecodedGenerator` for handling blob attachments?
+- Switch entirely to Python 3?
+    - Switch entirely to Python 3.5+?
 
 - Documentation:
     - Add docstrings

@@ -15,9 +15,12 @@ class MailCmdError(Exception):
         self.sendmail = sendmail
         self.rc = rc
         self.output = output
-        super(MailCmdError, self).__init__(
-            '{!r}: command exited with return code {}'.format(sendmail, rc)
-        )
+        super(MailCmdError, self).__init__(sendmail, rc, output)
+
+    def __str__(self):
+        return '{0.sendmail!r}: command exited with return code {0.rc}'\
+               .format(self)
+
 
 def mail_quote(s):
     return ''.join('> ' + line + '\n' for line in (s or '\n').splitlines())
