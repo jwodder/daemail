@@ -19,8 +19,10 @@
 - Improve the configuration settings dump in the logfile
 - Test against and indicate support for Python 3.6
 - Use `email.generator.DecodedGenerator` for handling blob attachments?
-- Switch entirely to Python 3?
+- Switch entirely to Python 3
     - Switch entirely to Python 3.5+?
+- Ensure usage of `sendmail` is compatible with <http://refspecs.linuxfoundation.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib-sendmail-1.html>
+- `show_argv`: Quote shell keywords?
 
 - Documentation:
     - Add docstrings
@@ -74,7 +76,6 @@ New Features
 - Support sending via IMAP? (cf. rss2email)
 
 - Options to add:
-    - `-H`, `--header` — set additional mail headers? (`action='append'`)
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
