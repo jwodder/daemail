@@ -1,13 +1,11 @@
-from   __future__  import unicode_literals
 import argparse
 from   datetime    import datetime
 from   email.utils import parseaddr
 import os
 import re
+from   shlex       import quote
 import signal
 import time
-from   six         import text_type
-from   six.moves   import shlex_quote as quote
 
 class MailCmdError(Exception):
     # Raised if the sendmail command returned nonzero
@@ -63,9 +61,8 @@ def show_argv(*argv):
     should still be understandable to users of other shells.
 
     The elements of ``argv`` are assumed to have been taken directly from
-    `sys.argv` (possibly with a detour through `argparse`); specifically, in
-    Python 2, they are assumed to be byte strings (encoding irrelevant), and in
-    Python 3, they are assumed to be text strings decoded with `os.fsdecode`.
+    `sys.argv` (possibly with a detour through `argparse`); specifically, they
+    are assumed to be text strings decoded with `os.fsdecode`.
     """
     # Just using `repr` for this won't work, as the quotes it adds around
     # simple (e.g., alphanumeric) arguments are unnecessary, and the double
@@ -73,7 +70,7 @@ def show_argv(*argv):
     shown = ''
     assigning = True
     for a in argv:
-        if isinstance(a, text_type):
+        if isinstance(a, str):
             a = os.fsencode(a)
         a = a.decode('iso-8859-1')
         if re.search(r'[^\x20-\x7E]', a):

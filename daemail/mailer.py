@@ -1,4 +1,3 @@
-from   __future__  import unicode_literals
 from   email.utils import formataddr
 import locale
 import mimetypes

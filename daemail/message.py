@@ -1,11 +1,9 @@
-from   __future__             import unicode_literals
 import email.charset
 from   email.encoders         import encode_base64
 from   email.message          import Message
 from   email.mime.application import MIMEApplication
 from   email.mime.multipart   import MIMEMultipart
 from   email.mime.text        import MIMEText
-from   six                    import PY2
 from   .util                  import mail_quote, mime_text
 
 utf8qp = email.charset.Charset('utf-8')
@@ -70,7 +68,4 @@ class DraftMessage(object):
             msg = MIMEMultipart(_subparts=self._attached)
         for k,v in self.headers.items():
             msg[k] = v
-        if PY2:
-            return msg.as_string(unixfrom=False)
-        else:
-            return msg.as_bytes(unixfrom=False)
+        return msg.as_bytes(unixfrom=False)

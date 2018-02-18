@@ -1,4 +1,3 @@
-from   __future__    import print_function, unicode_literals
 import argparse
 from   getpass       import getpass
 import netrc
@@ -155,11 +154,9 @@ def main():
         # Daemonization failed; report errors normally
         raise
     except Exception:
-        # Daemonization succeeded but mailer failed; report errors to logfile
+        # Daemonization succeeded but mailer failed; report errors to logfile.
         # If this open() fails, die alone where no one will ever know.
         sys.stderr = open(os.path.join(pwd, args.logfile), 'a')
-            # This will be a bytes stream in Python 2 (with Unicode strings
-            # implicitly encoded upon printing) and a text stream in Python 3.
         print('daemail:', __version__, file=sys.stderr)
         print('Command:', show_argv(args.command, *args.args), file=sys.stderr)
         print('Date:', nowstamp(), file=sys.stderr)

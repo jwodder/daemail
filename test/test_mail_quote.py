@@ -1,5 +1,4 @@
-from   __future__   import unicode_literals
-from   daemail.util import mail_quote
+from daemail.util import mail_quote
 
 def test_mail_quote_nothing():
     assert mail_quote('') == '> \n'

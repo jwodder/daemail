@@ -17,19 +17,18 @@
 ``daemail`` (pronounced "DEE-mayl", like "e-mail" but with a D) is a Python
 script for running a normally-foreground command in the background and
 e-mailing its output (by default, the combined stdout and stderr) once it's
-done.  It should work in both Python 2.7 and Python 3.2+, the only external
-dependencies being the `python-daemon
-<https://pypi.python.org/pypi/python-daemon>`_ package and the ubiquitous `six
-<https://pypi.python.org/pypi/six>`_ package.
+done.  The only external dependency is the `python-daemon
+<https://pypi.python.org/pypi/python-daemon>`_ package.
 
 
 Installation
 ============
 
-Just use `pip <https://pip.pypa.io/>`_ (You have pip, right?) to install
+``daemail`` requires Python 3.4 or higher.  Just use `pip
+<https://pip.pypa.io>`_ for Python 3 (You have pip, right?) to install
 ``daemail`` and its dependencies::
 
-    pip install daemail
+    python3 -m pip install daemail
 
 
 Usage

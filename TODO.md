@@ -19,9 +19,8 @@
 - Improve the configuration settings dump in the logfile
 - Test against and indicate support for Python 3.6
 - Use `email.generator.DecodedGenerator` for handling blob attachments?
-- Switch entirely to Python 3
-    - Switch entirely to Python 3.5+?
-    - Use `time.monotonic` to calculate elapsed time?
+- Switch entirely to Python 3.5+?
+- Use `time.monotonic` to calculate elapsed time
 - Ensure usage of `sendmail` is compatible with <http://refspecs.linuxfoundation.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib-sendmail-1.html>
 - `show_argv`: Quote shell keywords?
 - Should `--from-addr` always be required?

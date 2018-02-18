@@ -2,6 +2,8 @@ v0.6.0 (in development)
 -----------------------
 - **Breaking**: Removed `--to-name` and `--from-name` (deprecated in v0.5.0)
 
+- Dropped support for Python versions earlier than 3.4
+
 
 v0.5.0 (2017-02-05)
 -------------------

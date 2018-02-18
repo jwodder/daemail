@@ -26,18 +26,14 @@ setup(
     long_description=long_desc,
     url='https://github.com/jwodder/daemail',
 
-    install_requires=['python-daemon>=2.0,<3', 'six>=1.8.0,<2'],
+    install_requires=['python-daemon>=2.0,<3'],
 
     classifiers=[
         'Development Status :: 4 - Beta',
         #'Development Status :: 5 - Production/Stable',
 
-        'Programming Language :: Python :: 2',
-        # python-daemon doesn't support 2.6.
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Operating System :: POSIX',
