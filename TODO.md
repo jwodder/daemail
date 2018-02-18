@@ -21,8 +21,13 @@
 - Use `email.generator.DecodedGenerator` for handling blob attachments?
 - Switch entirely to Python 3
     - Switch entirely to Python 3.5+?
+    - Use `time.monotonic` to calculate elapsed time?
 - Ensure usage of `sendmail` is compatible with <http://refspecs.linuxfoundation.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib-sendmail-1.html>
 - `show_argv`: Quote shell keywords?
+- Should `--from-addr` always be required?
+- Add a `--combine` option that is the negation of `--split` and rename
+  `--split` to `--no-combine`?
+- Rename `--mime-type` to `--content-type`?
 
 - Documentation:
     - Add docstrings
@@ -37,6 +42,7 @@
         - Test handling of non-ASCII characters in `--smtp-password-file` in
           both Python 2 and Python 3
     - Use a mock Sender class
+        - Look into `lazr.smtptest`?
     - Combinations of possibilities to test:
         - command succeeds/fails/errors/is killed by a signal
         - command output can/can't be decoded/is empty
@@ -79,7 +85,7 @@ New Features
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
-    - `--no-daemonize` (for debugging)
+    - `--no-daemonize` (for debugging and/or running under a process manager)
         - Also add an option for teeing the output?
     - include environment variables in e-mail?
     - don't include `stdout` on success/failure
@@ -102,3 +108,6 @@ New Features
     - Send output to a given (non-temporary) file instead of adding it to the
       e-mail
     - `--cc`? `--bcc`?
+    - only show the name of the command run in the subject line (i.e., omit the
+      arguments)
+    - Don't ASCIIfy the command for the subject line
