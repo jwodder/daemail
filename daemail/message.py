@@ -12,7 +12,7 @@ utf8qp.body_encoding = email.charset.QP
 class DraftMessage(object):
     def __init__(self):
         self.headers = {}
-        self._attached = []  # list of MIMEBAse objects
+        self._attached = []  # list of MIMEBase objects
         self._trailing = ''
 
     def addtext(self, txt):
