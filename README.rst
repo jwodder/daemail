@@ -3,6 +3,12 @@
     :alt: Project Status: Active - The project has reached a stable, usable
           state and is being actively developed.
 
+.. image:: https://travis-ci.org/jwodder/daemail.svg?branch=master
+    :target: https://travis-ci.org/jwodder/daemail
+
+.. image:: https://codecov.io/gh/jwodder/daemail/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/jwodder/daemail
+
 .. image:: https://img.shields.io/pypi/pyversions/daemail.svg
     :target: https://pypi.python.org/pypi/daemail
 
