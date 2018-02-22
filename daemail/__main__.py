@@ -1,5 +1,7 @@
 import argparse
 from   getpass       import getpass
+import locale
+import mimetypes
 import netrc
 import os
 import os.path
@@ -129,6 +131,18 @@ def main():
         sender = senders.MboxSender(os.path.join(pwd, args.mbox))
     else:
         sender = senders.CommandSender(args.sendmail)
+
+    if args.encoding is None:
+        args.encoding = locale.getpreferredencoding(True)
+    if args.stderr_encoding is None:
+        args.stderr_encoding = args.encoding
+    if args.stdout_filename is not None:
+        if args.mime_type is None:
+            args.mime_type = mimetypes.guess_type(args.stdout_filename, False)[0] or 'application/octet-stream'
+        args.split = True
+    elif args.mime_type is not None:
+        args.stdout_filename = 'stdout'
+        args.split = True
 
     mailer = CommandMailer(
         encoding=args.encoding,

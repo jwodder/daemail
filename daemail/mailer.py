@@ -1,6 +1,6 @@
+from   collections import namedtuple
 from   email.utils import formataddr
 import locale
-import mimetypes
 import platform
 import subprocess
 import traceback
@@ -14,39 +14,10 @@ USER_AGENT = 'daemail {} ({} {})'.format(
     __version__, platform.python_implementation(), platform.python_version()
 )
 
-class CommandMailer(object):
-    def __init__(self, sender, dead_letter, to_addrs, from_addr=None,
-                 failure_only=False, nonempty=False, no_stdout=False,
-                 no_stderr=False, split=False, encoding=None,
-                 stderr_encoding=None, utc=False, mime_type=None,
-                 stdout_filename=None):
-        if encoding is None:
-            encoding = locale.getpreferredencoding(True)
-        if stderr_encoding is None:
-            stderr_encoding = encoding
-        if stdout_filename is not None:
-            if mime_type is None:
-                mime_type = mimetypes.guess_type(stdout_filename, False)[0] or \
-                    'application/octet-stream'
-            split = True
-        elif mime_type is not None:
-            stdout_filename = 'stdout'
-            split = True
-        self.from_addr = from_addr
-        self.to_addrs = to_addrs
-        self.failure_only = failure_only
-        self.nonempty = nonempty
-        self.sender = sender
-        self.no_stdout = no_stdout
-        self.no_stderr = no_stderr
-        self.split = split
-        self.encoding = encoding
-        self.stderr_encoding = stderr_encoding
-        self.utc = utc
-        self.mime_type = mime_type
-        self.stdout_filename = stdout_filename
-        self.dead_letter = dead_letter
-
+class CommandMailer(namedtuple('CommandMailer', '''
+    sender dead_letter to_addrs from_addr failure_only nonempty no_stdout
+    no_stderr split encoding stderr_encoding utc mime_type stdout_filename
+''')):
     def run(self, command, *args):
         try:
             results = self.subcmd(command, *args)

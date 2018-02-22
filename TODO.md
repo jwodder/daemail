@@ -11,7 +11,6 @@
 - Execute `--sendmail` in the directory in which daemail was started?
 - Look into handling of encoding issues with SMTP passwords
 - Check handling of non-ASCII e-mail addresses and realnames
-- Try to drastically simplify CommandMailer's constructor
 - Call `locale.getpreferredencoding(True)` once at the beginning of the program
   and then call it without arguments elsewhere?
 - Mail-quote the sending method pseudo-headers in dead letters?
