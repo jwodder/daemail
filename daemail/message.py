@@ -1,10 +1,8 @@
 import email.charset
 from   email.encoders         import encode_base64
 from   email.message          import Message
-from   email.mime.application import MIMEApplication
 from   email.mime.multipart   import MIMEMultipart
-from   email.mime.text        import MIMEText
-from   .util                  import mail_quote, mime_text
+from   .util                  import mail_quote
 
 utf8qp = email.charset.Charset('utf-8')
 utf8qp.body_encoding = email.charset.QP
@@ -12,60 +10,58 @@ utf8qp.body_encoding = email.charset.QP
 class DraftMessage(object):
     def __init__(self):
         self.headers = {}
-        self._attached = []  # list of MIMEBase objects
-        self._trailing = ''
+        self.parts = []  # list of strings and/or attachments
 
     def addtext(self, txt):
-        self._trailing += txt
-
-    def _endtext(self):
-        if self._trailing:
-            # In case of `addtext, _endtext, addtext, _endtext`:
-            if self._attached and isinstance(self._attached[-1], MIMEText):
-                last = self._attached[-1]
-                last.set_payload(mime_text(last) + self._trailing, utf8qp)
-            else:
-                msg = MIMEText('', _charset=None)
-                # No, `utf8qp` cannot be passed to MIMEText's constructor, as
-                # it seems to expect a string (in Python 2.7, at least).
-                msg.set_payload(self._trailing, utf8qp)
-                self._attached.append(msg)
-            self._trailing = ''
+        if self.parts and isinstance(self.parts[-1], str):
+            self.parts[-1] += txt
+        else:
+            self.parts.append(txt)
 
     def addblobquote(self, blob, encoding, filename):
         try:
             txt = blob.decode(encoding)
         except UnicodeDecodeError:
-            self._endtext()
-            attach = MIMEApplication(blob)
-            attach.add_header('Content-Disposition', 'inline',
-                              filename=filename)
-            self._attached.append(attach)
+            self.parts.append(mkattachment(
+                blob,
+                mime_type='application/octet-stream',
+                disposition='inline',
+                filename=filename,
+            ))
         else:
             self.addtext(mail_quote(txt))
 
     def addmimeblob(self, blob, mimetype, filename):
-        attach = Message()
-        attach['Content-Type'] = mimetype
-        attach.add_header('Content-Disposition', 'inline', filename=filename)
-        attach.set_payload(blob)
-        encode_base64(attach)
-        self._endtext()
-        self._attached.append(attach)
+        self.parts.append(mkattachment(
+            blob,
+            mime_type=mimetype,
+            disposition='inline',
+            filename=filename,
+        ))
 
     def compile(self):
-        self._endtext()
-        if not self._attached:
+        if not self.parts:
             msg = Message()
-        elif len(self._attached) == 1 and \
-                isinstance(self._attached[0], MIMEText):
-            # Copy the payload so that we don't set any headers on the
-            # attachment itself, which would cause problems if `compile` is
-            # later called again after more attachments have been added
-            msg = Message()
-            msg.set_payload(mime_text(self._attached[0]), utf8qp)
+        elif len(self.parts) == 1 and isinstance(self.parts[0], str):
+            msg = txt2mail(self.parts[0])
         else:
-            msg = MIMEMultipart(_subparts=self._attached)
+            msg = MIMEMultipart(_subparts=[
+                txt2mail(p) if isinstance(p, str) else p for p in self.parts
+            ])
         for k,v in self.headers.items():
             msg[k] = v
         return msg.as_bytes(unixfrom=False)
+
+
+def txt2mail(txt):
+    msg = Message()
+    msg.set_payload(txt, utf8qp)
+    return msg
+
+def mkattachment(blob, mime_type, disposition, filename):
+    attach = Message()
+    attach['Content-Type'] = mime_type
+    attach.add_header('Content-Disposition', disposition, filename=filename)
+    attach.set_payload(blob)
+    encode_base64(attach)
+    return attach

@@ -23,10 +23,6 @@ class MailCmdError(Exception):
 def mail_quote(s):
     return ''.join('> ' + line + '\n' for line in (s or '\n').splitlines())
 
-def mime_text(msg):
-    # Even if you say `decode=True`, get_payload still returns a `bytes` object
-    return msg.get_payload(decode=True).decode('utf-8')
-
 def rc_with_signal(rc):
     if rc < 0:
         # cf. <http://stackoverflow.com/q/2549939/744178>
