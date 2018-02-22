@@ -56,13 +56,13 @@ class DraftMessage(object):
     def compile(self):
         self._endtext()
         if not self._attached:
-            msg = MIMEText('', _charset=None)
+            msg = Message()
         elif len(self._attached) == 1 and \
                 isinstance(self._attached[0], MIMEText):
             # Copy the payload so that we don't set any headers on the
             # attachment itself, which would cause problems if `compile` is
             # later called again after more attachments have been added
-            msg = MIMEText('', _charset=None)
+            msg = Message()
             msg.set_payload(mime_text(self._attached[0]), utf8qp)
         else:
             msg = MIMEMultipart(_subparts=self._attached)
