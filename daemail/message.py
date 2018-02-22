@@ -1,18 +1,14 @@
-import email.charset
-from   email.encoders         import encode_base64
-from   email.message          import Message
-from   email.mime.multipart   import MIMEMultipart
-from   email.utils            import formataddr
+from   cgi           import parse_header
+from   email         import policy
+from   email.message import EmailMessage
+from   email.utils   import formataddr
 import platform
-from   .                      import __version__
-from   .util                  import mail_quote
+from   .             import __version__
+from   .util         import mail_quote
 
 USER_AGENT = 'daemail {} ({} {})'.format(
     __version__, platform.python_implementation(), platform.python_version()
 )
-
-utf8qp = email.charset.Charset('utf-8')
-utf8qp.body_encoding = email.charset.QP
 
 class DraftMessage(object):
     def __init__(self, from_addr, to_addrs, subject):
@@ -57,28 +53,41 @@ class DraftMessage(object):
         ))
 
     def compile(self):
-        if not self.parts:
-            msg = Message()
-        elif len(self.parts) == 1 and isinstance(self.parts[0], str):
+        if len(self.parts) == 1 and isinstance(self.parts[0], str):
             msg = txt2mail(self.parts[0])
         else:
-            msg = MIMEMultipart(_subparts=[
-                txt2mail(p) if isinstance(p, str) else p for p in self.parts
-            ])
+            msg = EmailMessage()
+            # This currently doesn't work <https://bugs.python.org/issue30820>:
+            #msg.set_content([
+            #    txt2mail(p) if isinstance(p, str) else p for p in self.parts
+            #])
+            msg.make_mixed()
+            for p in self.parts:
+                msg.attach(txt2mail(p) if isinstance(p, str) else p)
         for k,v in self.headers.items():
             msg[k] = v
-        return msg.as_bytes(unixfrom=False)
+        return msg.as_bytes(
+            unixfrom=False,
+            policy=policy.default.clone(cte_type='7bit'),
+        )
 
 
 def txt2mail(txt):
-    msg = Message()
-    msg.set_payload(txt, utf8qp)
+    msg = EmailMessage()
+    msg.set_content(txt)
     return msg
 
 def mkattachment(blob, mime_type, disposition, filename):
-    attach = Message()
-    attach['Content-Type'] = mime_type
-    attach.add_header('Content-Disposition', disposition, filename=filename)
-    attach.set_payload(blob)
-    encode_base64(attach)
+    assert isinstance(blob, bytes)
+    mime_type, params = parse_header(mime_type)
+    maintype, _, subtype = mime_type.partition('/')
+    attach = EmailMessage()
+    attach.set_content(
+        blob,
+        maintype,
+        subtype,
+        disposition=disposition,
+        filename=filename,
+        params=params,
+    )
     return attach
