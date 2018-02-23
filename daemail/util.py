@@ -1,11 +1,10 @@
 import argparse
 from   datetime    import datetime
-from   email.utils import parseaddr
+from   email.utils import localtime, parseaddr
 import os
 import re
 from   shlex       import quote
 import signal
-import time
 
 class MailCmdError(Exception):
     # Raised if the sendmail command returned nonzero
@@ -87,20 +86,7 @@ def nowstamp(utc=False):
     if utc:
         return str(datetime.utcnow()) + 'Z'
     else:
-        ### Replace with `str(email.utils.localtime())`?
-        now = time.time()
-        stamp = str(datetime.fromtimestamp(now))
-        if time.localtime(now).tm_isdst:
-            offset = time.altzone
-        else:
-            offset = time.timezone
-        if offset <= 0:
-            stamp += '+'
-            offset *= -1
-        else:
-            stamp += '-'
-        stamp += '{:02}:{:02}'.format(*divmod(offset // 60, 60))
-        return stamp
+        return str(localtime())
 
 def multiline822(s):
     return re.sub('^', '  ', re.sub('^$', '.', s.strip('\r\n'), flags=re.M),
