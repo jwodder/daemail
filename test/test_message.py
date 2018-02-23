@@ -9,7 +9,11 @@ TEXT = 'àéîøü\n'
 TEXT_ENC = TEXT.encode('utf-8')
 
 def test_7bit_text():
-    msg = DraftMessage()
+    msg = DraftMessage(
+        from_addr=('', 'from@example.com'),
+        to_addrs=[('', 'to@example.com')],
+        subject='test_7bit_text',
+    )
     msg.addtext(TEXT)
     blob = msg.compile()
     assert isinstance(blob, bytes)
@@ -17,7 +21,11 @@ def test_7bit_text():
     assert quopri.encodestring(TEXT_ENC) in blob or b64encode(TEXT_ENC) in blob
 
 def test_7bit_multipart():
-    msg = DraftMessage()
+    msg = DraftMessage(
+        from_addr=('', 'from@example.com'),
+        to_addrs=[('', 'to@example.com')],
+        subject='test_7bit_multipart',
+    )
     msg.addtext(TEXT)
     msg.addmimeblob(b'\0\0\0\0', 'application/octet-stream', 'null.dat')
     blob = msg.compile()

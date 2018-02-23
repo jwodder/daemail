@@ -2,14 +2,31 @@ import email.charset
 from   email.encoders         import encode_base64
 from   email.message          import Message
 from   email.mime.multipart   import MIMEMultipart
+from   email.utils            import formataddr
+import platform
+from   .                      import __version__
 from   .util                  import mail_quote
+
+USER_AGENT = 'daemail {} ({} {})'.format(
+    __version__, platform.python_implementation(), platform.python_version()
+)
 
 utf8qp = email.charset.Charset('utf-8')
 utf8qp.body_encoding = email.charset.QP
 
 class DraftMessage(object):
-    def __init__(self):
-        self.headers = {}
+    def __init__(self, from_addr, to_addrs, subject):
+        """
+        :type from_addr: ``(realname, email_address)`` pair or `None`
+        :type to_addrs: sequence of ``(realname, email_address)`` pairs
+        """
+        self.headers = {
+            "To": ', '.join(map(formataddr, to_addrs)),
+            "Subject": subject,
+            "User-Agent": USER_AGENT,
+        }
+        if from_addr is not None:
+            self.headers['From'] = formataddr(from_addr)
         self.parts = []  # list of strings and/or attachments
 
     def addtext(self, txt):

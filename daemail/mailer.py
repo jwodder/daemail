@@ -1,18 +1,11 @@
 from   collections import namedtuple
-from   email.utils import formataddr
 import locale
-import platform
 import subprocess
 import traceback
-from   .           import __version__
 from   .message    import DraftMessage
 from   .senders    import MboxSender
 from   .util       import MailCmdError, mail_quote, nowstamp, rc_with_signal, \
                             show_argv
-
-USER_AGENT = 'daemail {} ({} {})'.format(
-    __version__, platform.python_implementation(), platform.python_version()
-)
 
 class CommandMailer(namedtuple('CommandMailer', '''
     sender dead_letter to_addrs from_addr failure_only nonempty no_stdout
@@ -56,16 +49,14 @@ class CommandMailer(namedtuple('CommandMailer', '''
         }
 
     def cmd2mail(self, results, command, args):
-        cmdstring = show_argv(command, *args)
-        msg = DraftMessage()
-        if self.from_addr is not None:
-            msg.headers['From'] = formataddr(self.from_addr)
-        msg.headers['To'] = ', '.join(map(formataddr, self.to_addrs))
-        msg.headers['User-Agent'] = USER_AGENT
-        if results["rc"] == 0:
-            msg.headers['Subject'] = '[DONE] ' + cmdstring
-        else:
-            msg.headers['Subject'] = '[FAILED] ' + cmdstring
+        msg = DraftMessage(
+            from_addr = self.from_addr,
+            to_addrs  = self.to_addrs,
+            subject   = '[{}] {}'.format(
+                'DONE' if results["rc"] == 0 else 'FAILED',
+                show_argv(command, *args),
+            ),
+        )
         results["rc"] = rc_with_signal(results["rc"])
         msg.addtext('Start Time:  {start}\n'
                     'End Time:    {end}\n'
@@ -89,15 +80,13 @@ class CommandMailer(namedtuple('CommandMailer', '''
         return msg
 
     def err2mail(self, command, args):
-        cmdstring = show_argv(command, *args)
-        msg = DraftMessage()
-        if self.from_addr is not None:
-            msg.headers['From'] = formataddr(self.from_addr)
-        msg.headers['To'] = ', '.join(map(formataddr, self.to_addrs))
-        msg.headers['User-Agent'] = USER_AGENT
-        msg.headers['Subject'] = '[ERROR] ' + cmdstring
-        msg.addtext('An error occurred while attempting to run the command:'
-                    '\n' + mail_quote(traceback.format_exc()))
+        msg = DraftMessage(
+            from_addr = self.from_addr,
+            to_addrs  = self.to_addrs,
+            subject   = '[ERROR] ' + show_argv(command, *args),
+        )
+        msg.addtext('An error occurred while attempting to run the command:\n'
+                    + mail_quote(traceback.format_exc()))
         return msg
 
     def send(self, msg):

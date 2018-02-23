@@ -87,6 +87,7 @@ def nowstamp(utc=False):
     if utc:
         return str(datetime.utcnow()) + 'Z'
     else:
+        ### Replace with `str(email.utils.localtime())`?
         now = time.time()
         stamp = str(datetime.fromtimestamp(now))
         if time.localtime(now).tm_isdst:
