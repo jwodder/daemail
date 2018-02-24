@@ -16,11 +16,11 @@ class SMTPSender(object):
         self.username = username
         self.password = password
 
-    def send(self, msgbytes, from_addr, to_addrs):
+    def send(self, msg):
         server = self.connect()
         if self.username is not None:
             server.login(self.username, self.password)
-        server.sendmail(from_addr, to_addrs, msgbytes)
+        server.send_message(msg)
         server.quit()
 
     def connect(self):
@@ -57,12 +57,12 @@ class CommandSender(object):
     def __init__(self, sendmail):
         self.sendmail = sendmail
 
-    def send(self, msgbytes, _from, _to):
+    def send(self, msg):
         p = subprocess.Popen(self.sendmail, shell=True,
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
-        out, _ = p.communicate(msgbytes)
+        out, _ = p.communicate(bytes(msg))
         if p.returncode:
             raise MailCmdError(self.sendmail, p.returncode, out)
 
@@ -75,11 +75,11 @@ class MboxSender(object):
     def __init__(self, filename):
         self.filename = filename
 
-    def send(self, msgbytes, _from, _to):
-        deadbox = mailbox.mbox(self.filename)
-        deadbox.lock()
-        deadbox.add(msgbytes)
-        deadbox.close()
+    def send(self, msg):
+        mbox = mailbox.mbox(self.filename)
+        mbox.lock()
+        mbox.add(msg)
+        mbox.close()
 
     def about(self):
         yield ('Method', 'mbox')

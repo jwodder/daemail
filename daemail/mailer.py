@@ -90,9 +90,9 @@ class CommandMailer(namedtuple('CommandMailer', '''
         return msg
 
     def send(self, msg):
-        msgbytes = msg.compile()
+        msgobj = msg.compile()
         try:
-            self.sender.send(msgbytes, self.from_addr, self.to_addrs)
+            self.sender.send(msgobj)
         except Exception as e:
             msg.addtext(
                 '\nAdditionally, an error occurred while trying to send'
@@ -115,5 +115,4 @@ class CommandMailer(namedtuple('CommandMailer', '''
                 msg.addtext('\nError Traceback:\n')
                 msg.addtext(mail_quote(traceback.format_exc()))
             ### TODO: Handle failures here!
-            MboxSender(self.dead_letter)\
-                .send(msg.compile(), self.from_addr, self.to_addrs)
+            MboxSender(self.dead_letter).send(msg.compile())

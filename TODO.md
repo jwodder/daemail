@@ -19,7 +19,7 @@
 - Use `time.monotonic` to calculate elapsed time
 - Ensure usage of `sendmail` is compatible with <http://refspecs.linuxfoundation.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib-sendmail-1.html>
 - `show_argv`: Quote shell keywords?
-- Should `--from-addr` always be required?
+- Should `--from-addr` always be required? (at least for SMTP?)
 - Add a `--combine` option that is the negation of `--split` and rename
   `--split` to `--no-combine`?
 - Rename `--mime-type` to `--content-type`?

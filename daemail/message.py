@@ -9,6 +9,8 @@ USER_AGENT = 'daemail {} ({} {})'.format(
     __version__, platform.python_implementation(), platform.python_version()
 )
 
+POLICY = policy.default.clone(cte_type='7bit')
+
 class DraftMessage(object):
     def __init__(self, from_addr, to_addrs, subject):
         """
@@ -55,7 +57,7 @@ class DraftMessage(object):
         if len(self.parts) == 1 and isinstance(self.parts[0], str):
             msg = txt2mail(self.parts[0])
         else:
-            msg = EmailMessage()
+            msg = EmailMessage(policy=POLICY)
             # This currently doesn't work <https://bugs.python.org/issue30820>:
             #msg.set_content([
             #    txt2mail(p) if isinstance(p, str) else p for p in self.parts
@@ -65,14 +67,11 @@ class DraftMessage(object):
                 msg.attach(txt2mail(p) if isinstance(p, str) else p)
         for k,v in self.headers.items():
             msg[k] = v
-        return msg.as_bytes(
-            unixfrom=False,
-            policy=policy.default.clone(cte_type='7bit'),
-        )
+        return msg
 
 
 def txt2mail(txt):
-    msg = EmailMessage()
+    msg = EmailMessage(policy=POLICY)
     msg.set_content(txt)
     return msg
 

@@ -16,7 +16,7 @@ def test_7bit_text():
         subject='test_7bit_text',
     )
     msg.addtext(TEXT)
-    blob = msg.compile()
+    blob = bytes(msg.compile())
     assert isinstance(blob, bytes)
     assert TEXT_ENC not in blob
     assert quopri.encodestring(TEXT_ENC) in blob or b64encode(TEXT_ENC) in blob
@@ -29,7 +29,7 @@ def test_7bit_multipart():
     )
     msg.addtext(TEXT)
     msg.addmimeblob(b'\0\0\0\0', 'application/octet-stream', 'null.dat')
-    blob = msg.compile()
+    blob = bytes(msg.compile())
     assert isinstance(blob, bytes)
     assert TEXT_ENC not in blob
     assert quopri.encodestring(TEXT_ENC) in blob or b64encode(TEXT_ENC) in blob
