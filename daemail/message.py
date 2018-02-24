@@ -1,7 +1,6 @@
 from   cgi           import parse_header
 from   email         import policy
 from   email.message import EmailMessage
-from   email.utils   import formataddr
 import platform
 from   .             import __version__
 from   .util         import mail_quote
@@ -13,16 +12,16 @@ USER_AGENT = 'daemail {} ({} {})'.format(
 class DraftMessage(object):
     def __init__(self, from_addr, to_addrs, subject):
         """
-        :type from_addr: ``(realname, email_address)`` pair or `None`
-        :type to_addrs: sequence of ``(realname, email_address)`` pairs
+        :type from_addr: `email.headerregistry.Address` or `None`
+        :type to_addrs: sequence of `email.headerregistry.Address` objects
         """
         self.headers = {
-            "To": ', '.join(map(formataddr, to_addrs)),
+            "To": list(to_addrs),
             "Subject": subject,
             "User-Agent": USER_AGENT,
         }
         if from_addr is not None:
-            self.headers['From'] = formataddr(from_addr)
+            self.headers['From'] = from_addr
         self.parts = []  # list of strings and/or attachments
 
     def addtext(self, txt):

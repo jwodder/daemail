@@ -1,9 +1,10 @@
 import argparse
-from   datetime    import datetime
-from   email.utils import localtime, parseaddr
+from   datetime             import datetime
+from   email.headerregistry import Address
+from   email.utils          import localtime, parseaddr
 import os
 import re
-from   shlex       import quote
+from   shlex                import quote
 import signal
 
 class MailCmdError(Exception):
@@ -96,4 +97,7 @@ def addr_arg(s):
     realname, addr = parseaddr(s)
     if addr == '':
         raise argparse.ArgumentTypeError('{!r}: invalid address'.format(s))
-    return (realname, addr)
+    try:
+        return Address(realname, addr_spec=addr)
+    except ValueError:
+        raise argparse.ArgumentTypeError('{!r}: invalid address'.format(s))
