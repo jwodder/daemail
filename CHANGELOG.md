@@ -4,6 +4,8 @@ v0.6.0 (in development)
 
 - Dropped support for Python versions earlier than 3.4
 
+- Internal rewrites to use Python 3's new `email` API
+
 
 v0.5.0 (2017-02-05)
 -------------------
