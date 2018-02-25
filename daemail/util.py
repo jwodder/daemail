@@ -1,4 +1,3 @@
-import argparse
 from   datetime             import datetime
 from   email.headerregistry import Address
 from   email.utils          import localtime, parseaddr
@@ -6,6 +5,7 @@ import os
 import re
 from   shlex                import quote
 import signal
+import click
 
 class MailCmdError(Exception):
     # Raised if the sendmail command returned nonzero
@@ -93,11 +93,14 @@ def multiline822(s):
     return re.sub('^', '  ', re.sub('^$', '.', s.strip('\r\n'), flags=re.M),
                   flags=re.M)
 
-def addr_arg(s):
-    realname, addr = parseaddr(s)
-    if addr == '':
-        raise argparse.ArgumentTypeError('{!r}: invalid address'.format(s))
-    try:
-        return Address(realname, addr_spec=addr)
-    except ValueError:
-        raise argparse.ArgumentTypeError('{!r}: invalid address'.format(s))
+class AddressParamType(click.ParamType):
+    name = 'e-mail address'
+
+    def convert(self, value, param, ctx):
+        realname, addr = parseaddr(value)
+        if addr == '':
+            self.fail('{!r}: invalid address'.format(value), param, ctx)
+        try:
+            return Address(realname, addr_spec=addr)
+        except ValueError:
+            self.fail('{!r}: invalid address'.format(value), param, ctx)

@@ -24,10 +24,9 @@
 | `Issues <https://github.com/jwodder/daemail/issues>`_
 
 ``daemail`` (pronounced "DEE-mayl", like "e-mail" but with a D) is a Python
-script for running a normally-foreground command in the background and
-e-mailing its output (by default, the combined stdout and stderr) once it's
-done.  The only external dependency is the `python-daemon
-<https://pypi.org/project/python-daemon>`_ package.
+script based on `python-daemon <https://pypi.org/project/python-daemon>`_
+for running a normally-foreground command in the background and e-mailing its
+output (by default, the combined stdout and stderr) once it's done.
 
 
 Installation

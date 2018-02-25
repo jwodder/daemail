@@ -1,187 +1,218 @@
-import argparse
-from   getpass       import getpass
 import locale
 import mimetypes
-import netrc
+from   netrc         import netrc as NetRC
 import os
-import os.path
 import sys
 import traceback
+import click
 from   daemon        import DaemonContext  # python-daemon
 from   daemon.daemon import DaemonError
 from   .             import __version__
 from   .             import senders
 from   .mailer       import CommandMailer
-from   .util         import addr_arg, multiline822, nowstamp, show_argv
+from   .util         import AddressParamType, multiline822, nowstamp, show_argv
 
-def main():
+DEFAULT_SENDMAIL = 'sendmail -i -t'
+
+outfile_type=click.Path(writable=True, dir_okay=False, resolve_path=True)
+
+def set_sender_cls(cls):
+    def callback(ctx, param, value):
+        if value is not None:
+            ctx.params['sender_cls'] = cls
+            return value
+    return callback
+
+def use_smtp(ctx, param, value):
+    if value is not None and \
+            not issubclass(ctx.params.get('sender_cls'), senders.SMTPSender):
+        ctx.params['sender_cls'] = senders.SMTPSender
+        return value
+
+def pwd_getter(f):
+    def callback(ctx, param, value):
+        if value is not None:
+            ctx.params['smtp_password_getter'] = f(value)
+    return callback
+
+def plain_pwd(password):
+    return lambda host, username: (username, password)
+
+def password_file(fp):
+    def get(host, username):
+        with fp:
+            smtp_password = fp.read()
+        # Remove no more than one line ending sequence:
+        if smtp_password.endswith('\n'):
+            smtp_password = smtp_password[:-1]
+        if smtp_password.endswith('\r'):
+            smtp_password = smtp_password[:-1]
+        return (username, smtp_password)
+    return get
+
+def netrc_getter(value):
+    def get(host, username):
+        nrc = NetRC(None if value is True else value)
+        login = nrc.authenticators(host)
+        if login is not None:
+            if username is not None:
+                if login[0] is None or login[0] == username:
+                    return (username, login[2])
+            elif login[0] is not None:
+                return (login[0], login[2])
+        return (username, None)
+    return get
+
+
+@click.command(name='daemail', context_settings={
+    "allow_interspersed_args": False,
+    "help_option_names": ["-h", "--help"],
+})
+@click.version_option(__version__, '-V', '--version',
+                      message='%(prog)s %(version)s')
+@click.option('-C', '--chdir', metavar='DIR',
+              help="Change to this directory before running")
+@click.option('-D', '--dead-letter', metavar='MBOX', default='dead.letter',
+              type=outfile_type, help="Append undeliverable mail to this file")
+@click.option('-e', '--encoding', help='Encoding of stdout and stderr')
+@click.option('-E', '--stderr-encoding', help='Encoding of stderr',
+              metavar='ENCODING')
+@click.option('--foreground', '--fg', is_flag=True,
+              help='Run in the foreground instead of daemonizing')
+@click.option('-f', '--from-addr', '--from', type=AddressParamType,
+              help='From: address of e-mail')
+@click.option('-F', '--failure-only', is_flag=True,
+              help='Only send e-mail if command returned nonzero')
+@click.option('-l', '--logfile', default='daemail.log', type=outfile_type,
+              help='Append unrecoverable errors to this file')
+@click.option('-M', '--mime-type', '--mime',
+              help='Send output as attachment with given MIME type')
+@click.option('-n', '--nonempty', is_flag=True,
+              help='Only send e-mail if there was output or failure')
+@click.option('--no-stdout', is_flag=True, help="Don't capture stdout")
+@click.option('--no-stderr', is_flag=True, help="Don't capture stderr")
+@click.option('-S', '--split', is_flag=True,
+              help='Capture stdout and stderr separately')
+@click.option('--stdout-filename', metavar='FILENAME',
+              help='Send output as attachment with given filename')
+@click.option('-t', '--to-addr', '--to', metavar='RECIPIENT',
+              type=AddressParamType, multiple=True, required=True,
+              help='To: address of e-mail')
+@click.option('-Z', '--utc', is_flag=True, help='Use UTC timestamps')
+@click.option('-s', '--sendmail', metavar='COMMAND',
+              callback=set_sender_cls(senders.CommandSender),
+              help='Command for sending e-mail')
+@click.option('--mbox', help='Append e-mail to this mbox file',
+              type=outfile_type, callback=set_sender_cls(senders.MboxSender))
+@click.option('--smtp-host', metavar='HOST', callback=use_smtp,
+              help='SMTP server through which to send e-mail')
+@click.option('--smtp-port', type=int, metavar='PORT', callback=use_smtp,
+              help='Connect to --smtp-host on this port')
+@click.option('--smtp-username', metavar='USERNAME', callback=use_smtp,
+              help='Username for authenticating with --smtp-host')
+@click.option('--smtp-password', metavar='PASSWORD',
+              callback=pwd_getter(plain_pwd), expose_value=False,
+              help='Password for authenticating with --smtp-host')
+@click.option('--smtp-password-file', metavar='FILE', type=click.File(),
+              callback=pwd_getter(password_file), expose_value=False,
+              help='File containing password for authenticating with'
+                   ' --smtp-host')
+@click.option('--netrc', is_flag=True,
+              callback=pwd_getter(netrc_getter), expose_value=False,
+              help='Fetch SMTP password from ~/.netrc file')
+@click.option('--netrc-file', type=click.Path(dir_okay=False),
+              callback=pwd_getter(netrc_getter), expose_value=False,
+              help='Fetch SMTP password from given netrc file')
+@click.option('--smtp-ssl', 'sender_cls', flag_value=senders.SMTP_SSLSender,
+              help='Use SMTPS protocol')
+@click.option('--smtp-starttls', 'sender_cls',
+              flag_value=senders.StartTLSSender,
+              help='Use SMTP protocol with STARTTLS')
+@click.argument('command')
+@click.argument('args', nargs=-1, type=click.UNPROCESSED)
+def main(
+    command, args,
+    chdir, foreground,
+    logfile,
+    from_addr, to_addr,
+    failure_only, nonempty,
+    no_stdout, no_stderr, split,
+    encoding, stderr_encoding, mime_type, stdout_filename,
+    utc,
+    sender_cls, sendmail, mbox, dead_letter,
+    smtp_host, smtp_port, smtp_username, smtp_password_getter=None,
+):
+    """ Daemonize a command and e-mail the results """
+
     pwd = os.getcwd()
-    parser = argparse.ArgumentParser(
-        prog='daemail',
-        description='Daemonize a command and e-mail the results',
-    )
-    parser.add_argument('-C', '--chdir', metavar='DIR', default=pwd,
-                        help="Change to this directory before running")
-    parser.add_argument('-D', '--dead-letter', metavar='MBOX',
-                        default='dead.letter',
-                        help="Append undeliverable mail to this file")
-    parser.add_argument('-e', '--encoding',
-                        help='Encoding of stdout and stderr')
-    parser.add_argument('-E', '--stderr-encoding', help='Encoding of stderr',
-                        metavar='ENCODING')
-    parser.add_argument('--foreground', '--fg', action='store_true',
-                        help='Run in the foreground instead of daemonizing')
-    parser.add_argument('-f', '--from-addr', '--from', type=addr_arg,
-                        help='From: address of e-mail')
-    parser.add_argument('-F', '--failure-only', action='store_true',
-                        help='Only send e-mail if command returned nonzero')
-    parser.add_argument('-l', '--logfile', default='daemail.log',
-                        help='Append unrecoverable errors to this file')
-    parser.add_argument('-M', '--mime-type', '--mime',
-                        help='Send output as attachment with given MIME type')
-    parser.add_argument('-n', '--nonempty', action='store_true',
-                        help='Only send e-mail if there was output or failure')
-    parser.add_argument('--no-stdout', action='store_true',
-                        help="Don't capture stdout")
-    parser.add_argument('--no-stderr', action='store_true',
-                        help="Don't capture stderr")
-    parser.add_argument('-S', '--split', action='store_true',
-                        help='Capture stdout and stderr separately')
-    parser.add_argument('--stdout-filename', metavar='FILENAME',
-                        help='Send output as attachment with given filename')
-    parser.add_argument('-t', '--to-addr', '--to', metavar='RECIPIENT',
-                        type=addr_arg, action='append', required=True,
-                        help='To: address of e-mail')
-    parser.add_argument('-V', '--version', action='version',
-                                           version='daemail ' + __version__)
-    parser.add_argument('-Z', '--utc', action='store_true',
-                        help='Use UTC timestamps')
+    if chdir is None:
+        chdir = pwd
 
-    sendarg = parser.add_mutually_exclusive_group()
-    sendarg.add_argument('-s', '--sendmail', metavar='COMMAND',
-                         default='sendmail -i -t',
-                         help='Command for sending e-mail')
-    sendarg.add_argument('--mbox', help='Append e-mail to this mbox file')
-    sendarg.add_argument('--smtp-host', metavar='HOST',
-                        help='SMTP server through which to send e-mail')
-
-    parser.add_argument('--smtp-port', type=int, metavar='PORT',
-                        help='Connect to --smtp-host on this port')
-    parser.add_argument('--smtp-username', metavar='USERNAME',
-                        help='Username for authenticating with --smtp-host')
-
-    smtp_pass = parser.add_mutually_exclusive_group()
-    smtp_pass.add_argument('--smtp-password', metavar='PASSWORD',
-                           help='Password for authenticating with --smtp-host')
-    smtp_pass.add_argument('--smtp-password-file', metavar='FILE',
-                           type=argparse.FileType('r'),
-                           help='File containing password for authenticating'
-                                ' with --smtp-host')
-    smtp_pass.add_argument('--netrc', action='store_true',
-                           help='Fetch SMTP password from ~/.netrc file')
-    smtp_pass.add_argument('--netrc-file',
-                           help='Fetch SMTP password from given netrc file')
-
-    smtp_ssl = parser.add_mutually_exclusive_group()
-    smtp_ssl.add_argument('--smtp-ssl', action='store_true',
-                          help='Use SMTPS protocol')
-    smtp_ssl.add_argument('--smtp-starttls', action='store_true',
-                          help='Use SMTP protocol with STARTTLS')
-
-    parser.add_argument('command')
-    parser.add_argument('args', nargs=argparse.REMAINDER)
-    args = parser.parse_args()
-
-    if args.smtp_host is not None:
-        if args.smtp_ssl:
-            cls = senders.SMTP_SSLSender
-        elif args.smtp_starttls:
-            cls = senders.StartTLSSender
-        else:
-            cls = senders.SMTPSender
-        username = args.smtp_username
-        password = args.smtp_password
-        if args.smtp_password_file is not None:
-            assert password is None
-            with args.smtp_password_file as fp:
-                password = fp.read()
-            # Remove no more than one line ending sequence:
-            if password.endswith('\n'):
-                password = password[:-1]
-            if password.endswith('\r'):
-                password = password[:-1]
-        elif args.netrc or args.netrc_file is not None:
-            assert password is None
-            nrc = netrc.netrc(None if args.netrc else args.netrc_file)
-            login = nrc.authenticators(args.smtp_host)
-            if login is not None:
-                if username is not None:
-                    if login[0] is None or login[0] == username:
-                        password = login[2]
-                elif login[0] is not None:
-                    username = login[0]
-                    password = login[2]
-        if username is not None and password is None:
-            password = getpass('SMTP password: ')
-        sender = cls(args.smtp_host, args.smtp_port, username, password)
-    elif any(a.startswith(('smtp_', 'netrc')) and
-                getattr(args, a) not in (None, False)
-             for a in vars(args)):
-        sys.exit('daemail: --smtp-* options cannot be specified without'
-                 ' --smtp-host')
-    elif args.mbox is not None:
-        sender = senders.MboxSender(os.path.join(pwd, args.mbox))
+    if sender_cls is None:
+        sender = senders.CommandSender(DEFAULT_SENDMAIL)
+    elif sender_cls is senders.CommandSender:
+        sender = sender_cls(sendmail)
+    elif sender_cls is senders.MboxSender:
+        sender = sender_cls(mbox)
     else:
-        sender = senders.CommandSender(args.sendmail)
+        assert issubclass(sender_cls, senders.SMTPSender)
+        if smtp_host is None:
+            raise click.UsageError('--smtp-host is required for SMTP')
+        if smtp_password_getter is not None:
+            username, password = smtp_password_getter(smtp_host, smtp_username)
+        if username is not None and password is None:
+            password = click.prompt('SMTP password', hide_input=True, err=True)
+        sender = sender_cls(smtp_host, smtp_port, username, password)
 
-    if args.encoding is None:
-        args.encoding = locale.getpreferredencoding(True)
-    if args.stderr_encoding is None:
-        args.stderr_encoding = args.encoding
-    if args.stdout_filename is not None:
-        if args.mime_type is None:
-            args.mime_type = mimetypes.guess_type(args.stdout_filename, False)[0] or 'application/octet-stream'
-        args.split = True
-    elif args.mime_type is not None:
-        args.stdout_filename = 'stdout'
-        args.split = True
+    if encoding is None:
+        encoding = locale.getpreferredencoding(True)
+    if stderr_encoding is None:
+        stderr_encoding = encoding
+    if stdout_filename is not None:
+        if mime_type is None:
+            mime_type = mimetypes.guess_type(stdout_filename, False)[0] or \
+                'application/octet-stream'
+        split = True
+    elif mime_type is not None:
+        stdout_filename = 'stdout'
+        split = True
 
     mailer = CommandMailer(
-        encoding=args.encoding,
-        stderr_encoding=args.stderr_encoding,
-        from_addr=args.from_addr,
-        failure_only=args.failure_only,
+        encoding=encoding,
+        stderr_encoding=stderr_encoding,
+        from_addr=from_addr,
+        failure_only=failure_only,
         sender=sender,
-        nonempty=args.nonempty,
-        no_stdout=args.no_stdout,
-        no_stderr=args.no_stderr,
-        split=args.split,
-        to_addrs=args.to_addr,
-        utc=args.utc,
-        mime_type=args.mime_type,
-        stdout_filename=args.stdout_filename,
-        dead_letter=os.path.join(pwd, args.dead_letter),
+        nonempty=nonempty,
+        no_stdout=no_stdout,
+        no_stderr=no_stderr,
+        split=split,
+        to_addrs=to_addr,
+        utc=utc,
+        mime_type=mime_type,
+        stdout_filename=stdout_filename,
+        dead_letter=dead_letter,
     )
 
-    if args.foreground:
-        os.chdir(args.chdir)
-        mailer.run(args.command, *args.args)
+    if foreground:
+        os.chdir(chdir)
+        mailer.run(command, *args)
         return
     try:
-        with DaemonContext(working_directory=args.chdir, umask=os.umask(0)):
-            mailer.run(args.command, *args.args)
+        with DaemonContext(working_directory=chdir, umask=os.umask(0)):
+            mailer.run(command, *args)
     except DaemonError:
         # Daemonization failed; report errors normally
         raise
     except Exception:
         # Daemonization succeeded but mailer failed; report errors to logfile.
         # If this open() fails, die alone where no one will ever know.
-        sys.stderr = open(os.path.join(pwd, args.logfile), 'a')
+        sys.stderr = open(logfile, 'a')
         print('daemail:', __version__, file=sys.stderr)
-        print('Command:', show_argv(args.command, *args.args), file=sys.stderr)
+        print('Command:', show_argv(command, *args), file=sys.stderr)
         print('Date:', nowstamp(), file=sys.stderr)
         print('Configuration:', vars(mailer), file=sys.stderr)
-        print('Chdir:', repr(args.chdir), file=sys.stderr)
+        print('Chdir:', repr(chdir), file=sys.stderr)
         print('Traceback:', file=sys.stderr)
         print(multiline822(traceback.format_exc()), file=sys.stderr)
         print('', file=sys.stderr)

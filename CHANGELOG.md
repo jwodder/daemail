@@ -8,6 +8,9 @@ v0.6.0 (in development)
 
 - Added a `--foreground` option for disabling daemonization
 
+- **Breaking**: `--dead-letter`, `--logfile`, and `--mbox` now resolve symbolic
+  links before daemonization
+
 - Support Python 3.6 through 3.8
 
 
