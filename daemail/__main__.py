@@ -8,8 +8,8 @@ import click
 from   daemon        import DaemonContext  # python-daemon
 from   daemon.daemon import DaemonError
 from   .             import __version__
-from   .             import senders
-from   .mailer       import CommandMailer
+# Import mailer instead of mailer.CommandMailer for mocking purposes
+from   .             import mailer, senders
 from   .util         import AddressParamType, multiline822, nowstamp, show_argv
 
 DEFAULT_SENDMAIL = 'sendmail -i -t'
@@ -179,7 +179,7 @@ def main(
         stdout_filename = 'stdout'
         split = True
 
-    mailer = CommandMailer(
+    cmdmailer = mailer.CommandMailer(
         encoding=encoding,
         stderr_encoding=stderr_encoding,
         from_addr=from_addr,
@@ -198,11 +198,11 @@ def main(
 
     if foreground:
         os.chdir(chdir)
-        mailer.run(command, *args)
+        cmdmailer.run(command, *args)
         return
     try:
         with DaemonContext(working_directory=chdir, umask=os.umask(0)):
-            mailer.run(command, *args)
+            cmdmailer.run(command, *args)
     except DaemonError:
         # Daemonization failed; report errors normally
         raise
@@ -213,7 +213,7 @@ def main(
         print('daemail:', __version__, file=sys.stderr)
         print('Command:', show_argv(command, *args), file=sys.stderr)
         print('Date:', nowstamp(), file=sys.stderr)
-        print('Configuration:', vars(mailer), file=sys.stderr)
+        print('Configuration:', vars(cmdmailer), file=sys.stderr)
         print('Chdir:', repr(chdir), file=sys.stderr)
         print('Traceback:', file=sys.stderr)
         print(multiline822(traceback.format_exc()), file=sys.stderr)
