@@ -36,12 +36,7 @@ class DraftMessage(object):
         try:
             txt = blob.decode(encoding)
         except UnicodeDecodeError:
-            self.parts.append(mkattachment(
-                blob,
-                mime_type='application/octet-stream',
-                disposition='inline',
-                filename=filename,
-            ))
+            self.addmimeblob(blob, 'application/octet-stream', filename)
         else:
             self.addtext(mail_quote(txt))
 

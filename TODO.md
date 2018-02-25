@@ -23,6 +23,7 @@
 - Add a `--combine` option that is the negation of `--split` and rename
   `--split` to `--no-combine`?
 - Rename `--mime-type` to `--content-type`?
+- Eliminate `--utc`?
 
 - Documentation:
     - Add docstrings
