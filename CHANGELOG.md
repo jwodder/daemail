@@ -6,6 +6,8 @@ v0.6.0 (in development)
 
 - Internal rewrites to use Python 3's new `email` API
 
+- Added a `--foreground` option for disabling daemonization
+
 
 v0.5.0 (2017-02-05)
 -------------------

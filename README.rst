@@ -46,6 +46,7 @@ Usage
             [-D|--dead-letter <mbox>]
             [-e|--encoding <encoding>]
             [-E|--stderr-encoding <encoding>]
+            [--foreground|--fg]
             [-f|--from|--from-addr <address>]
             [-F|--failure-only]
             [-l|--logfile <logfile>]
@@ -102,6 +103,10 @@ Options
 
   This option only has an effect when ``--split`` is given, either implicitly
   or explicitly.
+
+- ``--foreground``, ``--fg`` — Run everything in the foreground instead of
+  daemonizing.  Note that command output will still be captured rather than
+  displayed.
 
 - ``-f <address>``, ``--from <address>``, ``--from-addr <address>`` — Set the
   ``From:`` address of the e-mail.  The address may be given in either the form

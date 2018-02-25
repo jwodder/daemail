@@ -81,8 +81,7 @@ New Features
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
-    - `--no-daemonize` (for debugging and/or running under a process manager)
-        - Also add an option for teeing the output?
+    - show command output when running in foreground?
     - include environment variables in e-mail?
     - don't include `stdout` on success/failure
     - Log dead letters to the logfile?

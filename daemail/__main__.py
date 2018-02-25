@@ -29,6 +29,8 @@ def main():
                         help='Encoding of stdout and stderr')
     parser.add_argument('-E', '--stderr-encoding', help='Encoding of stderr',
                         metavar='ENCODING')
+    parser.add_argument('--foreground', '--fg', action='store_true',
+                        help='Run in the foreground instead of daemonizing')
     parser.add_argument('-f', '--from-addr', '--from', type=addr_arg,
                         help='From: address of e-mail')
     parser.add_argument('-F', '--failure-only', action='store_true',
@@ -161,6 +163,10 @@ def main():
         dead_letter=os.path.join(pwd, args.dead_letter),
     )
 
+    if args.foreground:
+        os.chdir(args.chdir)
+        mailer.run(args.command, *args.args)
+        return
     try:
         with DaemonContext(working_directory=args.chdir, umask=os.umask(0)):
             mailer.run(args.command, *args.args)
