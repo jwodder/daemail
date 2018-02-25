@@ -93,14 +93,20 @@ def multiline822(s):
     return re.sub('^', '  ', re.sub('^$', '.', s.strip('\r\n'), flags=re.M),
                   flags=re.M)
 
+def parse_address(s):
+    realname, addr = parseaddr(s)
+    if addr == '':
+        raise ValueError(s)
+    try:
+        return Address(realname, addr_spec=addr)
+    except ValueError:
+        raise ValueError(s)
+
 class AddressParamType(click.ParamType):
     name = 'e-mail address'
 
     def convert(self, value, param, ctx):
-        realname, addr = parseaddr(value)
-        if addr == '':
-            self.fail('{!r}: invalid address'.format(value), param, ctx)
         try:
-            return Address(realname, addr_spec=addr)
+            return parse_address(value)
         except ValueError:
             self.fail('{!r}: invalid address'.format(value), param, ctx)

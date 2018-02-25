@@ -1,7 +1,7 @@
 from   base64          import b64encode
 import quopri
 from   daemail.message import DraftMessage
-from   daemail.util    import addr_arg
+from   daemail.util    import parse_address
 
 TEXT = 'àéîøü\n'
 # Something in the email module implicitly adds a newline to the body text if
@@ -11,8 +11,8 @@ TEXT_ENC = TEXT.encode('utf-8')
 
 def test_7bit_text():
     msg = DraftMessage(
-        from_addr=addr_arg('from@example.com'),
-        to_addrs=[addr_arg('to@example.com')],
+        from_addr=parse_address('from@example.com'),
+        to_addrs=[parse_address('to@example.com')],
         subject='test_7bit_text',
     )
     msg.addtext(TEXT)
@@ -23,8 +23,8 @@ def test_7bit_text():
 
 def test_7bit_multipart():
     msg = DraftMessage(
-        from_addr=addr_arg('from@example.com'),
-        to_addrs=[addr_arg('to@example.com')],
+        from_addr=parse_address('from@example.com'),
+        to_addrs=[parse_address('to@example.com')],
         subject='test_7bit_multipart',
     )
     msg.addtext(TEXT)

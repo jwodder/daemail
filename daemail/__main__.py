@@ -64,6 +64,8 @@ def netrc_getter(value):
     return get
 
 
+# Note: Options with multiple names need to have their desired name given
+# explicitly due to <https://github.com/pallets/click/issues/793>
 @click.command(name='daemail', context_settings={
     "allow_interspersed_args": False,
     "help_option_names": ["-h", "--help"],
@@ -77,15 +79,15 @@ def netrc_getter(value):
 @click.option('-e', '--encoding', help='Encoding of stdout and stderr')
 @click.option('-E', '--stderr-encoding', help='Encoding of stderr',
               metavar='ENCODING')
-@click.option('--foreground', '--fg', is_flag=True,
+@click.option('--foreground', '--fg', 'foreground', is_flag=True,
               help='Run in the foreground instead of daemonizing')
-@click.option('-f', '--from-addr', '--from', type=AddressParamType,
-              help='From: address of e-mail')
+@click.option('-f', '--from-addr', '--from', 'from_addr',
+              type=AddressParamType(), help='From: address of e-mail')
 @click.option('-F', '--failure-only', is_flag=True,
               help='Only send e-mail if command returned nonzero')
 @click.option('-l', '--logfile', default='daemail.log', type=outfile_type,
               help='Append unrecoverable errors to this file')
-@click.option('-M', '--mime-type', '--mime',
+@click.option('-M', '--mime-type', '--mime', 'mime_type',
               help='Send output as attachment with given MIME type')
 @click.option('-n', '--nonempty', is_flag=True,
               help='Only send e-mail if there was output or failure')
@@ -95,8 +97,8 @@ def netrc_getter(value):
               help='Capture stdout and stderr separately')
 @click.option('--stdout-filename', metavar='FILENAME',
               help='Send output as attachment with given filename')
-@click.option('-t', '--to-addr', '--to', metavar='RECIPIENT',
-              type=AddressParamType, multiple=True, required=True,
+@click.option('-t', '--to-addr', '--to', 'to_addr', metavar='RECIPIENT',
+              type=AddressParamType(), multiple=True, required=True,
               help='To: address of e-mail')
 @click.option('-Z', '--utc', is_flag=True, help='Use UTC timestamps')
 @click.option('-s', '--sendmail', metavar='COMMAND',
