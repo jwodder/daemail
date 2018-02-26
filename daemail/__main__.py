@@ -18,20 +18,21 @@ outfile_type=click.Path(writable=True, dir_okay=False, resolve_path=True)
 
 def set_sender_cls(cls):
     def callback(ctx, param, value):
-        if value is not None:
+        if value is not None and value is not False:
             ctx.params['sender_cls'] = cls
             return value
     return callback
 
 def use_smtp(ctx, param, value):
     if value is not None and \
-            not issubclass(ctx.params.get('sender_cls'), senders.SMTPSender):
+            (ctx.params.get('sender_cls') is None or
+                not issubclass(ctx.params['sender_cls'], senders.SMTPSender)):
         ctx.params['sender_cls'] = senders.SMTPSender
-        return value
+    return value
 
 def pwd_getter(f):
     def callback(ctx, param, value):
-        if value is not None:
+        if value is not None and value is not False:
             ctx.params['smtp_password_getter'] = f(value)
     return callback
 
@@ -125,11 +126,23 @@ def netrc_getter(value):
 @click.option('--netrc-file', type=click.Path(dir_okay=False),
               callback=pwd_getter(netrc_getter), expose_value=False,
               help='Fetch SMTP password from given netrc file')
-@click.option('--smtp-ssl', 'sender_cls', flag_value=senders.SMTP_SSLSender,
-              help='Use SMTPS protocol')
-@click.option('--smtp-starttls', 'sender_cls',
-              flag_value=senders.StartTLSSender,
-              help='Use SMTP protocol with STARTTLS')
+# Implementing `--smtp-ssl` and `--smtp-starttls` as feature switches writing
+# to `sender_cls` won't work, as click will overwrite `sender_cls` with `None`
+# if neither option is given.
+@click.option(
+    '--smtp-ssl',
+    is_flag=True,
+    callback=set_sender_cls(senders.SMTP_SSLSender),
+    expose_value=False,
+    help='Use SMTPS protocol',
+)
+@click.option(
+    '--smtp-starttls',
+    is_flag=True,
+    callback=set_sender_cls(senders.StartTLSSender),
+    expose_value=False,
+    help='Use SMTP protocol with STARTTLS',
+)
 @click.argument('command')
 @click.argument('args', nargs=-1, type=click.UNPROCESSED)
 def main(
@@ -141,8 +154,10 @@ def main(
     no_stdout, no_stderr, split,
     encoding, stderr_encoding, mime_type, stdout_filename,
     utc,
-    sender_cls, sendmail, mbox, dead_letter,
-    smtp_host, smtp_port, smtp_username, smtp_password_getter=None,
+    sendmail, mbox, dead_letter,
+    smtp_host, smtp_port, smtp_username,
+    sender_cls=None,
+    smtp_password_getter=None,
 ):
     """ Daemonize a command and e-mail the results """
 
@@ -160,11 +175,13 @@ def main(
         assert issubclass(sender_cls, senders.SMTPSender)
         if smtp_host is None:
             raise click.UsageError('--smtp-host is required for SMTP')
+        password = None
         if smtp_password_getter is not None:
-            username, password = smtp_password_getter(smtp_host, smtp_username)
-        if username is not None and password is None:
+            smtp_username, password = \
+                smtp_password_getter(smtp_host, smtp_username)
+        if smtp_username is not None and password is None:
             password = click.prompt('SMTP password', hide_input=True, err=True)
-        sender = sender_cls(smtp_host, smtp_port, username, password)
+        sender = sender_cls(smtp_host, smtp_port, smtp_username, password)
 
     if encoding is None:
         encoding = locale.getpreferredencoding(True)
