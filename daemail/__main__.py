@@ -1,6 +1,6 @@
 import locale
 import mimetypes
-from   netrc         import netrc as NetRC
+import netrc
 import os
 import sys
 import traceback
@@ -53,7 +53,7 @@ def password_file(fp):
 
 def netrc_getter(value):
     def get(host, username):
-        nrc = NetRC(None if value is True else value)
+        nrc = netrc.netrc(None if value is True else value)
         login = nrc.authenticators(host)
         if login is not None:
             if username is not None:
