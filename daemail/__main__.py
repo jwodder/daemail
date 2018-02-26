@@ -73,7 +73,7 @@ def netrc_getter(value):
 })
 @click.version_option(__version__, '-V', '--version',
                       message='%(prog)s %(version)s')
-@click.option('-C', '--chdir', metavar='DIR',
+@click.option('-C', '--chdir', metavar='DIR', default=os.getcwd,
               help="Change to this directory before running")
 @click.option('-D', '--dead-letter', metavar='MBOX', default='dead.letter',
               type=outfile_type, help="Append undeliverable mail to this file")
@@ -160,10 +160,6 @@ def main(
     smtp_password_getter=None,
 ):
     """ Daemonize a command and e-mail the results """
-
-    pwd = os.getcwd()
-    if chdir is None:
-        chdir = pwd
 
     if sender_cls is None:
         sender = senders.CommandSender(DEFAULT_SENDMAIL)
