@@ -103,7 +103,7 @@ def parse_address(s):
         raise ValueError(s)
 
 class AddressParamType(click.ParamType):
-    name = 'e-mail address'
+    name = 'address'
 
     def convert(self, value, param, ctx):
         try:

@@ -77,7 +77,8 @@ def netrc_getter(value):
               help="Change to this directory before running")
 @click.option('-D', '--dead-letter', metavar='MBOX', default='dead.letter',
               type=outfile_type, help="Append undeliverable mail to this file")
-@click.option('-e', '--encoding', help='Encoding of stdout and stderr')
+@click.option('-e', '--encoding', help='Encoding of stdout and stderr',
+              metavar='ENCODING')
 @click.option('-E', '--stderr-encoding', help='Encoding of stderr',
               metavar='ENCODING')
 @click.option('--foreground', '--fg', 'foreground', is_flag=True,
@@ -98,7 +99,7 @@ def netrc_getter(value):
               help='Capture stdout and stderr separately')
 @click.option('--stdout-filename', metavar='FILENAME',
               help='Send output as attachment with given filename')
-@click.option('-t', '--to-addr', '--to', 'to_addr', metavar='RECIPIENT',
+@click.option('-t', '--to-addr', '--to', 'to_addr', metavar='ADDRESS',
               type=AddressParamType(), multiple=True, required=True,
               help='To: address of e-mail')
 @click.option('-Z', '--utc', is_flag=True, help='Use UTC timestamps')
