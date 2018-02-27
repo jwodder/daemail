@@ -57,9 +57,9 @@ def netrc_getter(value):
         login = nrc.authenticators(host)
         if login is not None:
             if username is not None:
-                if login[0] is None or login[0] == username:
+                if login[0] in (None, '', username):
                     return (username, login[2])
-            elif login[0] is not None:
+            elif login[0] not in (None, ''):
                 return (login[0], login[2])
         return (username, None)
     return get
