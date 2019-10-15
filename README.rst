@@ -10,21 +10,24 @@
     :target: https://codecov.io/gh/jwodder/daemail
 
 .. image:: https://img.shields.io/pypi/pyversions/daemail.svg
-    :target: https://pypi.python.org/pypi/daemail
+    :target: https://pypi.org/project/daemail
 
 .. image:: https://img.shields.io/github/license/jwodder/daemail.svg?maxAge=2592000
     :target: https://opensource.org/licenses/MIT
     :alt: MIT License
 
+.. image:: https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg
+    :target: https://saythanks.io/to/jwodder
+
 `GitHub <https://github.com/jwodder/daemail>`_
-| `PyPI <https://pypi.python.org/pypi/daemail>`_
+| `PyPI <https://pypi.org/project/daemail>`_
 | `Issues <https://github.com/jwodder/daemail/issues>`_
 
 ``daemail`` (pronounced "DEE-mayl", like "e-mail" but with a D) is a Python
 script for running a normally-foreground command in the background and
 e-mailing its output (by default, the combined stdout and stderr) once it's
 done.  The only external dependency is the `python-daemon
-<https://pypi.python.org/pypi/python-daemon>`_ package.
+<https://pypi.org/project/python-daemon>`_ package.
 
 
 Installation

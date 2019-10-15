@@ -76,6 +76,7 @@ New Features
 - Support reading a shell script (or script for a given interpreter) from
   stdin?
 - Support sending via IMAP? (cf. rss2email)
+- When given only a single argument for a command, use the shell to execute it?
 
 - Options to add:
     - only capture the last `n` lines/bytes of output (for people who try to
@@ -106,3 +107,4 @@ New Features
     - only show the name of the command run in the subject line (i.e., omit the
       arguments)
     - Don't ASCIIfy the command for the subject line
+    - command timeout?
