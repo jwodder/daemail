@@ -8,6 +8,8 @@ v0.6.0 (in development)
 
 - Added a `--foreground` option for disabling daemonization
 
+- Support Python 3.8
+
 
 v0.5.0 (2017-02-05)
 -------------------
