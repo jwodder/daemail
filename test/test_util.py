@@ -1,5 +1,6 @@
+from   email.headerregistry import Address
 import pytest
-from   daemail.util import show_argv
+from   daemail.util         import mail_quote, parse_address, show_argv
 
 @pytest.mark.parametrize('argv,output', [
     ([], ''),
@@ -62,3 +63,55 @@ from   daemail.util import show_argv
 ])
 def test_show_argv(argv, output):
     assert show_argv(*argv) == output
+
+@pytest.mark.parametrize('inp,output', [
+    ('', '> \n'),
+    ('\n', '> \n'),
+    ('Insert output here.', '> Insert output here.\n'),
+    ('Insert output here.\n', '> Insert output here.\n'),
+    (
+        'Insert output here.\nOutsert input there.',
+        '> Insert output here.\n> Outsert input there.\n',
+    ),
+    (
+        'Insert output here.\nOutsert input there.\n',
+        '> Insert output here.\n> Outsert input there.\n',
+    ),
+    (
+        'Insert output here.\r\nOutsert input there.\r\n',
+        '> Insert output here.\n> Outsert input there.\n',
+    ),
+    (
+        'Insert output here.\rOutsert input there.\r',
+        '> Insert output here.\n> Outsert input there.\n',
+    ),
+])
+def test_mail_quote(inp, output):
+    assert mail_quote(inp) == output
+
+@pytest.mark.parametrize('s,addr', [
+    ('person@example.com', Address('', addr_spec='person@example.com')),
+    ('<person@example.com>', Address('', addr_spec='person@example.com')),
+    (
+        'Linus User <person@example.com>',
+        Address('Linus User', addr_spec='person@example.com'),
+    ),
+    (
+        '"Linus User" <person@example.com>',
+        Address('Linus User', addr_spec='person@example.com'),
+    ),
+])
+def test_parse_address(s, addr):
+    assert parse_address(s) == addr
+
+@pytest.mark.parametrize('s', [
+    '',
+    'person',
+    'Me <person>',
+    '@example.com',
+    '<@example.com>',
+    'Me <@example.com>',
+])
+def test_parse_address_error(s):
+    with pytest.raises(ValueError):
+        parse_address(s)

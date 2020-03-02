@@ -99,7 +99,7 @@ def parse_address(s):
         raise ValueError(s)
     try:
         return Address(realname, addr_spec=addr)
-    except ValueError:
+    except Exception:
         raise ValueError(s)
 
 class AddressParamType(click.ParamType):
