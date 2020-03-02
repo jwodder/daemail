@@ -111,6 +111,9 @@ def test_parse_address(s, addr):
     '@example.com',
     '<@example.com>',
     'Me <@example.com>',
+    'person@example.com, foo@bar.org',
+    'Me',
+    'person@example.com foo@bar.org',
 ])
 def test_parse_address_error(s):
     with pytest.raises(ValueError):

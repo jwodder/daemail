@@ -1,6 +1,5 @@
 from   datetime             import datetime, timezone
-from   email.headerregistry import Address
-from   email.utils          import parseaddr
+from   email.headerregistry import AddressHeader
 import os
 import re
 from   shlex                import quote
@@ -93,14 +92,20 @@ def multiline822(s):
     return re.sub('^', '  ', re.sub('^$', '.', s.strip('\r\n'), flags=re.M),
                   flags=re.M)
 
-def parse_address(s):
-    realname, addr = parseaddr(s)
-    if addr == '':
+def parse_address(s):  # -> email.headerregistry.Address
+    ### TODO: Is this really how you're supposed to parse fields with
+    ### email.headerregistry?
+    kwds = {"defects": []}
+    AddressHeader.parse(s, kwds)
+    if kwds["defects"]:
         raise ValueError(s)
-    try:
-        return Address(realname, addr_spec=addr)
-    except Exception:
+    addresses = [
+        address for group in kwds["groups"]
+                for address in group.addresses
+    ]
+    if len(addresses) != 1:
         raise ValueError(s)
+    return addresses[0]
 
 class AddressParamType(click.ParamType):
     name = 'address'
