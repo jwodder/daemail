@@ -525,3 +525,5 @@ def test_double_dash_command(mocker):
     ])
     assert r.exit_code == 0, r.output
     run.assert_called_once_with(mocker.ANY, '-l', 'true.log', 'false')
+
+# Don't use ~/.netrc if --netrc not specified

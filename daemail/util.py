@@ -1,6 +1,6 @@
-from   datetime             import datetime
+from   datetime             import datetime, timezone
 from   email.headerregistry import Address
-from   email.utils          import localtime, parseaddr
+from   email.utils          import parseaddr
 import os
 import re
 from   shlex                import quote
@@ -87,7 +87,7 @@ def nowstamp(utc=False):
     if utc:
         return str(datetime.utcnow()) + 'Z'
     else:
-        return str(localtime())
+        return str(datetime.now(timezone.utc).astimezone())
 
 def multiline822(s):
     return re.sub('^', '  ', re.sub('^$', '.', s.strip('\r\n'), flags=re.M),
