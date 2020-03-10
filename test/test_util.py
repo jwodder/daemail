@@ -2,7 +2,7 @@ from   datetime             import datetime, timedelta, timezone
 from   email.headerregistry import Address
 import pytest
 from   daemail.util         import dt2stamp, mail_quote, multiline822, \
-                                    parse_address, show_argv
+                                    parse_address, show_argv, split_content_type
 
 w4 = timezone(timedelta(hours=-4))
 
@@ -162,3 +162,14 @@ def test_dt2stamp(dt, slocal, sutc):
 ])
 def test_multiline822(sin, sout):
     assert multiline822(sin) == sout
+
+@pytest.mark.parametrize('s,ct', [
+    ('text/plain', ('text', 'plain', {})),
+    ('text/plain; charset=utf-8', ('text', 'plain', {"charset": "utf-8"})),
+    (
+        'text/markdown; charset=utf-8; variant=GFM',
+        ('text', 'markdown', {"charset": "utf-8", "variant": "GFM"}),
+    ),
+])
+def test_split_content_type(s, ct):
+    assert split_content_type(s) == ct

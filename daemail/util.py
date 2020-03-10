@@ -1,5 +1,6 @@
 from   datetime             import datetime, timezone
 from   email.headerregistry import AddressHeader
+from   email.message        import EmailMessage
 import os
 import re
 from   shlex                import quote
@@ -106,3 +107,13 @@ class AddressParamType(click.ParamType):
             return parse_address(value)
         except ValueError:
             self.fail('{!r}: invalid address'.format(value), param, ctx)
+
+
+def split_content_type(s):
+    # cgi.parse_header() is scheduled for removal by PEP 594:
+    #mime_type, params = cgi.parse_header(s)
+    #maintype, _, subtype = mime_type.partition('/')
+    msg = EmailMessage()
+    msg["Content-Type"] = s
+    ct = msg["Content-Type"]
+    return (ct.maintype, ct.subtype, ct.params)

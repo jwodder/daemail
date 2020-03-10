@@ -1,9 +1,8 @@
-from   cgi           import parse_header
 from   email         import policy
 from   email.message import EmailMessage
 import platform
 from   .             import __version__
-from   .util         import mail_quote
+from   .util         import mail_quote, split_content_type
 
 USER_AGENT = 'daemail {} ({} {})'.format(
     __version__, platform.python_implementation(), platform.python_version()
@@ -69,8 +68,7 @@ def txt2mail(txt):
 
 def mkattachment(blob, mime_type, disposition, filename):
     assert isinstance(blob, bytes)
-    mime_type, params = parse_header(mime_type)
-    maintype, _, subtype = mime_type.partition('/')
+    maintype, subtype, params = split_content_type(mime_type)
     attach = EmailMessage()
     attach.set_content(
         blob,
