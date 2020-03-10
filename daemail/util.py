@@ -3,7 +3,7 @@ from   email.headerregistry import AddressHeader
 import os
 import re
 from   shlex                import quote
-import signal
+from   signal               import Signals
 import click
 
 def mail_quote(s):
@@ -11,13 +11,12 @@ def mail_quote(s):
 
 def rc_with_signal(rc):
     if rc < 0:
-        # cf. <http://stackoverflow.com/q/2549939/744178>
-        signames = [
-            k for k,v in vars(signal).items()
-              if k.startswith('SIG') and v == -rc
-        ]
-        if signames:
-            return '{} ({})'.format(rc, ', '.join(signames))
+        try:
+            sig = Signals(-rc)
+        except ValueError:
+            return str(rc)
+        else:
+            return '{} ({})'.format(rc, sig.name)
     return str(rc)
 
 bash_slash = {
