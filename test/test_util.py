@@ -1,6 +1,10 @@
+from   datetime             import datetime, timedelta, timezone
 from   email.headerregistry import Address
 import pytest
-from   daemail.util         import mail_quote, parse_address, show_argv
+from   daemail.util         import dt2stamp, mail_quote, multiline822, \
+                                    parse_address, show_argv
+
+w4 = timezone(timedelta(hours=-4))
 
 @pytest.mark.parametrize('argv,output', [
     ([], ''),
@@ -118,3 +122,43 @@ def test_parse_address(s, addr):
 def test_parse_address_error(s):
     with pytest.raises(ValueError):
         parse_address(s)
+
+@pytest.mark.parametrize('dt,slocal,sutc', [
+    (
+        datetime(2020, 3, 10, 15, 0, 28, 123456, w4),
+        '2020-03-10 15:00:28.123456-04:00',
+        '2020-03-10 19:00:28.123456Z',
+    ),
+    (
+        datetime(2020, 3, 10, 15, 0, 28, 123456, timezone.utc),
+        '2020-03-10 15:00:28.123456+00:00',
+        '2020-03-10 15:00:28.123456Z',
+    ),
+    (
+        datetime(2020, 3, 10, 15, 0, 28, tzinfo=w4),
+        '2020-03-10 15:00:28-04:00',
+        '2020-03-10 19:00:28Z',
+    ),
+    (
+        datetime(2020, 3, 10, 15, 0, 28, tzinfo=timezone.utc),
+        '2020-03-10 15:00:28+00:00',
+        '2020-03-10 15:00:28Z',
+    ),
+])
+def test_dt2stamp(dt, slocal, sutc):
+    assert dt2stamp(dt) == slocal
+    assert dt2stamp(dt, utc=False) == slocal
+    assert dt2stamp(dt, utc=True) == sutc
+
+@pytest.mark.parametrize('sin,sout', [
+    ('', '  .'),
+    ('\n', '  .'),
+    ('This is test text.', '  This is test text.'),
+    ('This is test text.\n', '  This is test text.'),
+    (
+        'This is test text.\n\nThat was a blank line.',
+        '  This is test text.\n  .\n  That was a blank line.',
+    ),
+])
+def test_multiline822(sin, sout):
+    assert multiline822(sin) == sout
