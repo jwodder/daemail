@@ -22,6 +22,7 @@
 `GitHub <https://github.com/jwodder/daemail>`_
 | `PyPI <https://pypi.org/project/daemail>`_
 | `Issues <https://github.com/jwodder/daemail/issues>`_
+| `Changelog <https://github.com/jwodder/daemail/blob/master/CHANGELOG.md>`_
 
 ``daemail`` (pronounced "DEE-mayl", like "e-mail" but with a D) is a Python
 script built on top of `python-daemon
