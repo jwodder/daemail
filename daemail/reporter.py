@@ -1,6 +1,8 @@
 from   collections import namedtuple
+# Access `show_argv()` through `util` for mocking purposes
+from   .           import util
 from   .message    import DraftMessage
-from   .util       import mail_quote, dt2stamp, rc_with_signal, show_argv
+from   .util       import mail_quote, dt2stamp, rc_with_signal
 
 class CommandReporter(namedtuple('CommandReporter', '''
     encoding failure_only from_addr mime_type nonempty stderr_encoding
@@ -21,7 +23,7 @@ class CommandReporter(namedtuple('CommandReporter', '''
             msg = DraftMessage(
                 from_addr = self.from_addr,
                 to_addrs  = self.to_addrs,
-                subject   = '[ERROR] ' + show_argv(*result.argv),
+                subject   = '[ERROR] ' + util.show_argv(*result.argv),
             )
             msg.addtext(
                 'An error occurred while attempting to run the command:\n'
@@ -37,7 +39,7 @@ class CommandReporter(namedtuple('CommandReporter', '''
                 to_addrs  = self.to_addrs,
                 subject   = '[{}] {}'.format(
                     'DONE' if result.rc == 0 else 'FAILED',
-                    show_argv(*result.argv),
+                    util.show_argv(*result.argv),
                 ),
             )
             msg.addtext(
