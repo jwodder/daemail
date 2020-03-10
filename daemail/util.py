@@ -39,7 +39,7 @@ bash_slash.update({
 
 def show_argv(*argv):
     r"""
-    Join -- and possibly escape & quote -- the elements of ``argv`` into a
+    Join — and possibly escape & quote — the elements of ``argv`` into a
     pure-ASCII form suitable for passing directly to a \*nix shell.
     Nonprintable characters are escaped in a format that is Bash-specific but
     should still be understandable to users of other shells.
@@ -54,9 +54,7 @@ def show_argv(*argv):
     shown = ''
     assigning = True
     for a in argv:
-        if isinstance(a, str):
-            a = os.fsencode(a)
-        a = a.decode('iso-8859-1')
+        a = os.fsencode(a).decode('iso-8859-1')
         if re.search(r'[^\x20-\x7E]', a):
             a = "$'" + a.translate(bash_slash) + "'"
             assigning = False
