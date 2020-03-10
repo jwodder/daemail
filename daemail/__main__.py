@@ -331,6 +331,10 @@ def main(
 
 
 class Daemail(namedtuple('Daemail', 'runner reporter mailer')):
+    # runner: CommandRunner
+    # reporter: CommandReporter
+    # mailer: TryingSender
+
     def run(self, command, *args):
         r = self.runner.run(command, *args)
         msg = self.reporter.report(r)

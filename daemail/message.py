@@ -16,6 +16,7 @@ class DraftMessage:
         """
         :type from_addr: email.headerregistry.Address or None
         :type to_addrs: Iterable[email.headerregistry.Address]
+        :type subject: str
         """
         self.headers = {
             "To": list(to_addrs),

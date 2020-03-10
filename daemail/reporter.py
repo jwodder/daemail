@@ -6,6 +6,16 @@ class CommandReporter(namedtuple('CommandReporter', '''
     encoding failure_only from_addr mime_type nonempty stderr_encoding
     stdout_filename to_addrs utc
 ''')):
+    # encoding: str
+    # failure_only: bool
+    # from_addr: email.headerregistry.Address
+    # mime_type: Optional[str]
+    # nonempty: bool
+    # stderr_encoding: str
+    # stdout_filename: Optional[str]  # non-None iff mime_type is non-None
+    # to_addrs: list[email.headerregistry.Address]
+    # utc: bool
+
     def report(self, result):
         if result.errored:
             msg = DraftMessage(
