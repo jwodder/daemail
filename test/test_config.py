@@ -6,7 +6,7 @@ from   daemail.__main__ import main
 
 @pytest.fixture
 def capture_cfg(mocker):
-    return mocker.patch('daemail.mailer.CommandMailer', autospec=True)
+    return mocker.patch('daemail.__main__.Daemail', autospec=True)
 
 def test_default_sendmail(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -16,10 +16,10 @@ def test_default_sendmail(capture_cfg):
     ])
     assert r.exit_code == 0, r.output
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert isinstance(kwargs["sender"], senders.CommandSender)
-    assert kwargs["sender"].sendmail == 'sendmail -i -t'
+    mailer = capture_cfg.call_args[1]["mailer"]
+    assert isinstance(mailer.sender, senders.CommandSender)
+    assert mailer.sender.sendmail == 'sendmail -i -t'
+    assert mailer.dead_letter_path == os.path.realpath('dead.letter')
 
 def test_custom_sendmail(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -30,10 +30,9 @@ def test_custom_sendmail(capture_cfg):
     ])
     assert r.exit_code == 0, r.output
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert isinstance(kwargs["sender"], senders.CommandSender)
-    assert kwargs["sender"].sendmail == 'mail-send -q -rs'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert isinstance(sender, senders.CommandSender)
+    assert sender.sendmail == 'mail-send -q -rs'
 
 def test_smtp_host(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -44,13 +43,12 @@ def test_smtp_host(capture_cfg):
     ])
     assert r.exit_code == 0, r.output
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username is None
-    assert kwargs["sender"].password is None
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username is None
+    assert sender.password is None
 
 def test_smtp_host_port(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -62,13 +60,12 @@ def test_smtp_host_port(capture_cfg):
     ])
     assert r.exit_code == 0, r.output
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port == 42
-    assert kwargs["sender"].username is None
-    assert kwargs["sender"].password is None
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port == 42
+    assert sender.username is None
+    assert sender.password is None
 
 def test_smtp_port_host(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -80,13 +77,12 @@ def test_smtp_port_host(capture_cfg):
     ])
     assert r.exit_code == 0, r.output
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port == 42
-    assert kwargs["sender"].username is None
-    assert kwargs["sender"].password is None
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port == 42
+    assert sender.username is None
+    assert sender.password is None
 
 def test_bad_smtp_port_no_host(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -109,10 +105,9 @@ def test_smtp_port_mbox(capture_cfg):
     ])
     assert r.exit_code == 0, r.output
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert isinstance(kwargs["sender"], senders.MboxSender)
-    assert kwargs["sender"].filename == os.path.realpath('mail.mbox')
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert isinstance(sender, senders.MboxSender)
+    assert sender.filename == os.path.realpath('mail.mbox')
 
 def test_bad_mbox_smtp_port_no_host(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -136,13 +131,12 @@ def test_starttls_smtp_host(capture_cfg):
     ])
     assert r.exit_code == 0, r.output
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.StartTLSSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username is None
-    assert kwargs["sender"].password is None
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.StartTLSSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username is None
+    assert sender.password is None
 
 def test_smtp_host_starttls(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -154,13 +148,12 @@ def test_smtp_host_starttls(capture_cfg):
     ])
     assert r.exit_code == 0, r.output
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.StartTLSSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username is None
-    assert kwargs["sender"].password is None
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.StartTLSSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username is None
+    assert sender.password is None
 
 def test_ssl_smtp_host(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -172,13 +165,12 @@ def test_ssl_smtp_host(capture_cfg):
     ])
     assert r.exit_code == 0, r.output
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTP_SSLSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username is None
-    assert kwargs["sender"].password is None
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTP_SSLSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username is None
+    assert sender.password is None
 
 def test_smtp_host_ssl(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -190,13 +182,12 @@ def test_smtp_host_ssl(capture_cfg):
     ])
     assert r.exit_code == 0, r.output
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTP_SSLSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username is None
-    assert kwargs["sender"].password is None
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTP_SSLSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username is None
+    assert sender.password is None
 
 def test_smtp_host_username_input_pass(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -209,13 +200,12 @@ def test_smtp_host_username_input_pass(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == 'SMTP password: \n'
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username == 'me@invalid.test'
-    assert kwargs["sender"].password == 'hunter2'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'hunter2'
 
 def test_smtp_host_username_cli_pass(capture_cfg):
     r = CliRunner().invoke(main, [
@@ -229,13 +219,12 @@ def test_smtp_host_username_cli_pass(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == ''
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username == 'me@invalid.test'
-    assert kwargs["sender"].password == 'from-the-command-line'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'from-the-command-line'
 
 def test_smtp_host_username_file_pass(capture_cfg):
     runner = CliRunner()
@@ -253,13 +242,12 @@ def test_smtp_host_username_file_pass(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == ''
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username == 'me@invalid.test'
-    assert kwargs["sender"].password == 'from_a_file'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'from_a_file'
 
 def test_smtp_host_username_file_pass_extra_newline(capture_cfg):
     runner = CliRunner()
@@ -277,13 +265,12 @@ def test_smtp_host_username_file_pass_extra_newline(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == ''
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username == 'me@invalid.test'
-    assert kwargs["sender"].password == 'from_a_file\n'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'from_a_file\n'
 
 def test_smtp_host_username_cli_file_pass(capture_cfg):
     runner = CliRunner()
@@ -302,13 +289,12 @@ def test_smtp_host_username_cli_file_pass(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == ''
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username == 'me@invalid.test'
-    assert kwargs["sender"].password == 'from_a_file'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'from_a_file'
 
 def test_smtp_host_username_netrc_file_pass(capture_cfg):
     runner = CliRunner()
@@ -328,13 +314,12 @@ def test_smtp_host_username_netrc_file_pass(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == ''
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username == 'me@invalid.test'
-    assert kwargs["sender"].password == 'from-custom-netrc'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'from-custom-netrc'
 
 def test_smtp_host_username_netrc_mismatch(capture_cfg):
     runner = CliRunner()
@@ -354,13 +339,12 @@ def test_smtp_host_username_netrc_mismatch(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == 'SMTP password: \n'
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username == 'me@invalid.test'
-    assert kwargs["sender"].password == 'hunter2'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'hunter2'
 
 def test_smtp_host_username_netrc_host_mismatch(capture_cfg):
     runner = CliRunner()
@@ -380,13 +364,12 @@ def test_smtp_host_username_netrc_host_mismatch(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == 'SMTP password: \n'
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username == 'me@invalid.test'
-    assert kwargs["sender"].password == 'hunter2'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'hunter2'
 
 def test_smtp_host_no_username_netrc_file(capture_cfg):
     runner = CliRunner()
@@ -405,13 +388,12 @@ def test_smtp_host_no_username_netrc_file(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == ''
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username == 'me@invalid.test'
-    assert kwargs["sender"].password == 'from-custom-netrc'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'from-custom-netrc'
 
 def test_smtp_host_username_netrc_no_user(capture_cfg):
     runner = CliRunner()
@@ -430,13 +412,12 @@ def test_smtp_host_username_netrc_no_user(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == ''
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username == 'me@invalid.test'
-    assert kwargs["sender"].password == 'from-custom-netrc'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'from-custom-netrc'
 
 def test_smtp_host_no_username_netrc_no_user(capture_cfg):
     runner = CliRunner()
@@ -454,15 +435,16 @@ def test_smtp_host_no_username_netrc_no_user(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == ''
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username is None
-    assert kwargs["sender"].password is None
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username is None
+    assert sender.password is None
 
-@pytest.mark.skip(reason="Python doesn't support .netrc entries without `password`?")
+@pytest.mark.skip(
+    reason="Python doesn't support .netrc entries without `password`"
+)
 def test_smtp_host_no_username_netrc_no_pass(capture_cfg):
     runner = CliRunner()
     with runner.isolated_filesystem():
@@ -479,16 +461,15 @@ def test_smtp_host_no_username_netrc_no_pass(capture_cfg):
     assert r.exit_code == 0, r.output
     assert r.output == 'SMTP password: \n'
     assert capture_cfg.call_count == 1
-    _, kwargs = capture_cfg.call_args
-    assert "sender" in kwargs
-    assert type(kwargs["sender"]) is senders.SMTPSender
-    assert kwargs["sender"].host == 'smtp.test'
-    assert kwargs["sender"].port is None
-    assert kwargs["sender"].username == 'me@invalid.test'
-    assert kwargs["sender"].password == 'hunter2'
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'hunter2'
 
 def test_command_options(mocker):
-    run = mocker.patch('daemail.mailer.CommandMailer.run', autospec=True)
+    run = mocker.patch('daemail.__main__.Daemail.run', autospec=True)
     r = CliRunner().invoke(main, [
         '--foreground',
         '-t', 'null@test.test',
@@ -500,7 +481,7 @@ def test_command_options(mocker):
     run.assert_called_once_with(mocker.ANY, 'true', '-l', 'true.log', 'false')
 
 def test_command_double_dash(mocker):
-    run = mocker.patch('daemail.mailer.CommandMailer.run', autospec=True)
+    run = mocker.patch('daemail.__main__.Daemail.run', autospec=True)
     r = CliRunner().invoke(main, [
         '--foreground',
         '-t', 'null@test.test',
@@ -515,7 +496,7 @@ def test_command_double_dash(mocker):
     )
 
 def test_double_dash_command(mocker):
-    run = mocker.patch('daemail.mailer.CommandMailer.run', autospec=True)
+    run = mocker.patch('daemail.__main__.Daemail.run', autospec=True)
     r = CliRunner().invoke(main, [
         '--foreground',
         '-t', 'null@test.test',
@@ -526,4 +507,6 @@ def test_double_dash_command(mocker):
     assert r.exit_code == 0, r.output
     run.assert_called_once_with(mocker.ANY, '-l', 'true.log', 'false')
 
+# Falling/not falling back to `default` entry in netrc
 # Don't use ~/.netrc if --netrc not specified
+# Mock DaemonContext and assert that it is/isn't called without/with --fg

@@ -33,10 +33,7 @@
       README
 
 - Try to write tests
-    - Set up Travis integration
-    - Ensure this works in both Python 2 and Python 3
-        - Test handling of non-ASCII characters in `--smtp-password-file` in
-          both Python 2 and Python 3
+    - Test handling of non-ASCII characters in `--smtp-password-file`
     - Use a mock Sender class
         - Look into `lazr.smtptest`?
     - Combinations of possibilities to test:
@@ -66,8 +63,6 @@ New Features
   non-ASCII control/non-printable characters)
 - Support format specifiers in `--sendmail` for interpolating the To & From
   addresses (and subject?)
-- Should the `dead_letter` parameter of `CommandMailer` be a sender object
-  instead of filepath?
 - Support for Gmail's OAuth  (Save for a much later version)
     - cf. <https://developers.google.com/gmail/api/quickstart/python>
 - Support reading stdin before daemonzing and passing the contents to the
@@ -108,3 +103,4 @@ New Features
       arguments)
     - Don't ASCIIfy the command for the subject line
     - command timeout?
+    - Use the 'replace' error handler when decoding command stdout/stderr

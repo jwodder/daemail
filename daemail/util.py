@@ -6,27 +6,16 @@ from   shlex                import quote
 import signal
 import click
 
-class MailCmdError(Exception):
-    # Raised if the sendmail command returned nonzero
-    def __init__(self, sendmail, rc, output):
-        self.sendmail = sendmail
-        self.rc = rc
-        self.output = output
-        super(MailCmdError, self).__init__(sendmail, rc, output)
-
-    def __str__(self):
-        return '{0.sendmail!r}: command exited with return code {0.rc}'\
-               .format(self)
-
-
 def mail_quote(s):
     return ''.join('> ' + line + '\n' for line in (s or '\n').splitlines())
 
 def rc_with_signal(rc):
     if rc < 0:
         # cf. <http://stackoverflow.com/q/2549939/744178>
-        signames = [k for k,v in vars(signal).items()
-                      if k.startswith('SIG') and v == -rc]
+        signames = [
+            k for k,v in vars(signal).items()
+              if k.startswith('SIG') and v == -rc
+        ]
         if signames:
             return '{} ({})'.format(rc, ', '.join(signames))
     return str(rc)
@@ -82,11 +71,16 @@ def show_argv(*argv):
         shown += a
     return shown
 
-def nowstamp(utc=False):
+def dtnow():
+    return datetime.now(timezone.utc).astimezone()
+
+def dt2stamp(dt, utc=False):
     if utc:
-        return str(datetime.utcnow()) + 'Z'
+        s = str(dt.astimezone(timezone.utc))
+        assert s.endswith('+00:00')
+        return s[:-6] + 'Z'
     else:
-        return str(datetime.now(timezone.utc).astimezone())
+        return str(dt)
 
 def multiline822(s):
     return re.sub('^', '  ', re.sub('^$', '.', s.strip('\r\n'), flags=re.M),

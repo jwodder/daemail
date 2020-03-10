@@ -2,9 +2,9 @@ v0.6.0 (in development)
 -----------------------
 - **Breaking**: Removed `--to-name` and `--from-name` (deprecated in v0.5.0)
 
-- Dropped support for Python versions earlier than 3.4
+- Dropped support for Python versions earlier than 3.5
 
-- Internal rewrites to use Python 3's new `email` API
+- Massive internal rewrites
 
 - Added a `--foreground` option for disabling daemonization
 
@@ -12,6 +12,10 @@ v0.6.0 (in development)
   links before daemonization
 
 - Support Python 3.6 through 3.8
+
+- If no `--chdir` argument is supplied, change directory to the value of
+  `$PWD`, falling back to the old value of `getcwd()` only if the environment
+  variable isn't set
 
 
 v0.5.0 (2017-02-05)

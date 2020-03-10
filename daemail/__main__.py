@@ -1,3 +1,5 @@
+from   collections   import namedtuple
+from   contextlib    import contextmanager
 import locale
 import mimetypes
 import netrc
@@ -5,16 +7,17 @@ import os
 import sys
 import traceback
 import click
-from   daemon        import DaemonContext  # python-daemon
+from   daemon        import DaemonContext
 from   daemon.daemon import DaemonError
 from   .             import __version__
-# Import mailer instead of mailer.CommandMailer for mocking purposes
-from   .             import mailer, senders
-from   .util         import AddressParamType, multiline822, nowstamp, show_argv
+# Import runner instead of runner.CommandRunner etc. for mocking purposes
+from   .             import runner, reporter, senders
+from   .util         import AddressParamType, multiline822, dtnow, dt2stamp, \
+                                show_argv
 
 DEFAULT_SENDMAIL = 'sendmail -i -t'
 
-outfile_type=click.Path(writable=True, dir_okay=False, resolve_path=True)
+outfile_type = click.Path(writable=True, dir_okay=False, resolve_path=True)
 
 def set_sender_cls(cls):
     def callback(ctx, param, value):
@@ -24,9 +27,9 @@ def set_sender_cls(cls):
     return callback
 
 def use_smtp(ctx, param, value):
-    if value is not None and \
-            (ctx.params.get('sender_cls') is None or
-                not issubclass(ctx.params['sender_cls'], senders.SMTPSender)):
+    if value is not None \
+            and (ctx.params.get('sender_cls') is None
+                or not issubclass(ctx.params['sender_cls'],senders.SMTPSender)):
         ctx.params['sender_cls'] = senders.SMTPSender
     return value
 
@@ -64,85 +67,170 @@ def netrc_getter(value):
         return (username, None)
     return get
 
+def get_cwd():
+    # Prefer $PWD to os.getcwd() as the former does not resolve symlinks
+    return os.environ.get('PWD') or os.getcwd()
 
-# Note: Options with multiple names need to have their desired name given
-# explicitly due to <https://github.com/pallets/click/issues/793>
+
 @click.command(name='daemail', context_settings={
     "allow_interspersed_args": False,
     "help_option_names": ["-h", "--help"],
 })
-@click.version_option(__version__, '-V', '--version',
-                      message='%(prog)s %(version)s')
-@click.option('-C', '--chdir', metavar='DIR', default=os.getcwd,
-              help="Change to this directory before running")
-@click.option('-D', '--dead-letter', metavar='MBOX', default='dead.letter',
-              type=outfile_type, help="Append undeliverable mail to this file")
-@click.option('-e', '--encoding', help='Encoding of stdout and stderr',
-              metavar='ENCODING')
-@click.option('-E', '--stderr-encoding', help='Encoding of stderr',
-              metavar='ENCODING')
-@click.option('--foreground', '--fg', 'foreground', is_flag=True,
-              help='Run in the foreground instead of daemonizing')
-@click.option('-f', '--from-addr', '--from', 'from_addr',
-              type=AddressParamType(), help='From: address of e-mail')
-@click.option('-F', '--failure-only', is_flag=True,
-              help='Only send e-mail if command returned nonzero')
-@click.option('-l', '--logfile', default='daemail.log', type=outfile_type,
-              help='Append unrecoverable errors to this file')
-@click.option('-M', '--mime-type', '--mime', 'mime_type',
-              help='Send output as attachment with given MIME type')
-@click.option('-n', '--nonempty', is_flag=True,
-              help='Only send e-mail if there was output or failure')
+@click.version_option(
+    __version__,
+    '-V', '--version',
+    message = '%(prog)s %(version)s',
+)
+@click.option(
+    '-C', '--chdir',
+    metavar = 'DIR',
+    default = get_cwd,
+    help    = 'Change to this directory before running',
+)
+@click.option(
+    '-D', '--dead-letter',
+    metavar = 'MBOX',
+    default = 'dead.letter',
+    type    = outfile_type,
+    help    = 'Append undeliverable mail to this file',
+)
+@click.option(
+    '-e', '--encoding',
+    help    = 'Encoding of stdout and stderr',
+    metavar = 'ENCODING',
+)
+@click.option(
+    '-E', '--stderr-encoding',
+    help    = 'Encoding of stderr',
+    metavar = 'ENCODING',
+)
+@click.option(
+    '--foreground', '--fg',
+    is_flag = True,
+    help    = 'Run in the foreground instead of daemonizing',
+)
+@click.option(
+    '-f', '--from-addr', '--from',
+    type = AddressParamType(),
+    help = 'From: address of e-mail',
+)
+@click.option(
+    '-F', '--failure-only',
+    is_flag = True,
+    help    = 'Only send e-mail if command returned nonzero',
+)
+@click.option(
+    '-l', '--logfile',
+    default = 'daemail.log',
+    type    = outfile_type,
+    help    = 'Append unrecoverable errors to this file',
+)
+@click.option(
+    '-M', '--mime-type', '--mime',
+    help = 'Send output as attachment with given MIME type',
+)
+@click.option(
+    '-n', '--nonempty',
+    is_flag = True,
+    help    = 'Only send e-mail if there was output or failure',
+)
 @click.option('--no-stdout', is_flag=True, help="Don't capture stdout")
 @click.option('--no-stderr', is_flag=True, help="Don't capture stderr")
-@click.option('-S', '--split', is_flag=True,
-              help='Capture stdout and stderr separately')
-@click.option('--stdout-filename', metavar='FILENAME',
-              help='Send output as attachment with given filename')
-@click.option('-t', '--to-addr', '--to', 'to_addr', metavar='ADDRESS',
-              type=AddressParamType(), multiple=True, required=True,
-              help='To: address of e-mail')
+@click.option(
+    '-S', '--split',
+    is_flag = True,
+    help    = 'Capture stdout and stderr separately',
+)
+@click.option(
+    '--stdout-filename',
+    metavar = 'FILENAME',
+    help    = 'Send output as attachment with given filename',
+)
+@click.option(
+    '-t', '--to-addr', '--to',
+    metavar  = 'ADDRESS',
+    type     = AddressParamType(),
+    multiple = True,
+    required = True,
+    help     = 'To: address of e-mail',
+)
 @click.option('-Z', '--utc', is_flag=True, help='Use UTC timestamps')
-@click.option('-s', '--sendmail', metavar='COMMAND',
-              callback=set_sender_cls(senders.CommandSender),
-              help='Command for sending e-mail')
-@click.option('--mbox', help='Append e-mail to this mbox file',
-              type=outfile_type, callback=set_sender_cls(senders.MboxSender))
-@click.option('--smtp-host', metavar='HOST', callback=use_smtp,
-              help='SMTP server through which to send e-mail')
-@click.option('--smtp-port', type=int, metavar='PORT', callback=use_smtp,
-              help='Connect to --smtp-host on this port')
-@click.option('--smtp-username', metavar='USERNAME', callback=use_smtp,
-              help='Username for authenticating with --smtp-host')
-@click.option('--smtp-password', metavar='PASSWORD',
-              callback=pwd_getter(plain_pwd), expose_value=False,
-              help='Password for authenticating with --smtp-host')
-@click.option('--smtp-password-file', metavar='FILE', type=click.File(),
-              callback=pwd_getter(password_file), expose_value=False,
-              help='File containing password for authenticating with'
-                   ' --smtp-host')
-@click.option('--netrc', is_flag=True,
-              callback=pwd_getter(netrc_getter), expose_value=False,
-              help='Fetch SMTP password from ~/.netrc file')
-@click.option('--netrc-file', type=click.Path(dir_okay=False),
-              callback=pwd_getter(netrc_getter), expose_value=False,
-              help='Fetch SMTP password from given netrc file')
+@click.option(
+    '-s', '--sendmail',
+    metavar  = 'COMMAND',
+    callback = set_sender_cls(senders.CommandSender),
+    help     = 'Command for sending e-mail',
+)
+@click.option(
+    '--mbox',
+    help     = 'Append e-mail to this mbox file',
+    type     = outfile_type,
+    callback = set_sender_cls(senders.MboxSender),
+)
+@click.option(
+    '--smtp-host',
+    metavar  = 'HOST',
+    callback = use_smtp,
+    help     = 'SMTP server through which to send e-mail',
+)
+@click.option(
+    '--smtp-port',
+    type     = int,
+    metavar  = 'PORT',
+    callback = use_smtp,
+    help     = 'Connect to --smtp-host on this port',
+)
+@click.option(
+    '--smtp-username',
+    metavar  = 'USERNAME',
+    callback = use_smtp,
+    help     = 'Username for authenticating with --smtp-host',
+)
+@click.option(
+    '--smtp-password',
+    metavar      = 'PASSWORD',
+    callback     = pwd_getter(plain_pwd),
+    expose_value = False,
+    help         = 'Password for authenticating with --smtp-host',
+)
+@click.option(
+    '--smtp-password-file',
+    metavar      = 'FILE',
+    type         = click.File(),
+    callback     = pwd_getter(password_file),
+    expose_value = False,
+    help         = 'File containing password for --smtp-host',
+)
+@click.option(
+    '--netrc',
+    is_flag      = True,
+    callback     = pwd_getter(netrc_getter),
+    expose_value = False,
+    help         ='Fetch SMTP password from ~/.netrc file',
+)
+@click.option(
+    '--netrc-file',
+    type         = click.Path(dir_okay=False),
+    callback     = pwd_getter(netrc_getter),
+    expose_value = False,
+    help         = 'Fetch SMTP password from given netrc file',
+)
 # Implementing `--smtp-ssl` and `--smtp-starttls` as feature switches writing
 # to `sender_cls` won't work, as click will overwrite `sender_cls` with `None`
 # if neither option is given.
 @click.option(
     '--smtp-ssl',
-    is_flag=True,
-    callback=set_sender_cls(senders.SMTP_SSLSender),
-    expose_value=False,
-    help='Use SMTPS protocol',
+    is_flag      = True,
+    callback     = set_sender_cls(senders.SMTP_SSLSender),
+    expose_value = False,
+    help         = 'Use SMTPS protocol',
 )
 @click.option(
     '--smtp-starttls',
-    is_flag=True,
-    callback=set_sender_cls(senders.StartTLSSender),
-    expose_value=False,
-    help='Use SMTP protocol with STARTTLS',
+    is_flag      = True,
+    callback     = set_sender_cls(senders.StartTLSSender),
+    expose_value = False,
+    help         = 'Use SMTP protocol with STARTTLS',
 )
 @click.argument('command')
 @click.argument('args', nargs=-1, type=click.UNPROCESSED)
@@ -193,46 +281,97 @@ def main(
         stdout_filename = 'stdout'
         split = True
 
-    cmdmailer = mailer.CommandMailer(
-        encoding=encoding,
-        stderr_encoding=stderr_encoding,
-        from_addr=from_addr,
-        failure_only=failure_only,
-        sender=sender,
-        nonempty=nonempty,
-        no_stdout=no_stdout,
-        no_stderr=no_stderr,
-        split=split,
-        to_addrs=to_addr,
-        utc=utc,
-        mime_type=mime_type,
-        stdout_filename=stdout_filename,
-        dead_letter=dead_letter,
+    daemail = Daemail(
+        runner = runner.CommandRunner(
+            no_stderr = no_stderr,
+            no_stdout = no_stdout,
+            split     = split,
+        ),
+        reporter = reporter.CommandReporter(
+            encoding        = encoding,
+            failure_only    = failure_only,
+            from_addr       = from_addr,
+            mime_type       = mime_type,
+            nonempty        = nonempty,
+            stderr_encoding = stderr_encoding,
+            stdout_filename = stdout_filename,
+            to_addrs        = to_addr,
+            utc             = utc,
+        ),
+        mailer = senders.TryingSender(
+            dead_letter_path = dead_letter,
+            sender           = sender,
+        ),
     )
 
     if foreground:
-        os.chdir(chdir)
-        cmdmailer.run(command, *args)
-        return
+        ctx = chdir_context(chdir)
+    else:
+        ctx = DaemonContext(working_directory=chdir, umask=os.umask(0))
     try:
-        with DaemonContext(working_directory=chdir, umask=os.umask(0)):
-            cmdmailer.run(command, *args)
+        with ctx:
+            daemail.run(command, *args)
     except DaemonError:
         # Daemonization failed; report errors normally
         raise
     except Exception:
         # Daemonization succeeded but mailer failed; report errors to logfile.
         # If this open() fails, die alone where no one will ever know.
-        sys.stderr = open(logfile, 'a')
-        print('daemail:', __version__, file=sys.stderr)
-        print('Command:', show_argv(command, *args), file=sys.stderr)
-        print('Date:', nowstamp(), file=sys.stderr)
-        print('Configuration:', vars(cmdmailer), file=sys.stderr)
-        print('Chdir:', repr(chdir), file=sys.stderr)
-        print('Traceback:', file=sys.stderr)
-        print(multiline822(traceback.format_exc()), file=sys.stderr)
-        print('', file=sys.stderr)
+        with open(logfile, 'a') as fp:
+            print('daemail:', __version__, file=fp)
+            print('Command:', show_argv(command, *args), file=fp)
+            print('Date:', dt2stamp(dtnow()), file=fp)
+            print('Configuration:', file=fp)
+            print(multiline822(daemail.shows_config()), file=fp)
+            print('Chdir:', repr(chdir), file=fp)
+            print('Traceback:', file=fp)
+            print(multiline822(traceback.format_exc()), file=fp)
+            print('', file=fp)
         sys.exit(1)
+
+
+class Daemail(namedtuple('Daemail', 'runner reporter mailer')):
+    def run(self, command, *args):
+        r = self.runner.run(command, *args)
+        msg = self.reporter.report(r)
+        if msg is not None:
+            self.mailer.send(msg)
+
+    def shows_config(self):
+        s = ''
+        s += '"From:" address: ' + str(self.reporter.from_addr) + '\n'
+        s += '"To:" addresses:\n'
+        for t in self.reporter.to_addrs:
+            s += '  ' + str(t) + '\n'
+        s += 'Outgoing mail:\n'
+        for k,v in self.mailer.sender.about():
+            s += '  {}: {}\n'.format(k,v)
+        s += 'Dead letter mbox: ' + self.mailer.dead_letter_path + '\n'
+        s += 'Split stdout/stderr: ' + yesno(self.runner.split) + '\n'
+        s += 'Capture stdout: ' + yesno(not self.runner.no_stdout) + '\n'
+        s += 'stdout encoding: ' + self.reporter.encoding + '\n'
+        s += 'stdout MIME type: ' + str(self.reporter.mime_type) + '\n'
+        s += 'stdout filename: ' + str(self.reporter.stdout_filename) + '\n'
+        s += 'Capture stderr: ' + yesno(not self.runner.no_stderr) + '\n'
+        s += 'stderr encoding: ' + self.reporter.stderr_encoding + '\n'
+        s += 'Send iff failure: ' + yesno(self.reporter.failure_only) + '\n'
+        s += 'Send iff nonempty: ' + yesno(self.reporter.nonempty) + '\n'
+        s += 'UTC timestamps: ' + yesno(self.reporter.utc) + '\n'
+        return s
+
+
+@contextmanager
+def chdir_context(dirpath):
+    old_cwd = get_cwd()
+    os.chdir(dirpath)
+    try:
+        yield
+    finally:
+        ### TODO: Handle failure here:
+        os.chdir(old_cwd)
+
+def yesno(b):
+    return 'yes' if b else 'no'
 
 if __name__ == '__main__':
     main()

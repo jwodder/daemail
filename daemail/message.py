@@ -11,11 +11,11 @@ USER_AGENT = 'daemail {} ({} {})'.format(
 
 POLICY = policy.default.clone(cte_type='7bit')
 
-class DraftMessage(object):
+class DraftMessage:
     def __init__(self, from_addr, to_addrs, subject):
         """
-        :type from_addr: `email.headerregistry.Address` or `None`
-        :type to_addrs: sequence of `email.headerregistry.Address` objects
+        :type from_addr: email.headerregistry.Address or None
+        :type to_addrs: Iterable[email.headerregistry.Address]
         """
         self.headers = {
             "To": list(to_addrs),
@@ -43,9 +43,9 @@ class DraftMessage(object):
     def addmimeblob(self, blob, mimetype, filename):
         self.parts.append(mkattachment(
             blob,
-            mime_type=mimetype,
-            disposition='inline',
-            filename=filename,
+            mime_type   = mimetype,
+            disposition = 'inline',
+            filename    = filename,
         ))
 
     def compile(self):
@@ -53,10 +53,6 @@ class DraftMessage(object):
             msg = txt2mail(self.parts[0])
         else:
             msg = EmailMessage(policy=POLICY)
-            # This currently doesn't work <https://bugs.python.org/issue30820>:
-            #msg.set_content([
-            #    txt2mail(p) if isinstance(p, str) else p for p in self.parts
-            #])
             msg.make_mixed()
             for p in self.parts:
                 msg.attach(txt2mail(p) if isinstance(p, str) else p)
@@ -79,8 +75,8 @@ def mkattachment(blob, mime_type, disposition, filename):
         blob,
         maintype,
         subtype,
-        disposition=disposition,
-        filename=filename,
-        params=params,
+        disposition = disposition,
+        filename    = filename,
+        params      = params,
     )
     return attach

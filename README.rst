@@ -24,15 +24,16 @@
 | `Issues <https://github.com/jwodder/daemail/issues>`_
 
 ``daemail`` (pronounced "DEE-mayl", like "e-mail" but with a D) is a Python
-script based on `python-daemon <https://pypi.org/project/python-daemon>`_
-for running a normally-foreground command in the background and e-mailing its
-output (by default, the combined stdout and stderr) once it's done.
+script built on top of `python-daemon
+<https://pypi.org/project/python-daemon>`_ for running a normally-foreground
+command in the background and e-mailing its output (by default, the combined
+stdout and stderr) once it's done.
 
 
 Installation
 ============
 
-``daemail`` requires Python 3.4 or higher.  Just use `pip
+``daemail`` requires Python 3.5 or higher.  Just use `pip
 <https://pip.pypa.io>`_ for Python 3 (You have pip, right?) to install
 ``daemail`` and its dependencies::
 
