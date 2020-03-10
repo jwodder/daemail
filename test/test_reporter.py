@@ -290,7 +290,7 @@ def test_report_stdout_mime(mocker):
     assert msg.parts[1].get_content_disposition() == 'inline'
     assert msg.parts[1].get_content_type() == 'application/json'
     assert msg.parts[1].get_filename() == 'stdout.html'
-    ### TODO: Somehow fetch the Content-Type params and assert they are {}
+    assert msg.parts[1]["Content-Type"].params == {}
     show_argv_spy.assert_called_once_with(*result.argv)
 
 @pytest.mark.parametrize('result,subject,body', [
@@ -605,7 +605,7 @@ def test_report_undecodable_stdout_empty_stderr(mocker, stderr):
     assert msg.parts[1].get_content_disposition() == 'inline'
     assert msg.parts[1].get_content_type() == 'application/octet-stream'
     assert msg.parts[1].get_filename() == 'stdout'
-    ### TODO: Somehow fetch the Content-Type params and assert they are {}
+    assert msg.parts[1]["Content-Type"].params == {}
     show_argv_spy.assert_called_once_with(*result.argv)
 
 def test_report_undecodable_stdout_good_stderr(mocker):
@@ -652,7 +652,7 @@ def test_report_undecodable_stdout_good_stderr(mocker):
     assert msg.parts[1].get_content_disposition() == 'inline'
     assert msg.parts[1].get_content_type() == 'application/octet-stream'
     assert msg.parts[1].get_filename() == 'stdout'
-    ### TODO: Somehow fetch the Content-Type params and assert they are {}
+    assert msg.parts[1]["Content-Type"].params == {}
     assert msg.parts[2] == (
         '\n'
         'Error Output:\n'
@@ -706,7 +706,7 @@ def test_report_empty_stdout_undecodable_stderr(mocker):
     assert msg.parts[1].get_content_disposition() == 'inline'
     assert msg.parts[1].get_content_type() == 'application/octet-stream'
     assert msg.parts[1].get_filename() == 'stderr'
-    ### TODO: Somehow fetch the Content-Type params and assert they are {}
+    assert msg.parts[1]["Content-Type"].params == {}
     show_argv_spy.assert_called_once_with(*result.argv)
 
 def test_report_good_stdout_undecodable_stderr(mocker):
@@ -756,7 +756,7 @@ def test_report_good_stdout_undecodable_stderr(mocker):
     assert msg.parts[1].get_content_disposition() == 'inline'
     assert msg.parts[1].get_content_type() == 'application/octet-stream'
     assert msg.parts[1].get_filename() == 'stderr'
-    ### TODO: Somehow fetch the Content-Type params and assert they are {}
+    assert msg.parts[1]["Content-Type"].params == {}
     show_argv_spy.assert_called_once_with(*result.argv)
 
 def test_report_undecodable_stdout_and_stderr(mocker):
@@ -803,7 +803,7 @@ def test_report_undecodable_stdout_and_stderr(mocker):
     assert msg.parts[1].get_content_disposition() == 'inline'
     assert msg.parts[1].get_content_type() == 'application/octet-stream'
     assert msg.parts[1].get_filename() == 'stdout'
-    ### TODO: Somehow fetch the Content-Type params and assert they are {}
+    assert msg.parts[1]["Content-Type"].params == {}
     assert msg.parts[2] == (
         '\n'
         'Error Output:\n'
@@ -814,5 +814,5 @@ def test_report_undecodable_stdout_and_stderr(mocker):
     assert msg.parts[3].get_content_disposition() == 'inline'
     assert msg.parts[3].get_content_type() == 'application/octet-stream'
     assert msg.parts[3].get_filename() == 'stderr'
-    ### TODO: Somehow fetch the Content-Type params and assert they are {}
+    assert msg.parts[3]["Content-Type"].params == {}
     show_argv_spy.assert_called_once_with(*result.argv)
