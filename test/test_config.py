@@ -507,6 +507,28 @@ def test_double_dash_command(mocker):
     assert r.exit_code == 0, r.output
     run.assert_called_once_with(mocker.ANY, '-l', 'true.log', 'false')
 
+def test_bad_encoding(capture_cfg):
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '--encoding', 'foobar',
+        '-t', 'null@test.test',
+        'true',
+    ])
+    assert r.exit_code != 0
+    assert 'foobar: unknown encoding' in r.output
+    assert not capture_cfg.called
+
+def test_bad_stderr_encoding(capture_cfg):
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '--stderr-encoding', 'foobar',
+        '-t', 'null@test.test',
+        'true',
+    ])
+    assert r.exit_code != 0
+    assert 'foobar: unknown encoding' in r.output
+    assert not capture_cfg.called
+
 # Falling/not falling back to `default` entry in netrc
 # Don't use ~/.netrc if --netrc not specified
 # Mock DaemonContext and assert that it is/isn't called without/with --fg

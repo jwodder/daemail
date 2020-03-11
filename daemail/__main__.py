@@ -1,3 +1,4 @@
+from   codecs        import getdecoder
 from   collections   import namedtuple
 from   contextlib    import contextmanager
 import locale
@@ -67,6 +68,14 @@ def netrc_getter(value):
         return (username, None)
     return get
 
+def validate_encoding(ctx, param, value):
+    if value is not None:
+        try:
+            getdecoder(value)
+        except LookupError:
+            raise click.BadParameter('{}: unknown encoding'.format(value))
+    return value
+
 def get_cwd():
     # Prefer $PWD to os.getcwd() as the former does not resolve symlinks
     return os.environ.get('PWD') or os.getcwd()
@@ -96,13 +105,15 @@ def get_cwd():
 )
 @click.option(
     '-e', '--encoding',
-    help    = 'Encoding of stdout and stderr',
-    metavar = 'ENCODING',
+    callback = validate_encoding,
+    help     = 'Encoding of stdout and stderr',
+    metavar  = 'ENCODING',
 )
 @click.option(
     '-E', '--stderr-encoding',
-    help    = 'Encoding of stderr',
-    metavar = 'ENCODING',
+    callback = validate_encoding,
+    help     = 'Encoding of stderr',
+    metavar  = 'ENCODING',
 )
 @click.option(
     '--foreground', '--fg',
@@ -378,4 +389,4 @@ def yesno(b):
     return 'yes' if b else 'no'
 
 if __name__ == '__main__':
-    main()
+    main(prog_name=__package__)

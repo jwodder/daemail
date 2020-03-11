@@ -17,6 +17,9 @@ v0.6.0 (in development)
   `$PWD`, falling back to the old value of `getcwd()` only if the environment
   variable isn't set
 
+- `--encoding` and `--stderr-encoding` arguments are now validated before
+  daemonization
+
 
 v0.5.0 (2017-02-05)
 -------------------
