@@ -122,8 +122,8 @@ def test_daemail(mocker, opts, argv, run_kwargs, cmdresult, mailspec):
     with runner.isolated_filesystem():
         r = runner.invoke(main, [*opts, '--mbox', 'daemail.mbox', *argv])
         assert r.exit_code == 0, r.output
-        daemon_mock.assert_called_once()
-        daemon_mock.return_value.__enter__.assert_called_once()
+        assert daemon_mock.call_count == 1
+        assert daemon_mock.return_value.__enter__.call_count == 1
         run_mock.assert_called_once_with(argv, **run_kwargs)
         assert dtnow_mock.call_count == 2
         assert os.listdir() == ['daemail.mbox']
