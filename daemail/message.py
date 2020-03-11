@@ -55,6 +55,7 @@ class DraftMessage:
             msg = EmailMessage(policy=POLICY)
             msg.make_mixed()
             for p in self.parts:
+                ### TODO: Call add_attachment() instead?
                 msg.attach(txt2mail(p) if isinstance(p, str) else p)
         for k,v in self.headers.items():
             msg[k] = v
