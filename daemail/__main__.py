@@ -2,7 +2,6 @@ from   codecs        import getdecoder
 from   collections   import namedtuple
 from   contextlib    import contextmanager
 import locale
-import mimetypes
 import netrc
 import os
 import sys
@@ -13,8 +12,8 @@ from   daemon.daemon import DaemonError
 from   .             import __version__
 # Import runner instead of runner.CommandRunner etc. for mocking purposes
 from   .             import runner, reporter, senders
-from   .util         import AddressParamType, multiline822, dtnow, dt2stamp, \
-                                show_argv
+from   .util         import AddressParamType, dtnow, dt2stamp, get_mime_type, \
+                                multiline822, show_argv
 
 DEFAULT_SENDMAIL = 'sendmail -i -t'
 
@@ -285,8 +284,7 @@ def main(
         stderr_encoding = encoding
     if stdout_filename is not None:
         if mime_type is None:
-            mime_type = mimetypes.guess_type(stdout_filename, False)[0] or \
-                'application/octet-stream'
+            mime_type = get_mime_type(stdout_filename)
         split = True
     elif mime_type is not None:
         stdout_filename = 'stdout'

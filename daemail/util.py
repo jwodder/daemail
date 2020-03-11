@@ -1,6 +1,7 @@
 from   datetime             import datetime, timezone
 from   email.headerregistry import AddressHeader
 from   email.message        import EmailMessage
+from   mimetypes            import guess_type
 import os
 import re
 from   shlex                import quote
@@ -117,3 +118,21 @@ def split_content_type(s):
     msg["Content-Type"] = s
     ct = msg["Content-Type"]
     return (ct.maintype, ct.subtype, ct.params)
+
+def get_mime_type(filename):
+    """
+    Like `mimetypes.guess_type()`, except that if the file is compressed, the
+    MIME type for the compression is returned.  Also, the default return value
+    is now ``'application/octet-stream'`` instead of `None`.
+    """
+    mtype, encoding = guess_type(filename, False)
+    if encoding is None:
+        return mtype or 'application/octet-stream'
+    elif encoding == 'gzip':
+        # application/gzip is defined by RFC 6713
+        return 'application/gzip'
+        # Note that there is a "+gzip" MIME structured syntax suffix specified
+        # in an RFC draft that may one day mean the correct code is:
+        #return mtype + '+gzip'
+    else:
+        return 'application/x-' + encoding

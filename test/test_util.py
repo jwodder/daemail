@@ -1,8 +1,9 @@
 from   datetime             import datetime, timedelta, timezone
 from   email.headerregistry import Address
 import pytest
-from   daemail.util         import dt2stamp, mail_quote, multiline822, \
-                                    parse_address, show_argv, split_content_type
+from   daemail.util         import dt2stamp, get_mime_type, mail_quote, \
+                                    multiline822, parse_address, show_argv, \
+                                    split_content_type
 
 w4 = timezone(timedelta(hours=-4))
 
@@ -173,3 +174,24 @@ def test_multiline822(sin, sout):
 ])
 def test_split_content_type(s, ct):
     assert split_content_type(s) == ct
+
+@pytest.mark.parametrize('filename,mtype', [
+    ('foo.txt',     'text/plain'),
+    ('foo',         'application/octet-stream'),
+    ('foo.gz',      'application/gzip'),
+    ('foo.tar.gz',  'application/gzip'),
+    ('foo.tgz',     'application/gzip'),
+    ('foo.taz',     'application/gzip'),
+    ('foo.svg.gz',  'application/gzip'),
+    ('foo.svgz',    'application/gzip'),
+    ('foo.Z',       'application/x-compress'),
+    ('foo.tar.Z',   'application/x-compress'),
+    ('foo.bz2',     'application/x-bzip2'),
+    ('foo.tar.bz2', 'application/x-bzip2'),
+    ('foo.tbz2',    'application/x-bzip2'),
+    ('foo.xz',      'application/x-xz'),
+    ('foo.tar.xz',  'application/x-xz'),
+    ('foo.txz',     'application/x-xz'),
+])
+def test_get_mime_type(filename, mtype):
+    assert get_mime_type(filename) == mtype

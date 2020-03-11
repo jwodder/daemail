@@ -12,6 +12,8 @@ v0.6.0 (in development)
   variable isn't set
 - `--encoding` and `--stderr-encoding` arguments are now validated before
   daemonization
+- Deduction of the MIME type from `--stdout-filename`'s extension now better
+  handles names of compressed files
 
 v0.5.0 (2017-02-05)
 -------------------
