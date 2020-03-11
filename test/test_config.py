@@ -1,3 +1,4 @@
+import locale
 import os.path
 from   click.testing    import CliRunner
 import pytest
@@ -226,11 +227,17 @@ def test_smtp_host_username_cli_pass(capture_cfg):
     assert sender.username == 'me@invalid.test'
     assert sender.password == 'from-the-command-line'
 
-def test_smtp_host_username_file_pass(capture_cfg):
+@pytest.mark.parametrize('file_pwd', [
+    'from_a_file',
+    'from_a_file\n',
+    'from_a_file\r\n',
+    'from_a_file\r',
+])
+def test_smtp_host_username_file_pass(capture_cfg, file_pwd):
     runner = CliRunner()
     with runner.isolated_filesystem():
         with open('smtp_password.txt', 'w') as fp:
-            print('from_a_file', file=fp)
+            print(file_pwd, end='', file=fp)
         r = runner.invoke(main, [
             '--foreground',
             '--smtp-host', 'smtp.test',
@@ -529,6 +536,61 @@ def test_bad_stderr_encoding(capture_cfg):
     assert 'foobar: unknown encoding' in r.output
     assert not capture_cfg.called
 
+def test_default_encodings(capture_cfg):
+    def_encoding = locale.getpreferredencoding(True)
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '-t', 'null@test.test',
+        'true',
+    ])
+    assert r.exit_code == 0, r.output
+    assert capture_cfg.call_count == 1
+    reporter = capture_cfg.call_args[1]["reporter"]
+    assert reporter.encoding == def_encoding
+    assert reporter.stderr_encoding == def_encoding
+
+def test_encoding_set(capture_cfg):
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '-t', 'null@test.test',
+        '--encoding=cp500',
+        'true',
+    ])
+    assert r.exit_code == 0, r.output
+    assert capture_cfg.call_count == 1
+    reporter = capture_cfg.call_args[1]["reporter"]
+    assert reporter.encoding == 'cp500'
+    assert reporter.stderr_encoding == 'cp500'
+
+def test_stderr_encoding_set(capture_cfg):
+    def_encoding = locale.getpreferredencoding(True)
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '-t', 'null@test.test',
+        '--stderr-encoding', 'cp500',
+        'true',
+    ])
+    assert r.exit_code == 0, r.output
+    assert capture_cfg.call_count == 1
+    reporter = capture_cfg.call_args[1]["reporter"]
+    assert reporter.encoding == def_encoding
+    assert reporter.stderr_encoding == 'cp500'
+
+def test_all_encodings_set(capture_cfg):
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '-t', 'null@test.test',
+        '--encoding=cp500',
+        '--stderr-encoding', 'utf-16be',
+        'true',
+    ])
+    assert r.exit_code == 0, r.output
+    assert capture_cfg.call_count == 1
+    reporter = capture_cfg.call_args[1]["reporter"]
+    assert reporter.encoding == 'cp500'
+    assert reporter.stderr_encoding == 'utf-16be'
+
 # Falling/not falling back to `default` entry in netrc
 # Don't use ~/.netrc if --netrc not specified
 # Mock DaemonContext and assert that it is/isn't called without/with --fg
+# defaulting --stdout-filename and --mime-type

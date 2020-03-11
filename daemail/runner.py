@@ -2,7 +2,7 @@ from   collections import namedtuple
 import subprocess
 import sys
 import traceback
-from   .util       import dtnow
+from   .           import util  # Access dtnow through util for mocking purposes
 
 class CommandRunner(namedtuple('CommandRunner', 'no_stderr no_stdout split')):
     # no_stderr: bool
@@ -18,17 +18,17 @@ class CommandRunner(namedtuple('CommandRunner', 'no_stderr no_stdout split')):
             }
         else:
             params = {"stdout": subprocess.PIPE, "stderr": subprocess.STDOUT}
-        start = dtnow()
+        start = util.dtnow()
         try:
             r = subprocess.run([command, *args], **params)
         except Exception:
             return CommandError(
                 argv     = [command, *args],
                 start    = start,
-                end      = dtnow(),
+                end      = util.dtnow(),
                 exc_info = sys.exc_info(),
             )
-        end = dtnow()
+        end = util.dtnow()
         return CommandResult(
             argv   = [command, *args],
             rc     = r.returncode,

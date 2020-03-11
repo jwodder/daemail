@@ -8,7 +8,7 @@ import os
 import sys
 import traceback
 import click
-from   daemon        import DaemonContext
+import daemon
 from   daemon.daemon import DaemonError
 from   .             import __version__
 # Import runner instead of runner.CommandRunner etc. for mocking purposes
@@ -318,7 +318,7 @@ def main(
     if foreground:
         ctx = chdir_context(chdir)
     else:
-        ctx = DaemonContext(working_directory=chdir, umask=os.umask(0))
+        ctx = daemon.DaemonContext(working_directory=chdir, umask=os.umask(0))
     try:
         with ctx:
             daemail.run(command, *args)
@@ -372,7 +372,7 @@ class Daemail(namedtuple('Daemail', 'runner reporter mailer')):
         s += 'Send iff failure: ' + yesno(self.reporter.failure_only) + '\n'
         s += 'Send iff nonempty: ' + yesno(self.reporter.nonempty) + '\n'
         s += 'UTC timestamps: ' + yesno(self.reporter.utc) + '\n'
-        return s
+        return s.rstrip('\n')
 
 
 @contextmanager
