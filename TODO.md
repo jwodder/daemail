@@ -23,7 +23,6 @@
 - Add a `--combine` option that is the negation of `--split` and rename
   `--split` to `--no-combine`?
 - Rename `--mime-type` to `--content-type`?
-- Eliminate `--utc`?
 
 - Documentation:
     - Add docstrings
@@ -32,15 +31,10 @@
       `--encoding`, using `--smtp-host`, explanation of `--split`, etc.) to the
       README
 
-- Try to write tests
+- Write tests
     - Test handling of non-ASCII characters in `--smtp-password-file`
     - Use a mock Sender class
         - Look into `lazr.smtptest`?
-    - Combinations of possibilities to test:
-        - command succeeds/fails/errors/is killed by a signal
-        - command output can/can't be decoded/is empty
-        - mail command succeeds/fails/errors/is killed by a signal
-        - mail command output can/can't be decoded/is empty
     - Test handling of attachments containing "From " at the beginning of a
       line (especially when writing to dead.letter) or a line with just a
       period (Can either of these happen?)
@@ -67,7 +61,6 @@ New Features
     - cf. <https://developers.google.com/gmail/api/quickstart/python>
 - Support reading stdin before daemonzing and passing the contents to the
   command?
-- Use the `encoding` value returned by `mimetypes.guess_type`?
 - Support reading a shell script (or script for a given interpreter) from
   stdin?
 - Support sending via IMAP? (cf. rss2email)
@@ -87,7 +80,8 @@ New Features
       logfile?
     - (try to) e-mail fatal errors instead of writing them to the logfile?
     - `--stdin <file>`?
-    - certificates to use with SSL over SMTP
+    - certificates to use with SSL over SMTP (and other SSL configuration
+      goodies)
     - `--stderr-filename`
     - `--stderr-mime-type`? (but when is stderr not plain text?)
     - Combine stdout and stderr in the same attachment?

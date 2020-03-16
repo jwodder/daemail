@@ -50,7 +50,9 @@ def password_file(fp):
         if smtp_password.endswith('\n'):
             smtp_password = smtp_password[:-1]
         if smtp_password.endswith('\r'):
-            smtp_password = smtp_password[:-1]
+            # This should be unreachable due to Python opening files with
+            # universal newlines enabled by default, but just in case...
+            smtp_password = smtp_password[:-1]  # pragma: no cover
         return (username, smtp_password)
     return get
 
@@ -387,4 +389,4 @@ def yesno(b):
     return 'yes' if b else 'no'
 
 if __name__ == '__main__':
-    main(prog_name=__package__)
+    main(prog_name=__package__)  # pragma: no cover

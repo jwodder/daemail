@@ -475,6 +475,59 @@ def test_smtp_host_no_username_netrc_no_pass(capture_cfg):
     assert sender.username == 'me@invalid.test'
     assert sender.password == 'hunter2'
 
+def test_smtp_host_username_netrc_defaults(capture_cfg):
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        with open('netrc.txt', 'w') as fp:
+            print('default', file=fp)
+            print('login me@invalid.test', file=fp)
+            print('password from-custom-netrc', file=fp)
+        r = runner.invoke(main, [
+            '--foreground',
+            '--smtp-host', 'smtp.test',
+            '--smtp-username', 'me@invalid.test',
+            '--netrc-file', 'netrc.txt',
+            '-t', 'null@test.test',
+            'true',
+        ])
+    assert r.exit_code == 0, r.output
+    assert r.output == ''
+    assert capture_cfg.call_count == 1
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'from-custom-netrc'
+
+def test_smtp_host_username_netrc_skip_defaults(capture_cfg):
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        with open('netrc.txt', 'w') as fp:
+            print('default', file=fp)
+            print('login me@invalid.test', file=fp)
+            print('password from-custom-netrc', file=fp)
+            print('machine smtp.test', file=fp)
+            print('login me@invalid.test', file=fp)
+            print('password the-real-password', file=fp)
+        r = runner.invoke(main, [
+            '--foreground',
+            '--smtp-host', 'smtp.test',
+            '--smtp-username', 'me@invalid.test',
+            '--netrc-file', 'netrc.txt',
+            '-t', 'null@test.test',
+            'true',
+        ])
+    assert r.exit_code == 0, r.output
+    assert r.output == ''
+    assert capture_cfg.call_count == 1
+    sender = capture_cfg.call_args[1]["mailer"].sender
+    assert type(sender) is senders.SMTPSender
+    assert sender.host == 'smtp.test'
+    assert sender.port is None
+    assert sender.username == 'me@invalid.test'
+    assert sender.password == 'the-real-password'
+
 def test_command_options(mocker):
     run = mocker.patch('daemail.__main__.Daemail.run', autospec=True)
     r = CliRunner().invoke(main, [
@@ -590,7 +643,87 @@ def test_all_encodings_set(capture_cfg):
     assert reporter.encoding == 'cp500'
     assert reporter.stderr_encoding == 'utf-16be'
 
-# Falling/not falling back to `default` entry in netrc
+def test_stdout_file_defaults(capture_cfg):
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '-t', 'null@test.test',
+        'true',
+    ])
+    assert r.exit_code == 0, r.output
+    assert capture_cfg.call_count == 1
+    runner = capture_cfg.call_args[1]["runner"]
+    reporter = capture_cfg.call_args[1]["reporter"]
+    assert not runner.split
+    assert reporter.stdout_filename is None
+    assert reporter.mime_type is None
+
+def test_stdout_filename_set(capture_cfg):
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '-t', 'null@test.test',
+        '--stdout-filename=foo.png',
+        'true',
+    ])
+    assert r.exit_code == 0, r.output
+    assert capture_cfg.call_count == 1
+    runner = capture_cfg.call_args[1]["runner"]
+    reporter = capture_cfg.call_args[1]["reporter"]
+    assert runner.split
+    assert reporter.stdout_filename == 'foo.png'
+    assert reporter.mime_type == 'image/png'
+
+def test_mime_type_set(capture_cfg):
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '-t', 'null@test.test',
+        '--mime-type', 'application/json',
+        'true',
+    ])
+    assert r.exit_code == 0, r.output
+    assert capture_cfg.call_count == 1
+    runner = capture_cfg.call_args[1]["runner"]
+    reporter = capture_cfg.call_args[1]["reporter"]
+    assert runner.split
+    assert reporter.stdout_filename == 'stdout'
+    assert reporter.mime_type == 'application/json'
+
+def test_mime_type_and_stdout_filename_set(capture_cfg):
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '-t', 'null@test.test',
+        '--stdout-filename', 'foo.png',
+        '--mime-type=application/json',
+        'true',
+    ])
+    assert r.exit_code == 0, r.output
+    assert capture_cfg.call_count == 1
+    runner = capture_cfg.call_args[1]["runner"]
+    reporter = capture_cfg.call_args[1]["reporter"]
+    assert runner.split
+    assert reporter.stdout_filename == 'foo.png'
+    assert reporter.mime_type == 'application/json'
+
+@pytest.mark.parametrize('to_addr', ['Me', 'person@example.com, foo@bar.org'])
+def test_bad_to_addr(capture_cfg, to_addr):
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '-t', to_addr,
+        'true',
+    ])
+    assert r.exit_code != 0
+    assert '{!r}: invalid address'.format(to_addr) in r.output
+    assert not capture_cfg.called
+
+@pytest.mark.parametrize('from_addr', ['Me', 'person@example.com, foo@bar.org'])
+def test_bad_from_addr(capture_cfg, from_addr):
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '-t', 'null@test.test',
+        '--from', from_addr,
+        'true',
+    ])
+    assert r.exit_code != 0
+    assert '{!r}: invalid address'.format(from_addr) in r.output
+    assert not capture_cfg.called
+
 # Don't use ~/.netrc if --netrc not specified
-# Mock DaemonContext and assert that it is/isn't called without/with --fg
-# defaulting --stdout-filename and --mime-type

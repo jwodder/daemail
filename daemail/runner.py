@@ -65,4 +65,4 @@ class CommandError(namedtuple('CommandError', 'argv start end exc_info')):
         return True
 
     def format_traceback(self):
-        return traceback.format_exception(*self.exc_info)
+        return ''.join(traceback.format_exception(*self.exc_info))

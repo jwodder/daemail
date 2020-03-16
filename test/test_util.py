@@ -113,6 +113,7 @@ def test_parse_address(s, addr):
     '',
     'person',
     'Me <person>',
+    'Me person',
     '@example.com',
     '<@example.com>',
     'Me <@example.com>',
