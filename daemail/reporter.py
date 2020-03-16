@@ -2,7 +2,7 @@ from   collections import namedtuple
 # Access `show_argv()` through `util` for mocking purposes
 from   .           import util
 from   .message    import DraftMessage
-from   .util       import mail_quote, dt2stamp, rc_with_signal
+from   .util       import dt2stamp, mail_quote, rc_with_signal
 
 class CommandReporter(namedtuple('CommandReporter', '''
     encoding failure_only from_addr mime_type nonempty stderr_encoding

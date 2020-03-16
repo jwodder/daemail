@@ -11,8 +11,8 @@ import daemon
 from   daemon.daemon import DaemonError
 from   .             import __version__
 # Import runner instead of runner.CommandRunner etc. for mocking purposes
-from   .             import runner, reporter, senders
-from   .util         import AddressParamType, dtnow, dt2stamp, get_mime_type, \
+from   .             import reporter, runner, senders
+from   .util         import AddressParamType, dt2stamp, dtnow, get_mime_type, \
                                 multiline822, show_argv
 
 DEFAULT_SENDMAIL = 'sendmail -i -t'
