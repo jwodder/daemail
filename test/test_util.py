@@ -168,6 +168,7 @@ def test_multiline822(sin, sout):
 @pytest.mark.parametrize('s,ct', [
     ('text/plain', ('text', 'plain', {})),
     ('text/plain; charset=utf-8', ('text', 'plain', {"charset": "utf-8"})),
+    ('text/plain; charset="utf-8"', ('text', 'plain', {"charset": "utf-8"})),
     (
         'text/markdown; charset=utf-8; variant=GFM',
         ('text', 'markdown', {"charset": "utf-8", "variant": "GFM"}),
@@ -175,6 +176,16 @@ def test_multiline822(sin, sout):
 ])
 def test_split_content_type(s, ct):
     assert split_content_type(s) == ct
+
+@pytest.mark.parametrize('s', [
+    'text',
+    'text/',
+    '/plain',
+    'text/plain, charset=utf-8',
+])
+def test_split_content_type_error(s):
+    with pytest.raises(ValueError):
+        split_content_type(s)
 
 @pytest.mark.parametrize('filename,mtype', [
     ('foo.txt',     'text/plain'),

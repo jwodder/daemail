@@ -13,7 +13,7 @@ from   .             import __version__
 # Import runner instead of runner.CommandRunner etc. for mocking purposes
 from   .             import reporter, runner, senders
 from   .util         import AddressParamType, dt2stamp, dtnow, get_mime_type, \
-                                multiline822, show_argv
+                                multiline822, show_argv, split_content_type
 
 DEFAULT_SENDMAIL = 'sendmail -i -t'
 
@@ -75,6 +75,14 @@ def validate_encoding(ctx, param, value):
             getdecoder(value)
         except LookupError:
             raise click.BadParameter('{}: unknown encoding'.format(value))
+    return value
+
+def validate_mime_type(ctx, param, value):
+    if value is not None:
+        try:
+            split_content_type(value)
+        except ValueError:
+            raise click.BadParameter('{}: invalid MIME type'.format(value))
     return value
 
 def get_cwd():
@@ -139,7 +147,8 @@ def get_cwd():
 )
 @click.option(
     '-M', '--mime-type', '--mime',
-    help = 'Send output as attachment with given MIME type',
+    callback = validate_mime_type,
+    help     = 'Send output as attachment with given MIME type',
 )
 @click.option(
     '-n', '--nonempty',

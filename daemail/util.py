@@ -116,6 +116,8 @@ def split_content_type(s):
     #maintype, _, subtype = mime_type.partition('/')
     msg = EmailMessage()
     msg["Content-Type"] = s
+    if msg["Content-Type"].defects:
+        raise ValueError(s)
     ct = msg["Content-Type"]
     return (ct.maintype, ct.subtype, ct.params)
 

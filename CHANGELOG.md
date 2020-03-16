@@ -10,8 +10,8 @@ v0.6.0 (in development)
 - If no `--chdir` argument is supplied, change directory to the value of
   `$PWD`, falling back to the old value of `getcwd()` only if the environment
   variable isn't set
-- `--encoding` and `--stderr-encoding` arguments are now validated before
-  daemonization
+- `--encoding`, `--stderr-encoding`, and `--mime-type` arguments are now
+  validated before daemonization
 - Deduction of the MIME type from `--stdout-filename`'s extension now better
   handles names of compressed files
 

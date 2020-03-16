@@ -703,6 +703,23 @@ def test_mime_type_and_stdout_filename_set(capture_cfg):
     assert reporter.stdout_filename == 'foo.png'
     assert reporter.mime_type == 'application/json'
 
+@pytest.mark.parametrize('mt', [
+    'text',
+    'text/',
+    '/plain',
+    'text/plain, charset=utf-8',
+])
+def test_bad_mime_type(capture_cfg, mt):
+    r = CliRunner().invoke(main, [
+        '--foreground',
+        '-t', 'null@test.test',
+        '--mime-type', mt,
+        'true',
+    ])
+    assert r.exit_code != 0
+    assert '{}: invalid MIME type'.format(mt) in r.output
+    assert not capture_cfg.called
+
 @pytest.mark.parametrize('to_addr', ['Me', 'person@example.com, foo@bar.org'])
 def test_bad_to_addr(capture_cfg, to_addr):
     r = CliRunner().invoke(main, [
