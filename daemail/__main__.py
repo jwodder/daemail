@@ -370,7 +370,7 @@ class Daemail(namedtuple('Daemail', 'runner reporter mailer')):
         s += 'Outgoing mail:\n'
         for k,v in self.mailer.sender.about():
             s += '  {}: {}\n'.format(k,v)
-        s += 'Dead letter mbox: ' + self.mailer.dead_letter_path + '\n'
+        s += 'Dead letter mbox: ' + repr(self.mailer.dead_letter_path) + '\n'
         s += 'Split stdout/stderr: ' + yesno(self.runner.split) + '\n'
         s += 'Capture stdout: ' + yesno(not self.runner.no_stdout) + '\n'
         s += 'stdout encoding: ' + self.reporter.encoding + '\n'
