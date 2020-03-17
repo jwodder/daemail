@@ -1,5 +1,5 @@
-v0.6.0 (in development)
------------------------
+v0.6.0 (2020-03-17)
+-------------------
 - Massive internal rewrites
 - Dropped support for Python versions earlier than 3.5
 - Support Python 3.6 through 3.8
