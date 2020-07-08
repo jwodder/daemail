@@ -465,3 +465,8 @@ def test_sendmail_failure(mocker):
         '> All the foos are bar when they should be baz.\n'
     )
     deadspec.assert_match(dead_msgs[0])
+
+# daemail printf '%s\n' $'foo\nbar'
+# daemail printf '%s\n' $'foo\xe2bar'
+# daemail printf '%s\n' $'go\xf0\x9f\x90\x90at'
+# daemail printf '%s\n' $'baaaad \xed\xa0\xbd\xed\xb0\x90 goat'
