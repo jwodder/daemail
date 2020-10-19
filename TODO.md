@@ -34,7 +34,7 @@
 - Write tests
     - Test handling of non-ASCII characters in `--smtp-password-file`
     - Use a mock Sender class
-        - Look into `lazr.smtptest`?
+        - Look into `lazr.smtptest`? `bebleo-smtpd-fixture`? `smtpdfix`?
     - Test handling of attachments containing "From " at the beginning of a
       line (especially when writing to dead.letter) or a line with just a
       period (Can either of these happen?)
