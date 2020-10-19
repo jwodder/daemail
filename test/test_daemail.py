@@ -25,7 +25,7 @@ def show_result(r):
     if r.exception is not None:
         return ''.join(format_exception(*r.exc_info))
     else:
-        return r.output
+        return r.stdout, r.stderr
 
 @pytest.mark.parametrize('opts,argv,run_kwargs,cmdresult,mailspec', [
 

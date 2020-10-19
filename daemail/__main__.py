@@ -1,6 +1,5 @@
 from   codecs        import getdecoder
 from   collections   import namedtuple
-from   contextlib    import contextmanager
 import locale
 import netrc
 import os
@@ -9,6 +8,7 @@ import traceback
 import click
 import daemon
 from   daemon.daemon import DaemonError
+from   morecontext   import dirchanged
 from   .             import __version__
 # Import runner instead of runner.CommandRunner etc. for mocking purposes
 from   .             import reporter, runner, senders
@@ -325,7 +325,7 @@ def main(
     )
 
     if foreground:
-        ctx = chdir_context(chdir)
+        ctx = dirchanged(chdir)
     else:
         ctx = daemon.DaemonContext(working_directory=chdir, umask=os.umask(0))
     try:
@@ -383,16 +383,6 @@ class Daemail(namedtuple('Daemail', 'runner reporter mailer')):
         s += 'UTC timestamps: ' + yesno(self.reporter.utc) + '\n'
         return s.rstrip('\n')
 
-
-@contextmanager
-def chdir_context(dirpath):
-    old_cwd = get_cwd()
-    os.chdir(dirpath)
-    try:
-        yield
-    finally:
-        ### TODO: Handle failure here:
-        os.chdir(old_cwd)
 
 def yesno(b):
     return 'yes' if b else 'no'
