@@ -110,9 +110,9 @@ class TryingSender:
                 ' this e-mail:\n\n'
             )
             for k,v in self.sender.about():
-                msg.addtext('{}: {}\n'.format(k,v))
+                msg.addtext(f'{k}: {v}\n')
             if isinstance(e, MailCmdError):
-                msg.addtext('Exit Status: {}\n'.format(rc_with_signal(e.rc)))
+                msg.addtext(f'Exit Status: {rc_with_signal(e.rc)}\n')
                 if e.output:
                     msg.addtext('\nOutput:\n')
                     msg.addblobquote(
@@ -137,5 +137,4 @@ class MailCmdError(Exception):
         self.output = output
 
     def __str__(self):
-        return '{0.sendmail!r}: command exited with return code {0.rc}'\
-               .format(self)
+        return f'{self.sendmail!r}: command exited with return code {self.rc}'

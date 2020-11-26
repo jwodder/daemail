@@ -74,7 +74,7 @@ def validate_encoding(ctx, param, value):
         try:
             getdecoder(value)
         except LookupError:
-            raise click.BadParameter('{}: unknown encoding'.format(value))
+            raise click.BadParameter(f'{value}: unknown encoding')
     return value
 
 def validate_mime_type(ctx, param, value):
@@ -82,7 +82,7 @@ def validate_mime_type(ctx, param, value):
         try:
             split_content_type(value)
         except ValueError:
-            raise click.BadParameter('{}: invalid MIME type'.format(value))
+            raise click.BadParameter(f'{value}: invalid MIME type')
     return value
 
 def get_cwd():
@@ -369,7 +369,7 @@ class Daemail(namedtuple('Daemail', 'runner reporter mailer')):
             s += '  ' + str(t) + '\n'
         s += 'Outgoing mail:\n'
         for k,v in self.mailer.sender.about():
-            s += '  {}: {}\n'.format(k,v)
+            s += f'  {k}: {v}\n'
         s += 'Dead letter mbox: ' + repr(self.mailer.dead_letter_path) + '\n'
         s += 'Split stdout/stderr: ' + yesno(self.runner.split) + '\n'
         s += 'Capture stdout: ' + yesno(not self.runner.no_stdout) + '\n'

@@ -43,13 +43,9 @@ class CommandReporter(namedtuple('CommandReporter', '''
                 ),
             )
             msg.addtext(
-                'Start Time:  {}\n'
-                'End Time:    {}\n'
-                'Exit Status: {}\n'.format(
-                    dt2stamp(result.start, self.utc),
-                    dt2stamp(result.end, self.utc),
-                    rc_with_signal(result.rc),
-                )
+                f'Start Time:  {dt2stamp(result.start, self.utc)}\n'
+                f'End Time:    {dt2stamp(result.end, self.utc)}\n'
+                f'Exit Status: {rc_with_signal(result.rc)}\n'
             )
             # An empty byte string is always an empty character string and vice
             # versa, right?

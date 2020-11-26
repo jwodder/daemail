@@ -18,11 +18,11 @@ def rc_with_signal(rc):
         except ValueError:
             return str(rc)
         else:
-            return '{} ({})'.format(rc, sig.name)
+            return f'{rc} ({sig.name})'
     return str(rc)
 
 bash_slash = {
-    c: r'\x{:02x}'.format(c)
+    c: fr'\x{c:02x}'
     for c in list(range(0x00, 0x20)) + list(range(0x7F, 0x100))
 }
 bash_slash.update({
@@ -107,7 +107,7 @@ class AddressParamType(click.ParamType):
         try:
             return parse_address(value)
         except ValueError:
-            self.fail('{!r}: invalid address'.format(value), param, ctx)
+            self.fail(f'{value!r}: invalid address', param, ctx)
 
 
 def split_content_type(s):
