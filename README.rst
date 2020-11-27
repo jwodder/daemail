@@ -79,122 +79,149 @@ where ``<send options>`` is one of::
 Options
 -------
 
-- ``-C <directory>``, ``--chdir <directory>`` — Change to ``<directory>`` after
-  daemonizing but before running ``<command>``; defaults to the current
-  directory
+-C DIR, --chdir DIR     Change to ``DIR`` after daemonizing but before running
+                        the command; defaults to the current directory
 
-- ``-D <mbox>``, ``--dead-letter <mbox>`` — If an error occurs when trying to
-  send, append the e-mail (including a description of the error) to the file
-  ``<mbox>``; defaults to ``dead.letter``.  If the file already exists, it must
-  be a valid mbox file.
+-D MBOX, --dead-letter MBOX
+                        If an error occurs when trying to send, append the
+                        e-mail (including a description of the error) to the
+                        file ``MBOX``; defaults to ``dead.letter``.  If the
+                        file already exists, it must be a valid mbox file.
 
-- ``-e <encoding>``, ``--encoding <encoding>`` — Expect the stdout (and stderr,
-  if ``--split`` is not in effect) of ``<command>`` to be in the given
-  encoding; defaults to the preferred encoding returned by Python's
-  |getpreferredencoding|_.  If decoding fails, the output will be attached to
-  the e-mail as an ``application/octet-stream`` file named "``stdout``".
+-e ENCODING, --encoding ENCODING
+                        Expect the stdout (and stderr, if ``--split`` is not in
+                        effect) of the command to be in the given encoding;
+                        defaults to the preferred encoding returned by Python's
+                        |getpreferredencoding|_.  If decoding fails, the output
+                        will be attached to the e-mail as an
+                        ``application/octet-stream`` file named "``stdout``".
 
-  When ``--mime-type`` or ``--stdout-filename`` is also given, this option has
-  no effect other than to set the default value for ``--stderr-encoding``.
+                        When ``--mime-type`` or ``--stdout-filename`` is also
+                        given, this option has no effect other than to set the
+                        default value for ``--stderr-encoding``.
 
-- ``-E <encoding>``, ``--stderr-encoding <encoding>`` — Expect the stderr of
-  ``<command>`` to be in the given encoding; defaults to the value specified
-  via ``--encoding`` or its default.  If decoding fails, the stderr output will
-  be attached to the e-mail as an ``application/octet-stream`` file named
-  "``stderr``".
+-E ENCODING, --stderr-encoding ENCODING
+                        Expect the stderr of the command to be in the given
+                        encoding; defaults to the value specified via
+                        ``--encoding`` or its default.  If decoding fails, the
+                        stderr output will be attached to the e-mail as an
+                        ``application/octet-stream`` file named "``stderr``".
 
-  This option only has an effect when ``--split`` is given, either implicitly
-  or explicitly.
+                        This option only has an effect when ``--split`` is
+                        given, either implicitly or explicitly.
 
-- ``--foreground``, ``--fg`` — Run everything in the foreground instead of
-  daemonizing.  Note that command output will still be captured rather than
-  displayed.
+--foreground, --fg      Run everything in the foreground instead of
+                        daemonizing.  Note that command output will still be
+                        captured rather than displayed.
 
-- ``-f <address>``, ``--from <address>``, ``--from-addr <address>`` — Set the
-  ``From:`` address of the e-mail.  The address may be given in either the form
-  "``address@example.com``" or "``Real Name <address@example.com>``."  If not
-  specified, ``daemail`` will not set the ``From:`` header and will expect the
-  mail command or SMTP server to do it instead.
+-f ADDRESS, --from ADDRESS, --from-addr ADDRESS
+                        Set the ``From:`` address of the e-mail.  The address
+                        may be given in either the form
+                        "``address@example.com``" or "``Real Name
+                        <address@example.com>``."  If not specified,
+                        ``daemail`` will not set the ``From:`` header and will
+                        expect the mail command or SMTP server to do it
+                        instead.
 
-- ``-F``, ``--failure-only`` — Only send an e-mail if the command failed to run
-  or exited with a nonzero status
+-F, --failure-only      Only send an e-mail if the command failed to run or
+                        exited with a nonzero status
 
-- ``-l <logfile>``, ``--logfile <logfile>`` — If an unexpected & unhandleable
-  fatal error occurs after daemonization, append a report to ``<logfile>``;
-  defaults to ``daemail.log``
+-l LOGFILE, --logfile LOGFILE
+                        If an unexpected & unhandleable fatal error occurs
+                        after daemonization, append a report to LOGFILE;
+                        defaults to ``daemail.log``
 
-  - Such an error is a deficiency in the program; please report it!
+                        Such an error is a deficiency in the program; please
+                        report it!
 
-- ``-s <command>``, ``--sendmail <command>`` — Send e-mail by passing the
-  message on stdin to ``<command>`` (executed via the shell, in the directory
-  specified with ``--chdir`` or its default); default command: ``sendmail -i
-  -t``.  This is the default if neither ``--mbox`` nor ``--smtp-host`` is
-  specified.
+-s COMMAND, --sendmail COMMAND
+                        Send e-mail by passing the message on stdin to
+                        ``COMMAND`` (executed via the shell, in the directory
+                        specified with ``--chdir`` or its default); default
+                        command: ``sendmail -i -t``.  This is the default if
+                        neither ``--mbox`` nor ``--smtp-host`` is specified.
 
-- ``--mbox <mbox>`` — "Send" e-mail by appending it to the mbox file ``<mbox>``
+--mbox MBOX             "Send" e-mail by appending it to the mbox file ``MBOX``
 
-- ``-M <mime-type>``, ``--mime-type <mime-type>``, ``--mime <mime-type>`` —
-  Attach the standard output of ``<command>`` to the e-mail as an inline
-  attachment with the given MIME type.  The MIME type may include parameters,
-  e.g., ``--mime-type "text/html; charset=utf-16"``.  If ``--stdout-filename``
-  is not also supplied, the attachment is named "``stdout``".  Implies
-  ``--split``.
+-M MIME-TYPE, --mime-type MIME-TYPE, --mime MIME-TYPE
+                        Attach the standard output of the command to the
+                        e-mail as an inline attachment with the given MIME
+                        type.  The MIME type may include parameters, e.g.,
+                        ``--mime-type "text/html; charset=utf-16"``.  If
+                        ``--stdout-filename`` is not also supplied, the
+                        attachment is named "``stdout``".  Implies ``--split``.
 
-- ``-n``, ``--nonempty`` — Do not send an e-mail if the command exited
-  successfully and both the command's stdout & stderr were empty or not
-  captured
+-n, --nonempty          Do not send an e-mail if the command exited
+                        successfully and both the command's stdout & stderr
+                        were empty or not captured
 
-- ``--no-stdout`` — Don't capture the command's stdout; implies ``--split``
+--no-stdout             Don't capture the command's stdout; implies ``--split``
 
-- ``--no-stderr`` — Don't capture the command's stderr; implies ``--split``
+--no-stderr             Don't capture the command's stderr; implies ``--split``
 
-- ``--smtp-host <host>`` — Send e-mail via SMTP, connecting to the given host.
-  ``--smtp-host`` may be accompanied by the following options:
+--smtp-host HOST        Send e-mail via SMTP, connecting to the given host.
+                        See "`SMTP Options`_" for options for further
+                        configuring the SMTP connection.
 
-  - ``--smtp-port <port>`` — Connect to ``<host>`` on the given port; defaults
-    to 25, or to 465 if ``--smtp-ssl`` is specified
+-S, --split             Capture the command's stdout and stderr separately
+                        rather than as a single stream
 
-  - ``--smtp-username <username>`` — Authenticate to the SMTP server using the
-    given username.  If a username is supplied (either on the command line or
-    in a netrc file) but no password is, ``daemail`` will prompt the user for
-    the SMTP password before daemonizing.
+--stdout-filename FILENAME
+                        Attach the standard output of the command to the e-mail
+                        as an inline attachment with the given filename.  If
+                        ``--mime-type`` is not also supplied, the MIME type of
+                        the attachment is deduced from the file extension,
+                        falling back to ``application/octet-stream`` for
+                        unknown extensions.  Implies ``--split``.
 
-  - ``--smtp-password <password>`` — Authenticate to the SMTP server using the
-    given password
+-t ADDRESS, --to ADDRESS, --to-addr ADDRESS
+                        Set the recipient of the e-mail.  The address may be
+                        given in either the form "``address@example.com``" or
+                        "``Real Name <address@example.com>``."
 
-  - ``--smtp-password-file <file>`` — Authenticate to the SMTP server using the
-    contents of the given file (after removing the final line ending) as the
-    password
+                        This option is required.  It may be given multiple
+                        times in order to specify multiple recipients.
 
-  - ``--netrc`` — Fetch the SMTP username and/or password from ``~/.netrc``.
-    If ``--smtp-username`` specifies a different username for the host than is
-    given in the netrc file, the netrc file is ignored.
+-Z, --utc               Show start & end times in UTC instead of local time
 
-  - ``--netrc-file <file>`` — Like ``--netrc``, but use the given file instead
-    of ``~/.netrc``
 
-  - ``--smtp-ssl`` — Use the SMTPS protocol to communicate with the server
+SMTP Options
+^^^^^^^^^^^^
 
-  - ``--smtp-starttls`` — Use the SMTP protocol with the STARTTLS extension to
-    communicate with the server
+When ``--smtp-host`` is specified on the command line, these options may be
+specified as well in order to further configure the SMTP connection:
 
-- ``-S``, ``--split`` — Capture the command's stdout and stderr separately
-  rather than as a single stream
+--netrc                 Fetch the SMTP username and/or password from
+                        ``~/.netrc``.  If ``--smtp-username`` specifies a
+                        different username for the host than is given in the
+                        netrc file, the netrc file is ignored.
 
-- ``--stdout-filename <filename>`` — Attach the standard output of
-  ``<command>`` to the e-mail as an inline attachment with the given filename.
-  If ``--mime-type`` is not also supplied, the MIME type of the attachment is
-  deduced from the file extension, falling back to ``application/octet-stream``
-  for unknown extensions.  Implies ``--split``.
+--netrc-file FILE       Like ``--netrc``, but use the given file instead of
+                        ``~/.netrc``
 
-- ``-t <address>``, ``--to <address>``, ``--to-addr <address>`` — Set the
-  recipient of the e-mail.  The address may be given in either the form
-  "``address@example.com``" or "``Real Name <address@example.com>``."
+--smtp-password PASSWORD
+                        Authenticate to the SMTP server using the given
+                        password
 
-  - This option is required.  It may be given multiple times in order to
-    specify multiple recipients.
+--smtp-password-file FILE
+                        Authenticate to the SMTP server using the contents of
+                        the given file (after removing the final line ending)
+                        as the password
 
-- ``-Z``, ``--utc`` — Show start & end times in UTC instead of local time
+--smtp-port PORT        Connect to the SMTP host on the given port; defaults
+                        to 25, or to 465 if ``--smtp-ssl`` is specified
+
+--smtp-ssl              Use the SMTPS protocol to communicate with the server
+
+--smtp-starttls         Use the SMTP protocol with the STARTTLS extension to
+                        communicate with the server
+
+--smtp-username USERNAME
+                        Authenticate to the SMTP host using the given username.
+                        If a username is supplied (either on the command line
+                        or in a netrc file) but no password is, ``daemail``
+                        will prompt the user for the SMTP password before
+                        daemonizing.
 
 
 Caveats

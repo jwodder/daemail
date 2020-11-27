@@ -65,6 +65,8 @@ New Features
   stdin?
 - Support sending via IMAP? (cf. rss2email)
 - When given only a single argument for a command, use the shell to execute it?
+- Support reading the SMTP password from an environment variable
+- Support getting the SMTP password with `keyring`
 
 - Options to add:
     - only capture the last `n` lines/bytes of output (for people who try to
