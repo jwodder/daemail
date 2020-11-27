@@ -717,7 +717,7 @@ def test_bad_mime_type(capture_cfg, mt):
         'true',
     ])
     assert r.exit_code != 0
-    assert '{}: invalid MIME type'.format(mt) in r.output
+    assert f'{mt}: invalid MIME type' in r.output
     assert not capture_cfg.called
 
 @pytest.mark.parametrize('to_addr', ['Me', 'person@example.com, foo@bar.org'])
@@ -728,7 +728,7 @@ def test_bad_to_addr(capture_cfg, to_addr):
         'true',
     ])
     assert r.exit_code != 0
-    assert '{!r}: invalid address'.format(to_addr) in r.output
+    assert f'{to_addr!r}: invalid address' in r.output
     assert not capture_cfg.called
 
 @pytest.mark.parametrize('from_addr', ['Me', 'person@example.com, foo@bar.org'])
@@ -740,7 +740,7 @@ def test_bad_from_addr(capture_cfg, from_addr):
         'true',
     ])
     assert r.exit_code != 0
-    assert '{!r}: invalid address'.format(from_addr) in r.output
+    assert f'{from_addr!r}: invalid address' in r.output
     assert not capture_cfg.called
 
 # Don't use ~/.netrc if --netrc not specified
