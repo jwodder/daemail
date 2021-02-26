@@ -119,10 +119,9 @@ def test_runner(mocker, no_stderr, no_stdout, split, run_kwargs, runresult,
         else:
             return runresult
     run_mock = mocker.patch('subprocess.run', side_effect=subprocess_run)
-    tsiter = iter([MOCK_START, MOCK_END])
     dtnow_mock = mocker.patch(
         'daemail.util.dtnow',
-        side_effect=lambda: next(tsiter),
+        side_effect=[MOCK_START, MOCK_END],
     )
     runner = CommandRunner(
         no_stderr = no_stderr,

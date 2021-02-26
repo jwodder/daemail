@@ -269,10 +269,9 @@ def show_result(r):
 def test_daemail(mocker, opts, argv, run_kwargs, cmdresult, mailspec):
     daemon_mock = mocker.patch('daemon.DaemonContext', autospec=True)
     run_mock = mocker.patch('subprocess.run', return_value=cmdresult)
-    tsiter = iter([MOCK_START, MOCK_END])
     dtnow_mock = mocker.patch(
         'daemail.util.dtnow',
-        side_effect=lambda: next(tsiter),
+        side_effect=[MOCK_START, MOCK_END],
     )
     runner = CliRunner()
     with runner.isolated_filesystem():
@@ -357,10 +356,9 @@ def test_daemail(mocker, opts, argv, run_kwargs, cmdresult, mailspec):
 def test_no_message(mocker, opts, argv, run_kwargs, cmdresult):
     daemon_mock = mocker.patch('daemon.DaemonContext', autospec=True)
     run_mock = mocker.patch('subprocess.run', return_value=cmdresult)
-    tsiter = iter([MOCK_START, MOCK_END])
     dtnow_mock = mocker.patch(
         'daemail.util.dtnow',
-        side_effect=lambda: next(tsiter),
+        side_effect=[MOCK_START, MOCK_END],
     )
     runner = CliRunner()
     with runner.isolated_filesystem():
@@ -374,25 +372,23 @@ def test_no_message(mocker, opts, argv, run_kwargs, cmdresult):
 
 def test_sendmail_failure(mocker):
     daemon_mock = mocker.patch('daemon.DaemonContext', autospec=True)
-    runiter = iter([
-        SimpleNamespace(
-            returncode = 0,
-            stdout     = b'This is the output.\n',
-            stderr     = None,
-        ),
-        SimpleNamespace(
-            returncode = 1,
-            stdout     = b'All the foos are bar when they should be baz.\n',
-        ),
-    ])
     run_mock = mocker.patch(
         'subprocess.run',
-        side_effect=lambda *_v, **_kw: next(runiter)
+        side_effect=[
+            SimpleNamespace(
+                returncode = 0,
+                stdout     = b'This is the output.\n',
+                stderr     = None,
+            ),
+            SimpleNamespace(
+                returncode = 1,
+                stdout     = b'All the foos are bar when they should be baz.\n',
+            ),
+        ],
     )
-    tsiter = iter([MOCK_START, MOCK_END])
     dtnow_mock = mocker.patch(
         'daemail.util.dtnow',
-        side_effect=lambda: next(tsiter),
+        side_effect=[MOCK_START, MOCK_END],
     )
     runner = CliRunner()
     argv = ['not-a-real-command', '-x', 'foo.txt']
