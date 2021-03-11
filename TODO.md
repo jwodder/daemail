@@ -9,7 +9,6 @@
       differently if its output is closed
 - Should `--to-addr` not be required when sending to an mbox?
 - Execute `--sendmail` in the directory in which daemail was started?
-- Look into handling of encoding issues with SMTP passwords
 - Check handling of non-ASCII e-mail addresses and realnames
 - Call `locale.getpreferredencoding(True)` once at the beginning of the program
   and then call it without arguments elsewhere?
@@ -17,9 +16,7 @@
 - Make the internal API suitable for public exposure
 - Improve the configuration settings dump in the logfile
 - Use `time.monotonic` to calculate elapsed time
-- Ensure usage of `sendmail` is compatible with <http://refspecs.linuxfoundation.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib-sendmail-1.html>
 - `show_argv`: Quote shell keywords?
-- Should `--from-addr` always be required? (at least for SMTP?)
 - Add a `--combine` option that is the negation of `--split` and rename
   `--split` to `--no-combine`?
 - Rename `--mime-type` to `--content-type`?
@@ -32,12 +29,6 @@
       README
 
 - Write tests
-    - Test handling of non-ASCII characters in `--smtp-password-file`
-    - Use a mock Sender class
-        - Look into `lazr.smtptest`? `bebleo-smtpd-fixture`? `smtpdfix`?
-    - Test handling of attachments containing "From " at the beginning of a
-      line (especially when writing to dead.letter) or a line with just a
-      period (Can either of these happen?)
     - `show_argv`:
         - Test non-printable characters without single-letter escapes?
         - Test non-simple arguments with equals signs
@@ -55,18 +46,11 @@ New Features
 - `show_argv`: Show, say, an `é` in an argument as `é`, assuming it decodes
   properly using the filesystem encoding (This could lead to problems with
   non-ASCII control/non-printable characters)
-- Support format specifiers in `--sendmail` for interpolating the To & From
-  addresses (and subject?)
-- Support for Gmail's OAuth  (Save for a much later version)
-    - cf. <https://developers.google.com/gmail/api/quickstart/python>
 - Support reading stdin before daemonzing and passing the contents to the
   command?
 - Support reading a shell script (or script for a given interpreter) from
   stdin?
-- Support sending via IMAP? (cf. rss2email)
 - When given only a single argument for a command, use the shell to execute it?
-- Support reading the SMTP password from an environment variable
-- Support getting the SMTP password with `keyring`
 
 - Options to add:
     - only capture the last `n` lines/bytes of output (for people who try to
@@ -82,13 +66,10 @@ New Features
       logfile?
     - (try to) e-mail fatal errors instead of writing them to the logfile?
     - `--stdin <file>`?
-    - certificates to use with SSL over SMTP (and other SSL configuration
-      goodies)
     - `--stderr-filename`
     - `--stderr-mime-type`? (but when is stderr not plain text?)
     - Combine stdout and stderr in the same attachment?
     - Force stderr to be included/attached even if it's empty?
-    - Ignore nonexistent .netrc files?
     - Create a pidfile for the command and/or daemail?
     - `--forward`: while running the subcommand, forward any & all signals
       daemail receives to it
