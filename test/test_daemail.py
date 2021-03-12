@@ -1,17 +1,16 @@
-from   datetime              import datetime, timedelta, timezone
+from   datetime         import datetime, timedelta, timezone
 import email
-from   email                 import policy
-from   email.headerregistry  import Address
+from   email            import policy
 import mailbox
 import os
 import subprocess
-from   traceback             import format_exception
-from   types                 import SimpleNamespace
-from   click.testing         import CliRunner
+from   traceback        import format_exception
+from   types            import SimpleNamespace
+from   click.testing    import CliRunner
+from   email2dict       import email2dict
 import pytest
-from   daemail.__main__      import DEFAULT_SENDMAIL, main
-from   daemail.message       import USER_AGENT
-from   test_lib_emailmatcher import TextMessage
+from   daemail.__main__ import DEFAULT_SENDMAIL, main
+from   daemail.message  import USER_AGENT
 
 w4 = timezone(timedelta(hours=-4))
 
@@ -41,20 +40,33 @@ def show_result(r):
             stdout     = b'This is the output.\n',
             stderr     = None,
         ),
-        TextMessage(
-            {
-                "From": (Address('Me', addr_spec='sender@example.nil'),),
-                "To": (Address(addr_spec='null@test.test'),),
-                "Subject": '[DONE] not-a-real-command -x foo.txt',
-                "User-Agent": USER_AGENT,
+        {
+            "unixfrom": None,
+            "headers": {
+                "from": [
+                    {"display_name": "Me", "address": "sender@example.nil"}
+                ],
+                "to": [
+                    {"display_name": "", "address": "null@test.test"},
+                ],
+                "subject": '[DONE] not-a-real-command -x foo.txt',
+                "user-agent": [USER_AGENT],
+                "content-type": {
+                    "content_type": "text/plain",
+                    "params": {},
+                },
             },
-            'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
-            'End Time:    2020-03-11 16:24:19.102030-04:00\n'
-            'Exit Status: 0\n'
-            '\n'
-            'Output:\n'
-            '> This is the output.\n'
-        ),
+            "preamble": None,
+            "content": (
+                'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
+                'End Time:    2020-03-11 16:24:19.102030-04:00\n'
+                'Exit Status: 0\n'
+                '\n'
+                'Output:\n'
+                '> This is the output.\n'
+            ),
+            "epilogue": None,
+        },
     ),
 
     (
@@ -70,23 +82,37 @@ def show_result(r):
             stdout     = b'This is the output.\n',
             stderr     = None,
         ),
-        TextMessage(
-            {
-                "From": (Address('Me', addr_spec='sender@example.nil'),),
-                "To": (
-                    Address(addr_spec='null@test.test'),
-                    Address('Interested Party', addr_spec='them@org.test'),
-                ),
-                "Subject": '[DONE] not-a-real-command -x foo.txt',
-                "User-Agent": USER_AGENT,
+        {
+            "unixfrom": None,
+            "headers": {
+                "from": [
+                    {"display_name": "Me", "address": "sender@example.nil"}
+                ],
+                "to": [
+                    {"display_name": "", "address": "null@test.test"},
+                    {
+                        "display_name": "Interested Party",
+                        "address": "them@org.test",
+                    },
+                ],
+                "subject": '[DONE] not-a-real-command -x foo.txt',
+                "user-agent": [USER_AGENT],
+                "content-type": {
+                    "content_type": "text/plain",
+                    "params": {},
+                },
             },
-            'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
-            'End Time:    2020-03-11 16:24:19.102030-04:00\n'
-            'Exit Status: 0\n'
-            '\n'
-            'Output:\n'
-            '> This is the output.\n'
-        ),
+            "preamble": None,
+            "content": (
+                'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
+                'End Time:    2020-03-11 16:24:19.102030-04:00\n'
+                'Exit Status: 0\n'
+                '\n'
+                'Output:\n'
+                '> This is the output.\n'
+            ),
+            "epilogue": None,
+        },
     ),
 
     (
@@ -101,20 +127,31 @@ def show_result(r):
             stdout     = b'This is the output.\n',
             stderr     = None,
         ),
-        TextMessage(
-            {
-                "From": (Address('Me', addr_spec='sender@example.nil'),),
-                "To": (Address(addr_spec='null@test.test'),),
-                "Subject": "[DONE] 'space command' 'space file'",
-                "User-Agent": USER_AGENT,
+        {
+            "unixfrom": None,
+            "headers": {
+                "from": [
+                    {"display_name": "Me", "address": "sender@example.nil"}
+                ],
+                "to": [{"display_name": "", "address": "null@test.test"}],
+                "subject": "[DONE] 'space command' 'space file'",
+                "user-agent": [USER_AGENT],
+                "content-type": {
+                    "content_type": "text/plain",
+                    "params": {},
+                },
             },
-            'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
-            'End Time:    2020-03-11 16:24:19.102030-04:00\n'
-            'Exit Status: 0\n'
-            '\n'
-            'Output:\n'
-            '> This is the output.\n'
-        ),
+            "preamble": None,
+            "content": (
+                'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
+                'End Time:    2020-03-11 16:24:19.102030-04:00\n'
+                'Exit Status: 0\n'
+                '\n'
+                'Output:\n'
+                '> This is the output.\n'
+            ),
+            "epilogue": None,
+        },
     ),
 
     (
@@ -132,17 +169,28 @@ def show_result(r):
             stdout     = None,
             stderr     = None,
         ),
-        TextMessage(
-            {
-                "From": (Address('Me', addr_spec='sender@example.nil'),),
-                "To": (Address(addr_spec='null@test.test'),),
-                "Subject": "[FAILED] not-a-real-command -x foo.txt",
-                "User-Agent": USER_AGENT,
+        {
+            "unixfrom": None,
+            "headers": {
+                "from": [
+                    {"display_name": "Me", "address": "sender@example.nil"}
+                ],
+                "to": [{"display_name": "", "address": "null@test.test"}],
+                "subject": "[FAILED] not-a-real-command -x foo.txt",
+                "user-agent": [USER_AGENT],
+                "content-type": {
+                    "content_type": "text/plain",
+                    "params": {},
+                },
             },
-            'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
-            'End Time:    2020-03-11 16:24:19.102030-04:00\n'
-            'Exit Status: 1\n'
-        ),
+            "preamble": None,
+            "content": (
+                'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
+                'End Time:    2020-03-11 16:24:19.102030-04:00\n'
+                'Exit Status: 1\n'
+            ),
+            "epilogue": None,
+        },
     ),
 
     (
@@ -158,20 +206,31 @@ def show_result(r):
             stdout     = b'Something went wrong.\n',
             stderr     = None,
         ),
-        TextMessage(
-            {
-                "From": (Address('Me', addr_spec='sender@example.nil'),),
-                "To": (Address(addr_spec='null@test.test'),),
-                "Subject": "[FAILED] not-a-real-command -x foo.txt",
-                "User-Agent": USER_AGENT,
+        {
+            "unixfrom": None,
+            "headers": {
+                "from": [
+                    {"display_name": "Me", "address": "sender@example.nil"}
+                ],
+                "to": [{"display_name": "", "address": "null@test.test"}],
+                "subject": "[FAILED] not-a-real-command -x foo.txt",
+                "user-agent": [USER_AGENT],
+                "content-type": {
+                    "content_type": "text/plain",
+                    "params": {},
+                },
             },
-            'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
-            'End Time:    2020-03-11 16:24:19.102030-04:00\n'
-            'Exit Status: 1\n'
-            '\n'
-            'Output:\n'
-            '> Something went wrong.\n'
-        ),
+            "preamble": None,
+            "content": (
+                'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
+                'End Time:    2020-03-11 16:24:19.102030-04:00\n'
+                'Exit Status: 1\n'
+                '\n'
+                'Output:\n'
+                '> Something went wrong.\n'
+            ),
+            "epilogue": None,
+        },
     ),
 
     (
@@ -188,20 +247,31 @@ def show_result(r):
             stdout     = b'This is the stdout.\n',
             stderr     = b'',
         ),
-        TextMessage(
-            {
-                "From": (Address('Me', addr_spec='sender@example.nil'),),
-                "To": (Address(addr_spec='null@test.test'),),
-                "Subject": "[DONE] not-a-real-command -x foo.txt",
-                "User-Agent": USER_AGENT,
+        {
+            "unixfrom": None,
+            "headers": {
+                "from": [
+                    {"display_name": "Me", "address": "sender@example.nil"}
+                ],
+                "to": [{"display_name": "", "address": "null@test.test"}],
+                "subject": "[DONE] not-a-real-command -x foo.txt",
+                "user-agent": [USER_AGENT],
+                "content-type": {
+                    "content_type": "text/plain",
+                    "params": {},
+                },
             },
-            'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
-            'End Time:    2020-03-11 16:24:19.102030-04:00\n'
-            'Exit Status: 0\n'
-            '\n'
-            'Output:\n'
-            '> This is the stdout.\n'
-        ),
+            "preamble": None,
+            "content": (
+                'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
+                'End Time:    2020-03-11 16:24:19.102030-04:00\n'
+                'Exit Status: 0\n'
+                '\n'
+                'Output:\n'
+                '> This is the stdout.\n'
+            ),
+            "epilogue": None,
+        },
     ),
 
     (
@@ -218,22 +288,33 @@ def show_result(r):
             stdout     = b'',
             stderr     = b'This is the stderr.\n',
         ),
-        TextMessage(
-            {
-                "From": (Address('Me', addr_spec='sender@example.nil'),),
-                "To": (Address(addr_spec='null@test.test'),),
-                "Subject": "[DONE] not-a-real-command -x foo.txt",
-                "User-Agent": USER_AGENT,
+        {
+            "unixfrom": None,
+            "headers": {
+                "from": [
+                    {"display_name": "Me", "address": "sender@example.nil"}
+                ],
+                "to": [{"display_name": "", "address": "null@test.test"}],
+                "subject": "[DONE] not-a-real-command -x foo.txt",
+                "user-agent": [USER_AGENT],
+                "content-type": {
+                    "content_type": "text/plain",
+                    "params": {},
+                },
             },
-            'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
-            'End Time:    2020-03-11 16:24:19.102030-04:00\n'
-            'Exit Status: 0\n'
-            '\n'
-            'Output: none\n'
-            '\n'
-            'Error Output:\n'
-            '> This is the stderr.\n'
-        ),
+            "preamble": None,
+            "content": (
+                'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
+                'End Time:    2020-03-11 16:24:19.102030-04:00\n'
+                'Exit Status: 0\n'
+                '\n'
+                'Output: none\n'
+                '\n'
+                'Error Output:\n'
+                '> This is the stderr.\n'
+            ),
+            "epilogue": None,
+        },
     ),
 
     (
@@ -249,20 +330,31 @@ def show_result(r):
             stdout     = b'This is the output.\n',
             stderr     = None,
         ),
-        TextMessage(
-            {
-                "From": (Address('Me', addr_spec='sender@example.nil'),),
-                "To": (Address(addr_spec='null@test.test'),),
-                "Subject": '[DONE] not-a-real-command -x foo.txt',
-                "User-Agent": USER_AGENT,
+        {
+            "unixfrom": None,
+            "headers": {
+                "from": [
+                    {"display_name": "Me", "address": "sender@example.nil"}
+                ],
+                "to": [{"display_name": "", "address": "null@test.test"}],
+                "subject": '[DONE] not-a-real-command -x foo.txt',
+                "user-agent": [USER_AGENT],
+                "content-type": {
+                    "content_type": "text/plain",
+                    "params": {},
+                },
             },
-            'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
-            'End Time:    2020-03-11 16:24:19.102030-04:00\n'
-            'Exit Status: 0\n'
-            '\n'
-            'Output:\n'
-            '> This is the output.\n'
-        ),
+            "preamble": None,
+            "content": (
+                'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
+                'End Time:    2020-03-11 16:24:19.102030-04:00\n'
+                'Exit Status: 0\n'
+                '\n'
+                'Output:\n'
+                '> This is the output.\n'
+            ),
+            "epilogue": None,
+        },
     ),
 
 ])
@@ -290,7 +382,7 @@ def test_daemail(mocker, opts, argv, run_kwargs, cmdresult, mailspec):
         msgs = list(mbox)
         mbox.close()
     assert len(msgs) == 1
-    mailspec.assert_match(msgs[0])
+    assert email2dict(msgs[0]) == mailspec
 
 @pytest.mark.parametrize('opts,argv,run_kwargs,cmdresult', [
     (
@@ -415,21 +507,31 @@ def test_sendmail_failure(mocker):
             run_mock.call_args_list[1][1]["input"],
             policy=policy.default,
         )
-        mailspec = TextMessage(
-            {
-                "From": (Address('Me', addr_spec='sender@example.nil'),),
-                "To": (Address(addr_spec='null@test.test'),),
-                "Subject": '[DONE] not-a-real-command -x foo.txt',
-                "User-Agent": USER_AGENT,
+        assert email2dict(sent_msg) == {
+            "unixfrom": None,
+            "headers": {
+                "from": [
+                    {"display_name": "Me", "address": "sender@example.nil"}
+                ],
+                "to": [{"display_name": "", "address": "null@test.test"}],
+                "subject": '[DONE] not-a-real-command -x foo.txt',
+                "user-agent": [USER_AGENT],
+                "content-type": {
+                    "content_type": "text/plain",
+                    "params": {},
+                },
             },
-            'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
-            'End Time:    2020-03-11 16:24:19.102030-04:00\n'
-            'Exit Status: 0\n'
-            '\n'
-            'Output:\n'
-            '> This is the output.\n'
-        )
-        mailspec.assert_match(sent_msg)
+            "preamble": None,
+            "content": (
+                'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
+                'End Time:    2020-03-11 16:24:19.102030-04:00\n'
+                'Exit Status: 0\n'
+                '\n'
+                'Output:\n'
+                '> This is the output.\n'
+            ),
+            "epilogue": None,
+        }
         assert dtnow_mock.call_count == 2
         assert os.listdir() == ['dead.letter']
         mbox = mailbox.mbox('dead.letter', factory=msg_factory)
@@ -437,30 +539,40 @@ def test_sendmail_failure(mocker):
         dead_msgs = list(mbox)
         mbox.close()
     assert len(dead_msgs) == 1
-    deadspec = TextMessage(
-        {
-            "From": (Address('Me', addr_spec='sender@example.nil'),),
-            "To": (Address(addr_spec='null@test.test'),),
-            "Subject": '[DONE] not-a-real-command -x foo.txt',
-            "User-Agent": USER_AGENT,
+    assert email2dict(dead_msgs[0]) == {
+        "unixfrom": None,
+        "headers": {
+            "from": [
+                {"display_name": "Me", "address": "sender@example.nil"}
+            ],
+            "to": [{"display_name": "", "address": "null@test.test"}],
+            "subject": '[DONE] not-a-real-command -x foo.txt',
+            "user-agent": [USER_AGENT],
+            "content-type": {
+                "content_type": "text/plain",
+                "params": {},
+            },
         },
-        'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
-        'End Time:    2020-03-11 16:24:19.102030-04:00\n'
-        'Exit Status: 0\n'
-        '\n'
-        'Output:\n'
-        '> This is the output.\n'
-        '\n'
-        'Additionally, an error occurred while trying to send this e-mail:\n'
-        '\n'
-        'Method: command\n'
-        'Command: ' + DEFAULT_SENDMAIL + '\n'
-        'Exit Status: 1\n'
-        '\n'
-        'Output:\n'
-        '> All the foos are bar when they should be baz.\n'
-    )
-    deadspec.assert_match(dead_msgs[0])
+        "preamble": None,
+        "content": (
+            'Start Time:  2020-03-11 16:22:32.010203-04:00\n'
+            'End Time:    2020-03-11 16:24:19.102030-04:00\n'
+            'Exit Status: 0\n'
+            '\n'
+            'Output:\n'
+            '> This is the output.\n'
+            '\n'
+            'Additionally, an error occurred while trying to send this e-mail:\n'
+            '\n'
+            'Method: command\n'
+            f'Command: {DEFAULT_SENDMAIL}\n'
+            'Exit Status: 1\n'
+            '\n'
+            'Output:\n'
+            '> All the foos are bar when they should be baz.\n'
+        ),
+        "epilogue": None,
+    }
 
 # daemail printf '%s\n' $'foo\nbar'
 # daemail printf '%s\n' $'foo\xe2bar'

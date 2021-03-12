@@ -1,40 +1,15 @@
-from   base64                import b64encode
-from   email.headerregistry  import Address
-import quopri
-from   daemail.message       import DraftMessage, USER_AGENT
-from   daemail.util          import parse_address
-from   test_lib_emailmatcher import Attachment, MixedMessage, Text, TextMessage
+from   email.headerregistry import Address
+from   typing               import Dict
+from   email2dict           import email2dict
+from   daemail.message      import DraftMessage, USER_AGENT
 
 TEXT = 'àéîøü\n'
-# Something in the email module implicitly adds a newline to the body text if
-# one isn't present, so we need to include one here lest the base64 encodings
-# not match up.
-TEXT_ENC = TEXT.encode('utf-8')
 
-def test_7bit_text():
-    msg = DraftMessage(
-        from_addr=parse_address('from@example.com'),
-        to_addrs=[parse_address('to@example.com')],
-        subject='test_7bit_text',
-    )
-    msg.addtext(TEXT)
-    blob = bytes(msg.compile())
-    assert isinstance(blob, bytes)
-    assert TEXT_ENC not in blob
-    assert quopri.encodestring(TEXT_ENC) in blob or b64encode(TEXT_ENC) in blob
-
-def test_7bit_multipart():
-    msg = DraftMessage(
-        from_addr=parse_address('from@example.com'),
-        to_addrs=[parse_address('to@example.com')],
-        subject='test_7bit_multipart',
-    )
-    msg.addtext(TEXT)
-    msg.addmimeblob(b'\0\0\0\0', 'application/octet-stream', 'null.dat')
-    blob = bytes(msg.compile())
-    assert isinstance(blob, bytes)
-    assert TEXT_ENC not in blob
-    assert quopri.encodestring(TEXT_ENC) in blob or b64encode(TEXT_ENC) in blob
+def addr2dict(addr: Address) -> Dict[str, str]:
+    return {
+        "display_name": addr.display_name,
+        "address": addr.addr_spec,
+    }
 
 def test_compile_text():
     from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
@@ -48,16 +23,22 @@ def test_compile_text():
         subject = 'This is a test e-mail.',
     )
     draft.addtext(TEXT)
-    spec = TextMessage(
-        {
-            "Subject": "This is a test e-mail.",
-            "From": (from_addr,),
-            "To": to_addrs,
-            "User-Agent": USER_AGENT,
+    assert email2dict(draft.compile()) == {
+        "unixfrom": None,
+        "headers": {
+            "subject": "This is a test e-mail.",
+            "from": [addr2dict(from_addr)],
+            "to": list(map(addr2dict, to_addrs)),
+            "user-agent": [USER_AGENT],
+            "content-type": {
+                "content_type": "text/plain",
+                "params": {},
+            },
         },
-        TEXT,
-    )
-    spec.assert_match(draft.compile())
+        "preamble": None,
+        "content": TEXT,
+        "epilogue": None,
+    }
 
 def test_compile_text_no_from():
     to_addrs = (
@@ -70,17 +51,21 @@ def test_compile_text_no_from():
         subject = 'This is a test e-mail.',
     )
     draft.addtext(TEXT)
-    spec = TextMessage(
-        {
-            "Subject": "This is a test e-mail.",
-            "To": to_addrs,
-            "User-Agent": USER_AGENT,
+    assert email2dict(draft.compile()) == {
+        "unixfrom": None,
+        "headers": {
+            "subject": "This is a test e-mail.",
+            "to": list(map(addr2dict, to_addrs)),
+            "user-agent": [USER_AGENT],
+            "content-type": {
+                "content_type": "text/plain",
+                "params": {},
+            },
         },
-        TEXT,
-    )
-    msg = draft.compile()
-    spec.assert_match(msg)
-    assert 'From' not in msg
+        "preamble": None,
+        "content": TEXT,
+        "epilogue": None,
+    }
 
 def test_compile_multiline_text():
     from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
@@ -95,16 +80,22 @@ def test_compile_multiline_text():
     )
     draft.addtext('This is line 1.\n')
     draft.addtext('This is line 2.\n')
-    spec = TextMessage(
-        {
-            "Subject": "This is a test e-mail.",
-            "From": (from_addr,),
-            "To": to_addrs,
-            "User-Agent": USER_AGENT,
+    assert email2dict(draft.compile()) == {
+        "unixfrom": None,
+        "headers": {
+            "subject": "This is a test e-mail.",
+            "from": [addr2dict(from_addr)],
+            "to": list(map(addr2dict, to_addrs)),
+            "user-agent": [USER_AGENT],
+            "content-type": {
+                "content_type": "text/plain",
+                "params": {},
+            },
         },
-        'This is line 1.\nThis is line 2.\n',
-    )
-    spec.assert_match(draft.compile())
+        "preamble": None,
+        "content": 'This is line 1.\nThis is line 2.\n',
+        "epilogue": None,
+    }
 
 def test_compile_text_blob_text():
     from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
@@ -124,25 +115,63 @@ def test_compile_text_blob_text():
         'deadbeef.dat',
     )
     draft.addtext('This is line 2.\n')
-    spec = MixedMessage(
-        {
-            "Subject": "This is a test e-mail.",
-            "From": (from_addr,),
-            "To": to_addrs,
-            "User-Agent": USER_AGENT,
+    assert email2dict(draft.compile()) == {
+        "unixfrom": None,
+        "headers": {
+            "subject": "This is a test e-mail.",
+            "from": [addr2dict(from_addr)],
+            "to": list(map(addr2dict, to_addrs)),
+            "user-agent": [USER_AGENT],
+            "content-type": {
+                "content_type": "multipart/mixed",
+                "params": {},
+            },
         },
-        [
-            Text('This is line 1.\n'),
-            Attachment(
-                'inline',
-                'deadbeef.dat',
-                'application/octet-stream',
-                b'\xDE\xAD\xBE\xEF',
-            ),
-            Text('This is line 2.\n'),
+        "preamble": None,
+        "content": [
+            {
+                "unixfrom": None,
+                "headers": {
+                    "content-type": {
+                        "content_type": "text/plain",
+                        "params": {},
+                    },
+                },
+                "preamble": None,
+                "content": 'This is line 1.\n',
+                "epilogue": None,
+            },
+            {
+                "unixfrom": None,
+                "headers": {
+                    "content-type": {
+                        "content_type": "application/octet-stream",
+                        "params": {},
+                    },
+                    "content-disposition": {
+                        "disposition": "inline",
+                        "params": {"filename": "deadbeef.dat"},
+                    },
+                },
+                "preamble": None,
+                "content": b'\xDE\xAD\xBE\xEF',
+                "epilogue": None,
+            },
+            {
+                "unixfrom": None,
+                "headers": {
+                    "content-type": {
+                        "content_type": "text/plain",
+                        "params": {},
+                    },
+                },
+                "preamble": None,
+                "content": 'This is line 2.\n',
+                "epilogue": None,
+            },
         ],
-    )
-    spec.assert_match(draft.compile())
+        "epilogue": None,
+    }
 
 def test_compile_text_quote():
     from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
@@ -161,16 +190,22 @@ def test_compile_text_quote():
         'iso-8859-1',
         'latin1.txt',
     )
-    spec = TextMessage(
-        {
-            "Subject": "This is a test e-mail.",
-            "From": (from_addr,),
-            "To": to_addrs,
-            "User-Agent": USER_AGENT,
+    assert email2dict(draft.compile()) == {
+        "unixfrom": None,
+        "headers": {
+            "subject": "This is a test e-mail.",
+            "from": [addr2dict(from_addr)],
+            "to": list(map(addr2dict, to_addrs)),
+            "user-agent": [USER_AGENT],
+            "content-type": {
+                "content_type": "text/plain",
+                "params": {},
+            },
         },
-        'This is a quote:\n> \xD0is is i\xF1 L\xE1tin\xB9.\n',
-    )
-    spec.assert_match(draft.compile())
+        "preamble": None,
+        "content": 'This is a quote:\n> \xD0is is i\xF1 L\xE1tin\xB9.\n',
+        "epilogue": None,
+    }
 
 def test_compile_text_undecodable_quote():
     from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
@@ -189,21 +224,48 @@ def test_compile_text_undecodable_quote():
         'utf-8',
         'latin1.txt',
     )
-    spec = MixedMessage(
-        {
-            "Subject": "This is a test e-mail.",
-            "From": (from_addr,),
-            "To": to_addrs,
-            "User-Agent": USER_AGENT,
+    assert email2dict(draft.compile()) == {
+        "unixfrom": None,
+        "headers": {
+            "subject": "This is a test e-mail.",
+            "from": [addr2dict(from_addr)],
+            "to": list(map(addr2dict, to_addrs)),
+            "user-agent": [USER_AGENT],
+            "content-type": {
+                "content_type": "multipart/mixed",
+                "params": {},
+            },
         },
-        [
-            Text('This is a quote:\n'),
-            Attachment(
-                'inline',
-                'latin1.txt',
-                'application/octet-stream',
-                b'\xD0is is i\xF1 L\xE1tin\xB9.\n',
-            ),
+        "preamble": None,
+        "content": [
+            {
+                "unixfrom": None,
+                "headers": {
+                    "content-type": {
+                        "content_type": "text/plain",
+                        "params": {},
+                    },
+                },
+                "preamble": None,
+                "content": 'This is a quote:\n',
+                "epilogue": None,
+            },
+            {
+                "unixfrom": None,
+                "headers": {
+                    "content-type": {
+                        "content_type": "application/octet-stream",
+                        "params": {},
+                    },
+                    "content-disposition": {
+                        "disposition": "inline",
+                        "params": {"filename": "latin1.txt"},
+                    },
+                },
+                "preamble": None,
+                "content": b'\xD0is is i\xF1 L\xE1tin\xB9.\n',
+                "epilogue": None,
+            },
         ],
-    )
-    spec.assert_match(draft.compile())
+        "epilogue": None,
+    }
