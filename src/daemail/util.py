@@ -1,12 +1,11 @@
-from   datetime             import datetime, timezone
-from   email.headerregistry import AddressHeader
-from   email.message        import EmailMessage
-from   mimetypes            import guess_type
+from   datetime  import datetime, timezone
+from   mimetypes import guess_type
 import os
 import re
-from   shlex                import quote
-from   signal               import Signals
+from   shlex     import quote
+from   signal    import Signals
 import click
+from   mailbits  import parse_address
 
 def mail_quote(s):
     return ''.join('> ' + line + '\n' for line in (s or '\n').splitlines())
@@ -85,20 +84,6 @@ def multiline822(s):
     return re.sub('^', '  ', re.sub('^$', '.', s.strip('\r\n'), flags=re.M),
                   flags=re.M)
 
-def parse_address(s):  # -> email.headerregistry.Address
-    ### TODO: Is this really how you're supposed to parse fields with
-    ### email.headerregistry?
-    kwds = {"defects": []}
-    AddressHeader.parse(s, kwds)
-    if kwds["defects"]:
-        raise ValueError(s)
-    addresses = [
-        address for group in kwds["groups"]
-                for address in group.addresses
-    ]
-    if len(addresses) != 1:
-        raise ValueError(s)
-    return addresses[0]
 
 class AddressParamType(click.ParamType):
     name = 'address'
@@ -109,17 +94,6 @@ class AddressParamType(click.ParamType):
         except ValueError:
             self.fail(f'{value!r}: invalid address', param, ctx)
 
-
-def split_content_type(s):
-    # cgi.parse_header() is scheduled for removal by PEP 594:
-    #mime_type, params = cgi.parse_header(s)
-    #maintype, _, subtype = mime_type.partition('/')
-    msg = EmailMessage()
-    msg["Content-Type"] = s
-    if msg["Content-Type"].defects:
-        raise ValueError(s)
-    ct = msg["Content-Type"]
-    return (ct.maintype, ct.subtype, ct.params)
 
 def get_mime_type(filename):
     """

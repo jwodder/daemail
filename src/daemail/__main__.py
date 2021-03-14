@@ -8,12 +8,13 @@ import traceback
 import click
 import daemon
 from   daemon.daemon import DaemonError
+from   mailbits      import ContentType
 from   morecontext   import dirchanged
 from   .             import __version__
 # Import runner instead of runner.CommandRunner etc. for mocking purposes
 from   .             import reporter, runner, senders
 from   .util         import AddressParamType, dt2stamp, dtnow, get_mime_type, \
-                                multiline822, show_argv, split_content_type
+                                multiline822, show_argv
 
 DEFAULT_SENDMAIL = 'sendmail -i -t'
 
@@ -80,7 +81,7 @@ def validate_encoding(ctx, param, value):
 def validate_mime_type(ctx, param, value):
     if value is not None:
         try:
-            split_content_type(value)
+            ContentType.parse(value)
         except ValueError:
             raise click.BadParameter(f'{value}: invalid MIME type')
     return value

@@ -1,8 +1,9 @@
 from   email         import policy
 from   email.message import EmailMessage
 import platform
+from   mailbits      import ContentType
 from   .             import __version__
-from   .util         import mail_quote, split_content_type
+from   .util         import mail_quote
 
 USER_AGENT = 'daemail {} ({} {})'.format(
     __version__, platform.python_implementation(), platform.python_version()
@@ -69,14 +70,14 @@ def txt2mail(txt):
 
 def mkattachment(blob, mime_type, disposition, filename):
     assert isinstance(blob, bytes)
-    maintype, subtype, params = split_content_type(mime_type)
+    ct = ContentType.parse(mime_type)
     attach = EmailMessage()
     attach.set_content(
         blob,
-        maintype,
-        subtype,
+        ct.maintype,
+        ct.subtype,
         disposition = disposition,
         filename    = filename,
-        params      = params,
+        params      = ct.params,
     )
     return attach

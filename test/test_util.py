@@ -1,9 +1,7 @@
-from   datetime             import datetime, timedelta, timezone
-from   email.headerregistry import Address
+from   datetime     import datetime, timedelta, timezone
 import pytest
-from   daemail.util         import dt2stamp, get_mime_type, mail_quote, \
-                                    multiline822, parse_address, show_argv, \
-                                    split_content_type
+from   daemail.util import dt2stamp, get_mime_type, mail_quote, multiline822, \
+                            show_argv
 
 w4 = timezone(timedelta(hours=-4))
 
@@ -94,37 +92,6 @@ def test_show_argv(argv, output):
 def test_mail_quote(inp, output):
     assert mail_quote(inp) == output
 
-@pytest.mark.parametrize('s,addr', [
-    ('person@example.com', Address('', addr_spec='person@example.com')),
-    ('<person@example.com>', Address('', addr_spec='person@example.com')),
-    (
-        'Linus User <person@example.com>',
-        Address('Linus User', addr_spec='person@example.com'),
-    ),
-    (
-        '"Linus User" <person@example.com>',
-        Address('Linus User', addr_spec='person@example.com'),
-    ),
-])
-def test_parse_address(s, addr):
-    assert parse_address(s) == addr
-
-@pytest.mark.parametrize('s', [
-    '',
-    'person',
-    'Me <person>',
-    'Me person',
-    '@example.com',
-    '<@example.com>',
-    'Me <@example.com>',
-    'person@example.com, foo@bar.org',
-    'Me',
-    'person@example.com foo@bar.org',
-])
-def test_parse_address_error(s):
-    with pytest.raises(ValueError):
-        parse_address(s)
-
 @pytest.mark.parametrize('dt,slocal,sutc', [
     (
         datetime(2020, 3, 10, 15, 0, 28, 123456, w4),
@@ -164,28 +131,6 @@ def test_dt2stamp(dt, slocal, sutc):
 ])
 def test_multiline822(sin, sout):
     assert multiline822(sin) == sout
-
-@pytest.mark.parametrize('s,ct', [
-    ('text/plain', ('text', 'plain', {})),
-    ('text/plain; charset=utf-8', ('text', 'plain', {"charset": "utf-8"})),
-    ('text/plain; charset="utf-8"', ('text', 'plain', {"charset": "utf-8"})),
-    (
-        'text/markdown; charset=utf-8; variant=GFM',
-        ('text', 'markdown', {"charset": "utf-8", "variant": "GFM"}),
-    ),
-])
-def test_split_content_type(s, ct):
-    assert split_content_type(s) == ct
-
-@pytest.mark.parametrize('s', [
-    'text',
-    'text/',
-    '/plain',
-    'text/plain, charset=utf-8',
-])
-def test_split_content_type_error(s):
-    with pytest.raises(ValueError):
-        split_content_type(s)
 
 @pytest.mark.parametrize('filename,mtype', [
     ('foo.txt',     'text/plain'),

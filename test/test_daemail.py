@@ -7,7 +7,7 @@ import subprocess
 from   traceback        import format_exception
 from   types            import SimpleNamespace
 from   click.testing    import CliRunner
-from   email2dict       import email2dict
+from   mailbits         import email2dict
 import pytest
 from   daemail.__main__ import DEFAULT_SENDMAIL, main
 from   daemail.message  import USER_AGENT
