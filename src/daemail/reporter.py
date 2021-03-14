@@ -1,8 +1,9 @@
 from   collections import namedtuple
+from   eletter     import reply_quote
 # Access `show_argv()` through `util` for mocking purposes
 from   .           import util
 from   .message    import DraftMessage
-from   .util       import dt2stamp, mail_quote, rc_with_signal
+from   .util       import dt2stamp, rc_with_signal
 
 class CommandReporter(namedtuple('CommandReporter', '''
     encoding failure_only from_addr mime_type nonempty stderr_encoding
@@ -27,7 +28,7 @@ class CommandReporter(namedtuple('CommandReporter', '''
             )
             msg.addtext(
                 'An error occurred while attempting to run the command:\n'
-                + mail_quote(result.format_traceback())
+                + reply_quote(result.format_traceback())
             )
             return msg
         else:

@@ -1,83 +1,61 @@
-from   email         import policy
-from   email.message import EmailMessage
+from   email.headerregistry import Address
+from   email.message        import EmailMessage
 import platform
-from   mailbits      import ContentType
-from   .             import __version__
-from   .util         import mail_quote
+from   typing               import Iterable, List, Optional, Union
+import attr
+import eletter
+from   eletter              import BytesAttachment, MailItem, TextBody, \
+                                        reply_quote
+from   .                    import __url__, __version__
 
-USER_AGENT = 'daemail {} ({} {})'.format(
-    __version__, platform.python_implementation(), platform.python_version()
+USER_AGENT = 'daemail/{} ({}) eletter/{} {}/{}'.format(
+    __version__,
+    __url__,
+    eletter.__version__,
+    platform.python_implementation(),
+    platform.python_version()
 )
 
-POLICY = policy.default.clone(cte_type='7bit')
+def address_list(addrs: Iterable[Address]) -> List[Address]:
+    return list(addrs)
 
+@attr.s(auto_attribs=True)
 class DraftMessage:
-    def __init__(self, from_addr, to_addrs, subject):
-        """
-        :type from_addr: email.headerregistry.Address or None
-        :type to_addrs: Iterable[email.headerregistry.Address]
-        :type subject: str
-        """
-        self.headers = {
-            "To": list(to_addrs),
-            "Subject": subject,
-            "User-Agent": USER_AGENT,
-        }
-        if from_addr is not None:
-            self.headers['From'] = from_addr
-        self.parts = []  # list of strings and/or attachments
+    from_addr: Optional[Address]
+    to_addrs: List[Address] = attr.ib(converter=address_list)
+    subject: str
+    # List of strings and/or attachments:
+    parts: List[Union[str, MailItem]] = attr.ib(factory=list, init=False)
 
-    def addtext(self, txt):
+    def addtext(self, txt: str) -> None:
         if self.parts and isinstance(self.parts[-1], str):
             self.parts[-1] += txt
         else:
             self.parts.append(txt)
 
-    def addblobquote(self, blob, encoding, filename):
+    def addblobquote(self, blob: bytes, encoding: str, filename: str) -> None:
         try:
             txt = blob.decode(encoding)
         except UnicodeDecodeError:
-            self.addmimeblob(blob, 'application/octet-stream', filename)
+            self.parts.append(BytesAttachment(blob, filename, inline=True))
         else:
-            self.addtext(mail_quote(txt))
+            self.addtext(reply_quote(txt))
 
     def addmimeblob(self, blob, mimetype, filename):
-        self.parts.append(mkattachment(
+        self.parts.append(BytesAttachment(
             blob,
-            mime_type   = mimetype,
-            disposition = 'inline',
-            filename    = filename,
+            filename     = filename,
+            content_type = mimetype,
+            inline       = True,
         ))
 
-    def compile(self):
-        if len(self.parts) == 1 and isinstance(self.parts[0], str):
-            msg = txt2mail(self.parts[0])
-        else:
-            msg = EmailMessage(policy=POLICY)
-            msg.make_mixed()
-            for p in self.parts:
-                ### TODO: Call add_attachment() instead?
-                msg.attach(txt2mail(p) if isinstance(p, str) else p)
-        for k,v in self.headers.items():
-            msg[k] = v
-        return msg
-
-
-def txt2mail(txt):
-    msg = EmailMessage(policy=POLICY)
-    msg.set_content(txt)
-    return msg
-
-def mkattachment(blob, mime_type, disposition, filename):
-    assert isinstance(blob, bytes)
-    ct = ContentType.parse(mime_type)
-    attach = EmailMessage()
-    attach.set_content(
-        blob,
-        ct.maintype,
-        ct.subtype,
-        disposition = disposition,
-        filename    = filename,
-        params      = ct.params,
-    )
-    return attach
+    def compile(self) -> EmailMessage:
+        msg: MailItem = TextBody(self.parts[0])
+        for p in self.parts[1:]:
+            msg &= p
+        return msg.compose(
+            subject=self.subject,
+            from_=self.from_addr,
+            to=self.to_addrs,
+            headers={"User-Agent": USER_AGENT},
+        )

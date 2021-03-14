@@ -7,9 +7,6 @@ from   signal    import Signals
 import click
 from   mailbits  import parse_address
 
-def mail_quote(s):
-    return ''.join('> ' + line + '\n' for line in (s or '\n').splitlines())
-
 def rc_with_signal(rc):
     if rc < 0:
         try:

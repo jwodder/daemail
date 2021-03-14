@@ -1,7 +1,6 @@
 from   datetime     import datetime, timedelta, timezone
 import pytest
-from   daemail.util import dt2stamp, get_mime_type, mail_quote, multiline822, \
-                            show_argv
+from   daemail.util import dt2stamp, get_mime_type, multiline822, show_argv
 
 w4 = timezone(timedelta(hours=-4))
 
@@ -66,31 +65,6 @@ w4 = timezone(timedelta(hours=-4))
 ])
 def test_show_argv(argv, output):
     assert show_argv(*argv) == output
-
-@pytest.mark.parametrize('inp,output', [
-    ('', '> \n'),
-    ('\n', '> \n'),
-    ('Insert output here.', '> Insert output here.\n'),
-    ('Insert output here.\n', '> Insert output here.\n'),
-    (
-        'Insert output here.\nOutsert input there.',
-        '> Insert output here.\n> Outsert input there.\n',
-    ),
-    (
-        'Insert output here.\nOutsert input there.\n',
-        '> Insert output here.\n> Outsert input there.\n',
-    ),
-    (
-        'Insert output here.\r\nOutsert input there.\r\n',
-        '> Insert output here.\n> Outsert input there.\n',
-    ),
-    (
-        'Insert output here.\rOutsert input there.\r',
-        '> Insert output here.\n> Outsert input there.\n',
-    ),
-])
-def test_mail_quote(inp, output):
-    assert mail_quote(inp) == output
 
 @pytest.mark.parametrize('dt,slocal,sutc', [
     (

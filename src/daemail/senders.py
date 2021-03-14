@@ -3,7 +3,8 @@ import mailbox
 import smtplib
 import subprocess
 import traceback
-from   .util import mail_quote, rc_with_signal
+from   eletter import reply_quote
+from   .util   import rc_with_signal
 
 class SMTPSender:
     METHOD = 'SMTP'
@@ -124,7 +125,7 @@ class TryingSender:
                     msg.addtext('\nOutput: none\n')
             else:
                 msg.addtext('\nError Traceback:\n')
-                msg.addtext(mail_quote(traceback.format_exc()))
+                msg.addtext(reply_quote(traceback.format_exc()))
             ### TODO: Handle failures here!
             MboxSender(self.dead_letter_path).send(msg.compile())
 
