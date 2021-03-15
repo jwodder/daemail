@@ -1,19 +1,20 @@
 import locale
 from   subprocess import CalledProcessError
 import traceback
+import attr
 from   eletter    import reply_quote
-from   outgoing   import from_dict
+from   outgoing   import Sender, from_dict
 from   .util      import rc_with_signal
 
+@attr.s(auto_attribs=True)
 class TryingSender:
     """
     Tries to send a message via the given sender object, falling back to
     sending to the mbox at ``dead_letter_path`` if that fails
     """
 
-    def __init__(self, sender, dead_letter_path):
-        self.sender = sender
-        self.dead_letter_path = dead_letter_path
+    sender: Sender
+    dead_letter_path: str
 
     def send(self, msg):
         msgobj = msg.compile()

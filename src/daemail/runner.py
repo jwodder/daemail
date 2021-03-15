@@ -1,13 +1,15 @@
-from   collections import namedtuple
+from   datetime import datetime
 import subprocess
-import sys
 import traceback
-from   .           import util  # Access dtnow through util for mocking purposes
+from   typing   import List, Optional
+import attr
+from   .        import util  # Access dtnow through util for mocking purposes
 
-class CommandRunner(namedtuple('CommandRunner', 'no_stderr no_stdout split')):
-    # no_stderr: bool
-    # no_stdout: bool
-    # split: bool
+@attr.s(auto_attribs=True)
+class CommandRunner:
+    no_stderr: bool
+    no_stdout: bool
+    split: bool
 
     def run(self, command, *args):
         params = {}
@@ -23,10 +25,10 @@ class CommandRunner(namedtuple('CommandRunner', 'no_stderr no_stdout split')):
             r = subprocess.run([command, *args], **params)
         except Exception:
             return CommandError(
-                argv     = [command, *args],
-                start    = start,
-                end      = util.dtnow(),
-                exc_info = sys.exc_info(),
+                argv  = [command, *args],
+                start = start,
+                end   = util.dtnow(),
+                tb    = traceback.format_exc(),
             )
         end = util.dtnow()
         return CommandResult(
@@ -39,30 +41,27 @@ class CommandRunner(namedtuple('CommandRunner', 'no_stderr no_stdout split')):
         )
 
 
-class CommandResult(namedtuple(
-    'CommandResult', 'argv rc start end stdout stderr',
-)):
-    # argv: list[str]
-    # rc: int
-    # start: datetime  # aware
-    # end: datetime  # aware
-    # stdout: Optional[bytes]
-    # stderr: Optional[bytes]
+@attr.s(auto_attribs=True)
+class CommandResult:
+    argv: List[str]
+    rc: int
+    start: datetime  # aware
+    end: datetime  # aware
+    stdout: Optional[bytes]
+    stderr: Optional[bytes]
 
     @property
     def errored(self):
         return False
 
 
-class CommandError(namedtuple('CommandError', 'argv start end exc_info')):
-    # argv: list[str]
-    # start: datetime  # aware
-    # end: datetime  # aware
-    # exc_info: sys.exc_info()
+@attr.s(auto_attribs=True)
+class CommandError:
+    argv: List[str]
+    start: datetime  # aware
+    end: datetime  # aware
+    tb: str
 
     @property
     def errored(self):
         return True
-
-    def format_traceback(self):
-        return ''.join(traceback.format_exception(*self.exc_info))

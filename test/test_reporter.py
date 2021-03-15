@@ -202,21 +202,18 @@ def test_report_plain_message(mocker, result, subject, body):
 
 @pytest.mark.parametrize('failure_only', [False, True])
 @pytest.mark.parametrize('nonempty', [False, True])
-def test_report_command_error(mocker, monkeypatch, failure_only, nonempty):
-    monkeypatch.setattr(
-        CommandError,
-        'format_traceback',
-        lambda _: 'Traceback (most recent call last):\n'
-                  '    ...\n'
-                  "FakeError: Let's pretend this really happened\n"
-    )
+def test_report_command_error(mocker, failure_only, nonempty):
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     result = CommandError(
-        argv     = ['foo', '-x', 'bar.txt'],
-        start    = datetime(2020, 3, 10, 15, 0, 28, 123456, w4),
-        end      = datetime(2020, 3, 10, 15, 1, 27, 654321, w4),
-        exc_info = None,
+        argv  = ['foo', '-x', 'bar.txt'],
+        start = datetime(2020, 3, 10, 15, 0, 28, 123456, w4),
+        end   = datetime(2020, 3, 10, 15, 1, 27, 654321, w4),
+        tb    = (
+            'Traceback (most recent call last):\n'
+            '    ...\n'
+            "FakeError: Let's pretend this really happened\n"
+        ),
     )
     reporter = CommandReporter(
         encoding        = 'utf-8',

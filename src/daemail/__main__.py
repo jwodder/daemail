@@ -1,9 +1,9 @@
 from   codecs        import getdecoder
-from   collections   import namedtuple
 import locale
 import os
 import sys
 import traceback
+import attr
 import click
 import daemon
 from   daemon.daemon import DaemonError
@@ -213,10 +213,11 @@ def main(
         sys.exit(1)
 
 
-class Daemail(namedtuple('Daemail', 'runner reporter mailer')):
-    # runner: CommandRunner
-    # reporter: CommandReporter
-    # mailer: TryingSender
+@attr.s(auto_attribs=True)
+class Daemail:
+    runner: runner.CommandRunner
+    reporter: reporter.CommandReporter
+    mailer: senders.TryingSender
 
     def run(self, command, *args):
         r = self.runner.run(command, *args)

@@ -1,23 +1,23 @@
-from   collections import namedtuple
-from   eletter     import reply_quote
+from   email.headerregistry import Address
+from   typing               import List, Optional
+import attr
+from   eletter              import reply_quote
 # Access `show_argv()` through `util` for mocking purposes
-from   .           import util
-from   .message    import DraftMessage
-from   .util       import dt2stamp, rc_with_signal
+from   .                    import util
+from   .message             import DraftMessage
+from   .util                import dt2stamp, rc_with_signal
 
-class CommandReporter(namedtuple('CommandReporter', '''
-    encoding failure_only from_addr mime_type nonempty stderr_encoding
-    stdout_filename to_addrs utc
-''')):
-    # encoding: str
-    # failure_only: bool
-    # from_addr: email.headerregistry.Address
-    # mime_type: Optional[str]
-    # nonempty: bool
-    # stderr_encoding: str
-    # stdout_filename: Optional[str]  # non-None iff mime_type is non-None
-    # to_addrs: list[email.headerregistry.Address]
-    # utc: bool
+@attr.s(auto_attribs=True)
+class CommandReporter:
+    encoding: str
+    failure_only: bool
+    from_addr: Address
+    mime_type: Optional[str]
+    nonempty: bool
+    stderr_encoding: str
+    stdout_filename: Optional[str]  # non-None iff mime_type is non-None
+    to_addrs: List[Address]
+    utc: bool
 
     def report(self, result):
         if result.errored:
@@ -28,7 +28,7 @@ class CommandReporter(namedtuple('CommandReporter', '''
             )
             msg.addtext(
                 'An error occurred while attempting to run the command:\n'
-                + reply_quote(result.format_traceback())
+                + reply_quote(result.tb)
             )
             return msg
         else:
