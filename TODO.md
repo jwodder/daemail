@@ -7,19 +7,18 @@
     - Add an option for redirecting output to a file (`/dev/null`?) but not
       sending it anyway, for those rare cases where the command behaves
       differently if its output is closed
-- Should `--to-addr` not be required when sending to an mbox?
-- Execute `--sendmail` in the directory in which daemail was started?
-- Check handling of non-ASCII e-mail addresses and realnames
+- Invoke the sender in the directory from which daemail was started?
 - Call `locale.getpreferredencoding(True)` once at the beginning of the program
   and then call it without arguments elsewhere?
-- Mail-quote the sending method pseudo-headers in dead letters?
 - Make the internal API suitable for public exposure
 - Improve the configuration settings dump in the logfile
+    - Somehow bring back the sender configuration dump
 - Use `time.monotonic` to calculate elapsed time
-- `show_argv`: Quote shell keywords?
 - Add a `--combine` option that is the negation of `--split` and rename
   `--split` to `--no-combine`?
-- Rename `--mime-type` to `--content-type`?
+- `show_argv`: Show, say, an `é` in an argument as `é`, assuming it decodes
+  properly using the filesystem encoding (This could lead to problems with
+  non-ASCII control/non-printable characters)
 
 - Documentation:
     - Add docstrings
@@ -32,44 +31,32 @@
     - `show_argv`:
         - Test non-printable characters without single-letter escapes?
         - Test non-simple arguments with equals signs
-    - Do data-driven testing of e-mail composition
+    - Do data-driven testing of e-mail composition?
 
 New Features
 ------------
 - If opening the logfile and/or dead letter file fails, write to syslog?
-- Support pre-specifying all options via an INI-style config file
-  (`~/.config/daemail.cfg`)
-    - This will require implementing `--no-split`, `--no-utc`, etc. options for
-      overriding config file options on the command line
-    - cf. the config file options used by rss2email
 - Support format specifiers in the logfile and dead letter filenames
-- `show_argv`: Show, say, an `é` in an argument as `é`, assuming it decodes
-  properly using the filesystem encoding (This could lead to problems with
-  non-ASCII control/non-printable characters)
 - Support reading stdin before daemonzing and passing the contents to the
   command?
 - Support reading a shell script (or script for a given interpreter) from
   stdin?
-- When given only a single argument for a command, use the shell to execute it?
 
 - Options to add:
     - only capture the last `n` lines/bytes of output (for people who try to
       use this as a poor man's process supervisor)
     - don't include output if it exceeds a given size?
     - show command output when running in foreground?
-    - include environment variables in e-mail?
     - don't include `stdout` on success/failure
     - Log dead letters to the logfile?
     - Log successes to the logfile?
     - Log info/debugging messages to the logfile?
     - Log e-mails not sent due to `--failure-only` or `--nonempty` to the
       logfile?
-    - (try to) e-mail fatal errors instead of writing them to the logfile?
     - `--stdin <file>`?
     - `--stderr-filename`
     - `--stderr-mime-type`? (but when is stderr not plain text?)
     - Combine stdout and stderr in the same attachment?
-    - Force stderr to be included/attached even if it's empty?
     - Create a pidfile for the command and/or daemail?
     - `--forward`: while running the subcommand, forward any & all signals
       daemail receives to it
@@ -81,3 +68,4 @@ New Features
     - Don't ASCIIfy the command for the subject line
     - command timeout?
     - Use the 'replace' error handler when decoding command stdout/stderr
+    - `--shell` (for running a single argument via the shell)
