@@ -1,5 +1,5 @@
-v0.7.0 (in development)
------------------------
+v0.7.0 (2021-03-15)
+-------------------
 - Drop support for Python 3.5
 - Support Python 3.9
 - **Breaking**: All of the sending options have been removed from the
