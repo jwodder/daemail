@@ -7,9 +7,11 @@ from   pathlib          import Path
 import subprocess
 from   traceback        import format_exception
 from   types            import SimpleNamespace
-from   click.testing    import CliRunner
+from   typing           import Any, Dict, List
+from   click.testing    import CliRunner, Result
 from   mailbits         import email2dict
 import pytest
+from   pytest_mock      import MockerFixture
 from   daemail.__main__ import main
 from   daemail.message  import USER_AGENT
 
@@ -18,17 +20,14 @@ w4 = timezone(timedelta(hours=-4))
 MOCK_START = datetime(2020, 3, 11, 16, 22, 32,  10203, w4)
 MOCK_END   = datetime(2020, 3, 11, 16, 24, 19, 102030, w4)
 
-def msg_factory(fp):
-    return email.message_from_binary_file(fp, policy=policy.default)
-
-def show_result(r):
+def show_result(r: Result) -> Any:
     if r.exception is not None:
+        assert isinstance(r.exc_info, tuple)
         return ''.join(format_exception(*r.exc_info))
     else:
         return r.stdout, r.stderr
 
 @pytest.mark.parametrize('opts,argv,run_kwargs,cmdresult,mailspec', [
-
     (
         [
             '-t', 'null@test.test',
@@ -359,7 +358,14 @@ def show_result(r):
     ),
 
 ])
-def test_daemail(mocker, opts, argv, run_kwargs, cmdresult, mailspec):
+def test_daemail(
+    mocker: MockerFixture,
+    opts: List[str],
+    argv: List[str],
+    run_kwargs: Dict[str, Any],
+    cmdresult: Any,
+    mailspec: Dict[str, Any],
+) -> None:
     daemon_mock = mocker.patch('daemon.DaemonContext', autospec=True)
     run_mock = mocker.patch('subprocess.run', return_value=cmdresult)
     dtnow_mock = mocker.patch(
@@ -383,12 +389,14 @@ def test_daemail(mocker, opts, argv, run_kwargs, cmdresult, mailspec):
         run_mock.assert_called_once_with(argv, **run_kwargs)
         assert dtnow_mock.call_count == 2
         assert sorted(os.listdir()) == ['config.toml', 'daemail.mbox']
-        mbox = mailbox.mbox('daemail.mbox', factory=msg_factory)
+        mbox = mailbox.mbox('daemail.mbox')
         mbox.lock()
         msgs = list(mbox)
         mbox.close()
     assert len(msgs) == 1
-    assert email2dict(msgs[0]) == mailspec
+    msgdict = email2dict(msgs[0])
+    msgdict["unixfrom"] = None
+    assert msgdict == mailspec
 
 @pytest.mark.parametrize('opts,argv,run_kwargs,cmdresult', [
     (
@@ -451,7 +459,13 @@ def test_daemail(mocker, opts, argv, run_kwargs, cmdresult, mailspec):
         ),
     ),
 ])
-def test_no_message(mocker, opts, argv, run_kwargs, cmdresult):
+def test_no_message(
+    mocker: MockerFixture,
+    opts: List[str],
+    argv: List[str],
+    run_kwargs: Dict[str, Any],
+    cmdresult: Any,
+) -> None:
     daemon_mock = mocker.patch('daemon.DaemonContext', autospec=True)
     run_mock = mocker.patch('subprocess.run', return_value=cmdresult)
     dtnow_mock = mocker.patch(
@@ -473,7 +487,7 @@ def test_no_message(mocker, opts, argv, run_kwargs, cmdresult):
         assert dtnow_mock.call_count == 2
         assert os.listdir() == ['config.toml']
 
-def test_sendmail_failure(mocker):
+def test_sendmail_failure(mocker: MockerFixture) -> None:
     daemon_mock = mocker.patch('daemon.DaemonContext', autospec=True)
     run_mock = mocker.patch(
         'subprocess.run',
@@ -550,12 +564,14 @@ def test_sendmail_failure(mocker):
         }
         assert dtnow_mock.call_count == 2
         assert sorted(os.listdir()) == ['config.toml', 'dead.letter']
-        mbox = mailbox.mbox('dead.letter', factory=msg_factory)
+        mbox = mailbox.mbox('dead.letter')
         mbox.lock()
         dead_msgs = list(mbox)
         mbox.close()
     assert len(dead_msgs) == 1
-    assert email2dict(dead_msgs[0]) == {
+    msgdict = email2dict(dead_msgs[0])
+    msgdict["unixfrom"] = None
+    assert msgdict == {
         "unixfrom": None,
         "headers": {
             "from": [

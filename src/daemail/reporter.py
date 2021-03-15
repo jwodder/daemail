@@ -1,26 +1,28 @@
 from   email.headerregistry import Address
-from   typing               import List, Optional
+from   typing               import List, Optional, Union
 import attr
 from   eletter              import reply_quote
 # Access `show_argv()` through `util` for mocking purposes
 from   .                    import util
 from   .message             import DraftMessage
-from   .util                import dt2stamp, rc_with_signal
+from   .runner              import CommandError, CommandResult
+from   .util                import address_list, dt2stamp, rc_with_signal
 
 @attr.s(auto_attribs=True)
 class CommandReporter:
     encoding: str
     failure_only: bool
-    from_addr: Address
+    from_addr: Optional[Address]
     mime_type: Optional[str]
     nonempty: bool
     stderr_encoding: str
     stdout_filename: Optional[str]  # non-None iff mime_type is non-None
-    to_addrs: List[Address]
+    to_addrs: List[Address] = attr.ib(converter=address_list)
     utc: bool
 
-    def report(self, result):
-        if result.errored:
+    def report(self, result: Union[CommandResult, CommandError]) \
+            -> Optional[DraftMessage]:
+        if isinstance(result, CommandError):
             msg = DraftMessage(
                 from_addr = self.from_addr,
                 to_addrs  = self.to_addrs,
@@ -53,6 +55,7 @@ class CommandReporter:
             if result.stdout:
                 msg.addtext('\nOutput:\n')
                 if self.mime_type is not None:
+                    assert self.stdout_filename is not None
                     msg.addmimeblob(result.stdout, self.mime_type,
                                     self.stdout_filename)
                 else:

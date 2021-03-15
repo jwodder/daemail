@@ -1,4 +1,5 @@
 from   datetime     import datetime, timedelta, timezone
+from   typing       import List
 import pytest
 from   daemail.util import dt2stamp, get_mime_type, multiline822, show_argv
 
@@ -63,7 +64,7 @@ w4 = timezone(timedelta(hours=-4))
     ### TODO: This assumes sys.getfilesystemencoding() == 'utf-8':
     (['fooébar'], r"$'foo\xc3\xa9bar'"),
 ])
-def test_show_argv(argv, output):
+def test_show_argv(argv: List[str], output: str) -> None:
     assert show_argv(*argv) == output
 
 @pytest.mark.parametrize('dt,slocal,sutc', [
@@ -88,7 +89,7 @@ def test_show_argv(argv, output):
         '2020-03-10 15:00:28Z',
     ),
 ])
-def test_dt2stamp(dt, slocal, sutc):
+def test_dt2stamp(dt: datetime, slocal: str, sutc: str) -> None:
     assert dt2stamp(dt) == slocal
     assert dt2stamp(dt, utc=False) == slocal
     assert dt2stamp(dt, utc=True) == sutc
@@ -103,7 +104,7 @@ def test_dt2stamp(dt, slocal, sutc):
         '  This is test text.\n  .\n  That was a blank line.',
     ),
 ])
-def test_multiline822(sin, sout):
+def test_multiline822(sin: str, sout: str) -> None:
     assert multiline822(sin) == sout
 
 @pytest.mark.parametrize('filename,mtype', [
@@ -124,5 +125,5 @@ def test_multiline822(sin, sout):
     ('foo.tar.xz',  'application/x-xz'),
     ('foo.txz',     'application/x-xz'),
 ])
-def test_get_mime_type(filename, mtype):
+def test_get_mime_type(filename: str, mtype: str) -> None:
     assert get_mime_type(filename) == mtype

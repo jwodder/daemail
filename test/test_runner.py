@@ -1,8 +1,10 @@
 from   datetime       import datetime, timedelta, timezone
 import subprocess
 from   types          import SimpleNamespace
+from   typing         import Any, Dict, Union
 from   unittest.mock  import ANY, sentinel
 import pytest
+from   pytest_mock    import MockerFixture
 from   daemail.runner import CommandError, CommandResult, CommandRunner
 
 w4 = timezone(timedelta(hours=-4))
@@ -14,8 +16,7 @@ ARGV = ['not-a-real-command', '-x', 'foo.txt']
 
 ERROR = OSError('The kernel died.')
 
-@pytest.mark.parametrize('no_stderr,no_stdout,split,run_kwargs,runresult,'
-                         'cmdresult,errored', [
+@pytest.mark.parametrize('no_stderr,no_stdout,split,run_kwargs,runresult,cmdresult', [
     (
         False,
         False,
@@ -34,7 +35,6 @@ ERROR = OSError('The kernel died.')
             stdout = sentinel.stdout,
             stderr = sentinel.stderr,
         ),
-        False,
     ),
     (
         False,
@@ -48,7 +48,6 @@ ERROR = OSError('The kernel died.')
             end   = MOCK_END,
             tb    = ANY,
         ),
-        True,
     ),
     (
         False,
@@ -68,7 +67,6 @@ ERROR = OSError('The kernel died.')
             stdout = sentinel.stdout,
             stderr = sentinel.stderr,
         ),
-        False,
     ),
     (
         True,
@@ -88,7 +86,6 @@ ERROR = OSError('The kernel died.')
             stdout = sentinel.stdout,
             stderr = sentinel.stderr,
         ),
-        False,
     ),
     (
         False,
@@ -108,12 +105,18 @@ ERROR = OSError('The kernel died.')
             stdout = sentinel.stdout,
             stderr = sentinel.stderr,
         ),
-        False,
     ),
 ])
-def test_runner(mocker, no_stderr, no_stdout, split, run_kwargs, runresult,
-                cmdresult, errored):
-    def subprocess_run(*args, **kwargs):
+def test_runner(
+    mocker: MockerFixture,
+    no_stderr: bool,
+    no_stdout: bool,
+    split: bool,
+    run_kwargs: Dict[str, Any],
+    runresult: Any,
+    cmdresult: Union[CommandResult, CommandError],
+) -> None:
+    def subprocess_run(*args: Any, **kwargs: Any) -> Any:
         if isinstance(runresult, Exception):
             raise runresult
         else:
@@ -132,4 +135,3 @@ def test_runner(mocker, no_stderr, no_stdout, split, run_kwargs, runresult,
     run_mock.assert_called_once_with(ARGV, **run_kwargs)
     assert dtnow_mock.call_count == 2
     assert r == cmdresult
-    assert r.errored is errored

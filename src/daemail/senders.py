@@ -4,6 +4,7 @@ import traceback
 import attr
 from   eletter    import reply_quote
 from   outgoing   import Sender, from_dict
+from   .message   import DraftMessage
 from   .util      import rc_with_signal
 
 @attr.s(auto_attribs=True)
@@ -16,7 +17,7 @@ class TryingSender:
     sender: Sender
     dead_letter_path: str
 
-    def send(self, msg):
+    def send(self, msg: DraftMessage) -> None:
         msgobj = msg.compile()
         try:
             self.sender.send(msgobj)

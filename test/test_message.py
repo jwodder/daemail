@@ -11,7 +11,7 @@ def addr2dict(addr: Address) -> Dict[str, str]:
         "address": addr.addr_spec,
     }
 
-def test_compile_text():
+def test_compile_text() -> None:
     from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
     to_addrs = (
         Address(addr_spec='me@example.com'),
@@ -40,7 +40,7 @@ def test_compile_text():
         "epilogue": None,
     }
 
-def test_compile_text_no_from():
+def test_compile_text_no_from() -> None:
     to_addrs = (
         Address(addr_spec='me@example.com'),
         Address('Jane Q. Recipient', addr_spec='jane@example.org'),
@@ -67,7 +67,7 @@ def test_compile_text_no_from():
         "epilogue": None,
     }
 
-def test_compile_multiline_text():
+def test_compile_multiline_text() -> None:
     from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
     to_addrs = (
         Address(addr_spec='me@example.com'),
@@ -97,7 +97,7 @@ def test_compile_multiline_text():
         "epilogue": None,
     }
 
-def test_compile_text_blob_text():
+def test_compile_text_blob_text() -> None:
     from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
     to_addrs = (
         Address(addr_spec='me@example.com'),
@@ -173,7 +173,7 @@ def test_compile_text_blob_text():
         "epilogue": None,
     }
 
-def test_compile_text_quote():
+def test_compile_text_quote() -> None:
     from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
     to_addrs = (
         Address(addr_spec='me@example.com'),
@@ -207,7 +207,7 @@ def test_compile_text_quote():
         "epilogue": None,
     }
 
-def test_compile_text_undecodable_quote():
+def test_compile_text_undecodable_quote() -> None:
     from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
     to_addrs = (
         Address(addr_spec='me@example.com'),

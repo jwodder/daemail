@@ -1,9 +1,11 @@
 from   datetime             import datetime, timedelta, timezone
 from   email.headerregistry import Address
 import signal
+from   typing               import Optional
 import attr
 from   eletter              import BytesAttachment
 import pytest
+from   pytest_mock          import MockerFixture
 from   daemail              import util
 from   daemail.message      import DraftMessage
 from   daemail.reporter     import CommandReporter
@@ -175,7 +177,12 @@ w4 = timezone(timedelta(hours=-4))
         ),
     ),
 ])
-def test_report_plain_message(mocker, result, subject, body):
+def test_report_plain_message(
+    mocker: MockerFixture,
+    result: CommandResult,
+    subject: str,
+    body: str,
+) -> None:
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     reporter = CommandReporter(
@@ -202,7 +209,11 @@ def test_report_plain_message(mocker, result, subject, body):
 
 @pytest.mark.parametrize('failure_only', [False, True])
 @pytest.mark.parametrize('nonempty', [False, True])
-def test_report_command_error(mocker, failure_only, nonempty):
+def test_report_command_error(
+    mocker: MockerFixture,
+    failure_only: bool,
+    nonempty: bool,
+) -> None:
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     result = CommandError(
@@ -242,7 +253,7 @@ def test_report_command_error(mocker, failure_only, nonempty):
     }
     show_argv_spy.assert_called_once_with(*result.argv)
 
-def test_report_stdout_mime(mocker):
+def test_report_stdout_mime(mocker: MockerFixture) -> None:
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     result = CommandResult(
@@ -388,7 +399,11 @@ def test_report_stdout_mime(mocker):
         None,
     ),
 ])
-def test_report_nonempty(result, subject, body):
+def test_report_nonempty(
+    result: CommandResult,
+    subject: Optional[str],
+    body: Optional[str],
+) -> None:
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     reporter = CommandReporter(
@@ -487,7 +502,11 @@ def test_report_nonempty(result, subject, body):
         ),
     ),
 ])
-def test_report_failure_only(result, subject, body):
+def test_report_failure_only(
+    result: CommandResult,
+    subject: Optional[str],
+    body: Optional[str],
+) -> None:
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     reporter = CommandReporter(
@@ -513,7 +532,7 @@ def test_report_failure_only(result, subject, body):
             "parts": [body],
         }
 
-def test_report_utc(mocker):
+def test_report_utc(mocker: MockerFixture) -> None:
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     result = CommandResult(
@@ -554,7 +573,10 @@ def test_report_utc(mocker):
     show_argv_spy.assert_called_once_with(*result.argv)
 
 @pytest.mark.parametrize('stderr', [b'', None])
-def test_report_undecodable_stdout_empty_stderr(mocker, stderr):
+def test_report_undecodable_stdout_empty_stderr(
+    mocker: MockerFixture,
+    stderr: Optional[bytes],
+) -> None:
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     result = CommandResult(
@@ -601,7 +623,7 @@ def test_report_undecodable_stdout_empty_stderr(mocker, stderr):
     }
     show_argv_spy.assert_called_once_with(*result.argv)
 
-def test_report_undecodable_stdout_good_stderr(mocker):
+def test_report_undecodable_stdout_good_stderr(mocker: MockerFixture) -> None:
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     result = CommandResult(
@@ -649,7 +671,7 @@ def test_report_undecodable_stdout_good_stderr(mocker):
     }
     show_argv_spy.assert_called_once_with(*result.argv)
 
-def test_report_empty_stdout_undecodable_stderr(mocker):
+def test_report_empty_stdout_undecodable_stderr(mocker: MockerFixture) -> None:
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     result = CommandResult(
@@ -698,7 +720,7 @@ def test_report_empty_stdout_undecodable_stderr(mocker):
     }
     show_argv_spy.assert_called_once_with(*result.argv)
 
-def test_report_good_stdout_undecodable_stderr(mocker):
+def test_report_good_stdout_undecodable_stderr(mocker: MockerFixture) -> None:
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     result = CommandResult(
@@ -748,7 +770,7 @@ def test_report_good_stdout_undecodable_stderr(mocker):
     }
     show_argv_spy.assert_called_once_with(*result.argv)
 
-def test_report_undecodable_stdout_and_stderr(mocker):
+def test_report_undecodable_stdout_and_stderr(mocker: MockerFixture) -> None:
     from_addr = Address('Command Reporter', addr_spec='reporter@example.com')
     to_addrs = [Address('Re Cipient', addr_spec='person@example.com')]
     result = CommandResult(

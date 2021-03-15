@@ -1,8 +1,11 @@
 from   codecs        import getdecoder
+from   email.headerregistry import Address
 import locale
 import os
+from   pathlib       import Path
 import sys
 import traceback
+from   typing        import Any, ContextManager, Optional, Tuple, Union
 import attr
 import click
 import daemon
@@ -18,7 +21,7 @@ from   .util         import AddressParamType, dt2stamp, dtnow, get_mime_type, \
 
 outfile_type = click.Path(writable=True, dir_okay=False, resolve_path=True)
 
-def validate_encoding(_ctx, _param, value):
+def validate_encoding(_ctx: click.Context, _param: click.Parameter, value: Any) -> Any:
     if value is not None:
         try:
             getdecoder(value)
@@ -26,7 +29,7 @@ def validate_encoding(_ctx, _param, value):
             raise click.BadParameter(f'{value}: unknown encoding')
     return value
 
-def validate_mime_type(_ctx, _param, value):
+def validate_mime_type(_ctx: click.Context, _param: click.Parameter, value: Any) -> Any:
     if value is not None:
         try:
             ContentType.parse(value)
@@ -34,7 +37,7 @@ def validate_mime_type(_ctx, _param, value):
             raise click.BadParameter(f'{value}: invalid MIME type')
     return value
 
-def get_cwd():
+def get_cwd() -> str:
     # Prefer $PWD to os.getcwd() as the former does not resolve symlinks
     return os.environ.get('PWD') or os.getcwd()
 
@@ -135,17 +138,26 @@ def get_cwd():
 @click.argument('command')
 @click.argument('args', nargs=-1, type=click.UNPROCESSED)
 def main(
-    command, args,
-    config,
-    chdir, foreground,
-    logfile,
-    from_addr, to_addr,
-    failure_only, nonempty,
-    no_stdout, no_stderr, split,
-    encoding, stderr_encoding, mime_type, stdout_filename,
-    utc,
-    dead_letter,
-):
+    command: str,
+    args: Tuple[str, ...],
+    config: Union[Path, str],
+    chdir: str,
+    foreground: bool,
+    logfile: str,
+    from_addr: Optional[Address],
+    to_addr: Tuple[Address],
+    failure_only: bool,
+    nonempty: bool,
+    no_stdout: bool,
+    no_stderr: bool,
+    split: bool,
+    encoding: Optional[str],
+    stderr_encoding: Optional[str],
+    mime_type: Optional[str],
+    stdout_filename: Optional[str],
+    utc: bool,
+    dead_letter: str,
+) -> None:
     """ Daemonize a command and e-mail the results """
 
     sender = from_config_file(config, fallback=False)
@@ -185,6 +197,7 @@ def main(
         ),
     )
 
+    ctx: ContextManager[Any]
     if foreground:
         ctx = dirchanged(chdir)
     else:
@@ -219,13 +232,13 @@ class Daemail:
     reporter: reporter.CommandReporter
     mailer: senders.TryingSender
 
-    def run(self, command, *args):
+    def run(self, command: str, *args: str) -> None:
         r = self.runner.run(command, *args)
         msg = self.reporter.report(r)
         if msg is not None:
             self.mailer.send(msg)
 
-    def shows_config(self):
+    def shows_config(self) -> str:
         s = ''
         s += '"From:" address: ' + str(self.reporter.from_addr) + '\n'
         s += '"To:" addresses:\n'
@@ -246,7 +259,7 @@ class Daemail:
         return s.rstrip('\n')
 
 
-def yesno(b):
+def yesno(b: bool) -> str:
     return 'yes' if b else 'no'
 
 if __name__ == '__main__':

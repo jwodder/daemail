@@ -1,13 +1,15 @@
-from   datetime  import datetime, timezone
-from   mimetypes import guess_type
+from   datetime             import datetime, timezone
+from   email.headerregistry import Address
+from   mimetypes            import guess_type
 import os
 import re
-from   shlex     import quote
-from   signal    import Signals
+from   shlex                import quote
+from   signal               import Signals
+from   typing               import Iterable, List, Optional
 import click
-from   mailbits  import parse_address
+from   mailbits             import parse_address
 
-def rc_with_signal(rc):
+def rc_with_signal(rc: int) -> str:
     if rc < 0:
         try:
             sig = Signals(-rc)
@@ -34,7 +36,7 @@ bash_slash.update({
     0x5C: r'\\',
 })
 
-def show_argv(*argv):
+def show_argv(*argv: str) -> str:
     r"""
     Join — and possibly escape & quote — the elements of ``argv`` into a
     pure-ASCII form suitable for passing directly to a \*nix shell.
@@ -66,10 +68,10 @@ def show_argv(*argv):
         shown += a
     return shown
 
-def dtnow():
+def dtnow() -> datetime:
     return datetime.now(timezone.utc).astimezone()
 
-def dt2stamp(dt, utc=False):
+def dt2stamp(dt: datetime, utc: bool = False) -> str:
     if utc:
         s = str(dt.astimezone(timezone.utc))
         assert s.endswith('+00:00')
@@ -77,7 +79,7 @@ def dt2stamp(dt, utc=False):
     else:
         return str(dt)
 
-def multiline822(s):
+def multiline822(s: str) -> str:
     return re.sub('^', '  ', re.sub('^$', '.', s.strip('\r\n'), flags=re.M),
                   flags=re.M)
 
@@ -85,14 +87,19 @@ def multiline822(s):
 class AddressParamType(click.ParamType):
     name = 'address'
 
-    def convert(self, value, param, ctx):
+    def convert(
+        self,
+        value: str,
+        param: Optional[click.Parameter],
+        ctx: Optional[click.Context],
+    ) -> Address:
         try:
             return parse_address(value)
         except ValueError:
             self.fail(f'{value!r}: invalid address', param, ctx)
 
 
-def get_mime_type(filename):
+def get_mime_type(filename: str) -> str:
     """
     Like `mimetypes.guess_type()`, except that if the file is compressed, the
     MIME type for the compression is returned.  Also, the default return value
@@ -109,3 +116,6 @@ def get_mime_type(filename):
         #return mtype + '+gzip'
     else:
         return 'application/x-' + encoding
+
+def address_list(addrs: Iterable[Address]) -> List[Address]:
+    return list(addrs)

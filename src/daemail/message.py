@@ -1,13 +1,14 @@
 from   email.headerregistry import Address
 from   email.message        import EmailMessage
 import platform
-from   typing               import Iterable, List, Optional, Union
+from   typing               import List, Optional, Union
 import attr
 import eletter
 from   eletter              import BytesAttachment, MailItem, TextBody, \
                                         reply_quote
 import outgoing
 from   .                    import __url__, __version__
+from   .util                import address_list
 
 USER_AGENT = 'daemail/{} ({}) outgoing/{} eletter/{} {}/{}'.format(
     __version__,
@@ -17,9 +18,6 @@ USER_AGENT = 'daemail/{} ({}) outgoing/{} eletter/{} {}/{}'.format(
     platform.python_implementation(),
     platform.python_version()
 )
-
-def address_list(addrs: Iterable[Address]) -> List[Address]:
-    return list(addrs)
 
 @attr.s(auto_attribs=True)
 class DraftMessage:
@@ -43,7 +41,7 @@ class DraftMessage:
         else:
             self.addtext(reply_quote(txt))
 
-    def addmimeblob(self, blob, mimetype, filename):
+    def addmimeblob(self, blob: bytes, mimetype: str, filename: str) -> None:
         self.parts.append(BytesAttachment(
             blob,
             filename     = filename,
@@ -52,7 +50,11 @@ class DraftMessage:
         ))
 
     def compile(self) -> EmailMessage:
-        msg: MailItem = TextBody(self.parts[0])
+        msg: MailItem
+        if isinstance(self.parts[0], str):
+            msg = TextBody(self.parts[0])
+        else:
+            msg = self.parts[0]
         for p in self.parts[1:]:
             msg &= p
         return msg.compose(
