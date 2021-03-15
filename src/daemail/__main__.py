@@ -18,7 +18,7 @@ from   .util         import AddressParamType, dt2stamp, dtnow, get_mime_type, \
 
 outfile_type = click.Path(writable=True, dir_okay=False, resolve_path=True)
 
-def validate_encoding(ctx, param, value):
+def validate_encoding(_ctx, _param, value):
     if value is not None:
         try:
             getdecoder(value)
@@ -26,7 +26,7 @@ def validate_encoding(ctx, param, value):
             raise click.BadParameter(f'{value}: unknown encoding')
     return value
 
-def validate_mime_type(ctx, param, value):
+def validate_mime_type(_ctx, _param, value):
     if value is not None:
         try:
             ContentType.parse(value)
