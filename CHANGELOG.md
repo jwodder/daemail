@@ -6,6 +6,8 @@ v0.7.0 (in development)
   command-line interface.  Sending is now performed via the
   [`outgoing`](https://github.com/jwodder/outgoing) library, which is
   configured via a configuration file.
+- Errors that occur when daemonization is disabled will now be reported
+  directly to the screen instead of to the logfile
 
 v0.6.0 (2020-03-17)
 -------------------

@@ -196,6 +196,8 @@ def main(
         # Daemonization failed; report errors normally
         raise
     except Exception:
+        if foreground:
+            raise
         # Daemonization succeeded but mailer failed; report errors to logfile.
         # If this open() fails, die alone where no one will ever know.
         with open(logfile, 'a') as fp:
