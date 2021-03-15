@@ -2,6 +2,10 @@ v0.7.0 (in development)
 -----------------------
 - Drop support for Python 3.5
 - Support Python 3.9
+- **Breaking**: All of the sending options have been removed from the
+  command-line interface.  Sending is now performed via the
+  [`outgoing`](https://github.com/jwodder/outgoing) library, which is
+  configured via a configuration file.
 
 v0.6.0 (2020-03-17)
 -------------------

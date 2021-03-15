@@ -3,13 +3,14 @@ import email
 from   email            import policy
 import mailbox
 import os
+from   pathlib          import Path
 import subprocess
 from   traceback        import format_exception
 from   types            import SimpleNamespace
 from   click.testing    import CliRunner
 from   mailbits         import email2dict
 import pytest
-from   daemail.__main__ import DEFAULT_SENDMAIL, main
+from   daemail.__main__ import main
 from   daemail.message  import USER_AGENT
 
 w4 = timezone(timedelta(hours=-4))
@@ -367,7 +368,12 @@ def test_daemail(mocker, opts, argv, run_kwargs, cmdresult, mailspec):
     )
     runner = CliRunner()
     with runner.isolated_filesystem():
-        r = runner.invoke(main, [*opts, '--mbox', 'daemail.mbox', *argv])
+        Path("config.toml").write_text(
+            '[outgoing]\n'
+            'method = "mbox"\n'
+            'path = "daemail.mbox"\n'
+        )
+        r = runner.invoke(main, [*opts, '--config', 'config.toml', *argv])
         assert r.exit_code == 0, show_result(r)
         if '--foreground' in opts:
             assert not daemon_mock.called
@@ -376,7 +382,7 @@ def test_daemail(mocker, opts, argv, run_kwargs, cmdresult, mailspec):
             assert daemon_mock.return_value.__enter__.call_count == 1
         run_mock.assert_called_once_with(argv, **run_kwargs)
         assert dtnow_mock.call_count == 2
-        assert os.listdir() == ['daemail.mbox']
+        assert sorted(os.listdir()) == ['config.toml', 'daemail.mbox']
         mbox = mailbox.mbox('daemail.mbox', factory=msg_factory)
         mbox.lock()
         msgs = list(mbox)
@@ -454,13 +460,18 @@ def test_no_message(mocker, opts, argv, run_kwargs, cmdresult):
     )
     runner = CliRunner()
     with runner.isolated_filesystem():
-        r = runner.invoke(main, [*opts, '--mbox', 'daemail.mbox', *argv])
+        Path("config.toml").write_text(
+            '[outgoing]\n'
+            'method = "mbox"\n'
+            'path = "daemail.mbox"\n'
+        )
+        r = runner.invoke(main, [*opts, '--config', 'config.toml', *argv])
         assert r.exit_code == 0, show_result(r)
         assert daemon_mock.call_count == 1
         assert daemon_mock.return_value.__enter__.call_count == 1
         run_mock.assert_called_once_with(argv, **run_kwargs)
         assert dtnow_mock.call_count == 2
-        assert os.listdir() == []
+        assert os.listdir() == ['config.toml']
 
 def test_sendmail_failure(mocker):
     daemon_mock = mocker.patch('daemon.DaemonContext', autospec=True)
@@ -472,9 +483,11 @@ def test_sendmail_failure(mocker):
                 stdout     = b'This is the output.\n',
                 stderr     = None,
             ),
-            SimpleNamespace(
+            subprocess.CalledProcessError(
                 returncode = 1,
-                stdout     = b'All the foos are bar when they should be baz.\n',
+                cmd        = ["sendmail", "-i", "-t"],
+                output     = b'All the foos are bar when they should be baz.\n',
+                stderr     = b'',
             ),
         ],
     )
@@ -485,9 +498,11 @@ def test_sendmail_failure(mocker):
     runner = CliRunner()
     argv = ['not-a-real-command', '-x', 'foo.txt']
     with runner.isolated_filesystem():
+        Path("config.toml").write_text('[outgoing]\nmethod = "command"\n')
         r = runner.invoke(main, [
             '-t', 'null@test.test',
             '-f', 'Me <sender@example.nil>',
+            '-c', 'config.toml',
             *argv,
         ])
         assert r.exit_code == 0, show_result(r)
@@ -496,11 +511,12 @@ def test_sendmail_failure(mocker):
         assert run_mock.call_args_list == [
             mocker.call(argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT),
             mocker.call(
-                DEFAULT_SENDMAIL,
-                shell  = True,
+                ["sendmail", "-i", "-t"],
+                shell  = False,
                 input  = mocker.ANY,
+                check  = True,
                 stdout = subprocess.PIPE,
-                stderr = subprocess.STDOUT,
+                stderr = subprocess.PIPE,
             ),
         ]
         sent_msg = email.message_from_bytes(
@@ -533,7 +549,7 @@ def test_sendmail_failure(mocker):
             "epilogue": None,
         }
         assert dtnow_mock.call_count == 2
-        assert os.listdir() == ['dead.letter']
+        assert sorted(os.listdir()) == ['config.toml', 'dead.letter']
         mbox = mailbox.mbox('dead.letter', factory=msg_factory)
         mbox.lock()
         dead_msgs = list(mbox)
@@ -564,8 +580,7 @@ def test_sendmail_failure(mocker):
             '\n'
             'Additionally, an error occurred while trying to send this e-mail:\n'
             '\n'
-            'Method: command\n'
-            f'Command: {DEFAULT_SENDMAIL}\n'
+            "Command: ['sendmail', '-i', '-t']\n"
             'Exit Status: 1\n'
             '\n'
             'Output:\n'

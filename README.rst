@@ -44,40 +44,23 @@ Usage
 
 ::
 
-    daemail [-C|--chdir <directory>]
-            [-D|--dead-letter <mbox>]
-            [-e|--encoding <encoding>]
-            [-E|--stderr-encoding <encoding>]
-            [--foreground|--fg]
-            [-f|--from|--from-addr <address>]
-            [-F|--failure-only]
-            [-l|--logfile <logfile>]
-            [-M|--mime-type|--mime <mime-type>]
-            [-n|--nonempty]
-            [--no-stdout]
-            [--no-stderr]
-            [-S|--split]
-            [--stdout-filename <filename>]
-            [-Z|--utc]
-            -t|--to|--to-addr <address>  [-t|--to|--to-addr <address> ...]
-            [<send options>]
-            <command> [<arg> ...]
+    daemail [<options>] <command> [<arg> ...]
 
-where ``<send options>`` is one of::
+``daemail`` runs ``command`` with the given arguments in the background and
+sends an e-mail once the command finishes.  The sending of the e-mail is
+performed by the outgoing_ library, and thus an `outgoing configuration file`__
+must be created with settings for sending e-mail before ``daemail`` can be
+used.
 
-    -s|--sendmail <command>  # default
-
-    --mbox <mbox>
-
-    --smtp-host <host>
-        [--smtp-port <port>]
-        [--smtp-username <username>]
-        [--smtp-password <password> | --smtp-password-file <file> | --netrc | --netrc-file <file>]
-        [--smtp-ssl | --smtp-starttls]
-
+.. _outgoing: https://github.com/jwodder/outgoing
+__ https://outgoing.readthedocs.io/en/latest/configuration.html
 
 Options
 -------
+
+-c FILE, --config FILE  Read sending configuration for the ``outgoing`` library
+                        from ``FILE``; defaults to ``outgoing``'s default
+                        configuration file
 
 -C DIR, --chdir DIR     Change to ``DIR`` after daemonizing but before running
                         the command; defaults to the current directory
@@ -128,20 +111,11 @@ Options
 
 -l LOGFILE, --logfile LOGFILE
                         If an unexpected & unhandleable fatal error occurs
-                        after daemonization, append a report to LOGFILE;
+                        after daemonization, append a report to ``LOGFILE``;
                         defaults to ``daemail.log``
 
                         Such an error is a deficiency in the program; please
                         report it!
-
--s COMMAND, --sendmail COMMAND
-                        Send e-mail by passing the message on stdin to
-                        ``COMMAND`` (executed via the shell, in the directory
-                        specified with ``--chdir`` or its default); default
-                        command: ``sendmail -i -t``.  This is the default if
-                        neither ``--mbox`` nor ``--smtp-host`` is specified.
-
---mbox MBOX             "Send" e-mail by appending it to the mbox file ``MBOX``
 
 -M MIME-TYPE, --mime-type MIME-TYPE, --mime MIME-TYPE
                         Attach the standard output of the command to the
@@ -158,10 +132,6 @@ Options
 --no-stdout             Don't capture the command's stdout; implies ``--split``
 
 --no-stderr             Don't capture the command's stderr; implies ``--split``
-
---smtp-host HOST        Send e-mail via SMTP, connecting to the given host.
-                        See "`SMTP Options`_" for options for further
-                        configuring the SMTP connection.
 
 -S, --split             Capture the command's stdout and stderr separately
                         rather than as a single stream
@@ -183,45 +153,6 @@ Options
                         times in order to specify multiple recipients.
 
 -Z, --utc               Show start & end times in UTC instead of local time
-
-
-SMTP Options
-^^^^^^^^^^^^
-
-When ``--smtp-host`` is specified on the command line, these options may be
-specified as well in order to further configure the SMTP connection:
-
---netrc                 Fetch the SMTP username and/or password from
-                        ``~/.netrc``.  If ``--smtp-username`` specifies a
-                        different username for the host than is given in the
-                        netrc file, the netrc file is ignored.
-
---netrc-file FILE       Like ``--netrc``, but use the given file instead of
-                        ``~/.netrc``
-
---smtp-password PASSWORD
-                        Authenticate to the SMTP server using the given
-                        password
-
---smtp-password-file FILE
-                        Authenticate to the SMTP server using the contents of
-                        the given file (after removing the final line ending)
-                        as the password
-
---smtp-port PORT        Connect to the SMTP host on the given port; defaults
-                        to 25, or to 465 if ``--smtp-ssl`` is specified
-
---smtp-ssl              Use the SMTPS protocol to communicate with the server
-
---smtp-starttls         Use the SMTP protocol with the STARTTLS extension to
-                        communicate with the server
-
---smtp-username USERNAME
-                        Authenticate to the SMTP host using the given username.
-                        If a username is supplied (either on the command line
-                        or in a netrc file) but no password is, ``daemail``
-                        will prompt the user for the SMTP password before
-                        daemonizing.
 
 
 Caveats

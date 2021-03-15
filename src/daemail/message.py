@@ -6,11 +6,13 @@ import attr
 import eletter
 from   eletter              import BytesAttachment, MailItem, TextBody, \
                                         reply_quote
+import outgoing
 from   .                    import __url__, __version__
 
-USER_AGENT = 'daemail/{} ({}) eletter/{} {}/{}'.format(
+USER_AGENT = 'daemail/{} ({}) outgoing/{} eletter/{} {}/{}'.format(
     __version__,
     __url__,
+    outgoing.__version__,
     eletter.__version__,
     platform.python_implementation(),
     platform.python_version()
