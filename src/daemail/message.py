@@ -1,23 +1,23 @@
-from   email.headerregistry import Address
-from   email.message        import EmailMessage
+from email.headerregistry import Address
+from email.message import EmailMessage
 import platform
-from   typing               import List, Optional, Union
+from typing import List, Optional, Union
 import attr
 import eletter
-from   eletter              import BytesAttachment, MailItem, TextBody, \
-                                        reply_quote
+from eletter import BytesAttachment, MailItem, TextBody, reply_quote
 import outgoing
-from   .                    import __url__, __version__
-from   .util                import address_list
+from . import __url__, __version__
+from .util import address_list
 
-USER_AGENT = 'daemail/{} ({}) outgoing/{} eletter/{} {}/{}'.format(
+USER_AGENT = "daemail/{} ({}) outgoing/{} eletter/{} {}/{}".format(
     __version__,
     __url__,
     outgoing.__version__,
     eletter.__version__,
     platform.python_implementation(),
-    platform.python_version()
+    platform.python_version(),
 )
+
 
 @attr.s(auto_attribs=True)
 class DraftMessage:
@@ -42,12 +42,14 @@ class DraftMessage:
             self.addtext(reply_quote(txt))
 
     def addmimeblob(self, blob: bytes, mimetype: str, filename: str) -> None:
-        self.parts.append(BytesAttachment(
-            blob,
-            filename     = filename,
-            content_type = mimetype,
-            inline       = True,
-        ))
+        self.parts.append(
+            BytesAttachment(
+                blob,
+                filename=filename,
+                content_type=mimetype,
+                inline=True,
+            )
+        )
 
     def compile(self) -> EmailMessage:
         msg: MailItem

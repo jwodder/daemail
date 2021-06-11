@@ -1,9 +1,10 @@
-from   email.headerregistry import Address
-from   typing               import Dict
-from   mailbits             import email2dict
-from   daemail.message      import DraftMessage, USER_AGENT
+from email.headerregistry import Address
+from typing import Dict
+from mailbits import email2dict
+from daemail.message import DraftMessage, USER_AGENT
 
-TEXT = 'àéîøü\n'
+TEXT = "àéîøü\n"
+
 
 def addr2dict(addr: Address) -> Dict[str, str]:
     return {
@@ -11,16 +12,17 @@ def addr2dict(addr: Address) -> Dict[str, str]:
         "address": addr.addr_spec,
     }
 
+
 def test_compile_text() -> None:
-    from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
+    from_addr = Address("Joe Q. Sender", addr_spec="joe@example.nil")
     to_addrs = (
-        Address(addr_spec='me@example.com'),
-        Address('Jane Q. Recipient', addr_spec='jane@example.org'),
+        Address(addr_spec="me@example.com"),
+        Address("Jane Q. Recipient", addr_spec="jane@example.org"),
     )
     draft = DraftMessage(
-        from_addr = from_addr,
-        to_addrs = to_addrs,
-        subject = 'This is a test e-mail.',
+        from_addr=from_addr,
+        to_addrs=to_addrs,
+        subject="This is a test e-mail.",
     )
     draft.addtext(TEXT)
     assert email2dict(draft.compile()) == {
@@ -39,16 +41,17 @@ def test_compile_text() -> None:
         "content": TEXT,
         "epilogue": None,
     }
+
 
 def test_compile_text_no_from() -> None:
     to_addrs = (
-        Address(addr_spec='me@example.com'),
-        Address('Jane Q. Recipient', addr_spec='jane@example.org'),
+        Address(addr_spec="me@example.com"),
+        Address("Jane Q. Recipient", addr_spec="jane@example.org"),
     )
     draft = DraftMessage(
-        from_addr = None,
-        to_addrs = to_addrs,
-        subject = 'This is a test e-mail.',
+        from_addr=None,
+        to_addrs=to_addrs,
+        subject="This is a test e-mail.",
     )
     draft.addtext(TEXT)
     assert email2dict(draft.compile()) == {
@@ -67,19 +70,20 @@ def test_compile_text_no_from() -> None:
         "epilogue": None,
     }
 
+
 def test_compile_multiline_text() -> None:
-    from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
+    from_addr = Address("Joe Q. Sender", addr_spec="joe@example.nil")
     to_addrs = (
-        Address(addr_spec='me@example.com'),
-        Address('Jane Q. Recipient', addr_spec='jane@example.org'),
+        Address(addr_spec="me@example.com"),
+        Address("Jane Q. Recipient", addr_spec="jane@example.org"),
     )
     draft = DraftMessage(
-        from_addr = from_addr,
-        to_addrs = to_addrs,
-        subject = 'This is a test e-mail.',
+        from_addr=from_addr,
+        to_addrs=to_addrs,
+        subject="This is a test e-mail.",
     )
-    draft.addtext('This is line 1.\n')
-    draft.addtext('This is line 2.\n')
+    draft.addtext("This is line 1.\n")
+    draft.addtext("This is line 2.\n")
     assert email2dict(draft.compile()) == {
         "unixfrom": None,
         "headers": {
@@ -93,28 +97,29 @@ def test_compile_multiline_text() -> None:
             },
         },
         "preamble": None,
-        "content": 'This is line 1.\nThis is line 2.\n',
+        "content": "This is line 1.\nThis is line 2.\n",
         "epilogue": None,
     }
 
+
 def test_compile_text_blob_text() -> None:
-    from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
+    from_addr = Address("Joe Q. Sender", addr_spec="joe@example.nil")
     to_addrs = (
-        Address(addr_spec='me@example.com'),
-        Address('Jane Q. Recipient', addr_spec='jane@example.org'),
+        Address(addr_spec="me@example.com"),
+        Address("Jane Q. Recipient", addr_spec="jane@example.org"),
     )
     draft = DraftMessage(
-        from_addr = from_addr,
-        to_addrs = to_addrs,
-        subject = 'This is a test e-mail.',
+        from_addr=from_addr,
+        to_addrs=to_addrs,
+        subject="This is a test e-mail.",
     )
-    draft.addtext('This is line 1.\n')
+    draft.addtext("This is line 1.\n")
     draft.addmimeblob(
-        b'\xDE\xAD\xBE\xEF',
-        'application/octet-stream',
-        'deadbeef.dat',
+        b"\xDE\xAD\xBE\xEF",
+        "application/octet-stream",
+        "deadbeef.dat",
     )
-    draft.addtext('This is line 2.\n')
+    draft.addtext("This is line 2.\n")
     assert email2dict(draft.compile()) == {
         "unixfrom": None,
         "headers": {
@@ -138,7 +143,7 @@ def test_compile_text_blob_text() -> None:
                     },
                 },
                 "preamble": None,
-                "content": 'This is line 1.\n',
+                "content": "This is line 1.\n",
                 "epilogue": None,
             },
             {
@@ -154,7 +159,7 @@ def test_compile_text_blob_text() -> None:
                     },
                 },
                 "preamble": None,
-                "content": b'\xDE\xAD\xBE\xEF',
+                "content": b"\xDE\xAD\xBE\xEF",
                 "epilogue": None,
             },
             {
@@ -166,29 +171,30 @@ def test_compile_text_blob_text() -> None:
                     },
                 },
                 "preamble": None,
-                "content": 'This is line 2.\n',
+                "content": "This is line 2.\n",
                 "epilogue": None,
             },
         ],
         "epilogue": None,
     }
 
+
 def test_compile_text_quote() -> None:
-    from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
+    from_addr = Address("Joe Q. Sender", addr_spec="joe@example.nil")
     to_addrs = (
-        Address(addr_spec='me@example.com'),
-        Address('Jane Q. Recipient', addr_spec='jane@example.org'),
+        Address(addr_spec="me@example.com"),
+        Address("Jane Q. Recipient", addr_spec="jane@example.org"),
     )
     draft = DraftMessage(
-        from_addr = from_addr,
-        to_addrs = to_addrs,
-        subject = 'This is a test e-mail.',
+        from_addr=from_addr,
+        to_addrs=to_addrs,
+        subject="This is a test e-mail.",
     )
-    draft.addtext('This is a quote:\n')
+    draft.addtext("This is a quote:\n")
     draft.addblobquote(
-        b'\xD0is is i\xF1 L\xE1tin\xB9.\n',
-        'iso-8859-1',
-        'latin1.txt',
+        b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+        "iso-8859-1",
+        "latin1.txt",
     )
     assert email2dict(draft.compile()) == {
         "unixfrom": None,
@@ -203,26 +209,27 @@ def test_compile_text_quote() -> None:
             },
         },
         "preamble": None,
-        "content": 'This is a quote:\n> \xD0is is i\xF1 L\xE1tin\xB9.\n',
+        "content": "This is a quote:\n> \xD0is is i\xF1 L\xE1tin\xB9.\n",
         "epilogue": None,
     }
 
+
 def test_compile_text_undecodable_quote() -> None:
-    from_addr = Address('Joe Q. Sender', addr_spec='joe@example.nil')
+    from_addr = Address("Joe Q. Sender", addr_spec="joe@example.nil")
     to_addrs = (
-        Address(addr_spec='me@example.com'),
-        Address('Jane Q. Recipient', addr_spec='jane@example.org'),
+        Address(addr_spec="me@example.com"),
+        Address("Jane Q. Recipient", addr_spec="jane@example.org"),
     )
     draft = DraftMessage(
-        from_addr = from_addr,
-        to_addrs = to_addrs,
-        subject = 'This is a test e-mail.',
+        from_addr=from_addr,
+        to_addrs=to_addrs,
+        subject="This is a test e-mail.",
     )
-    draft.addtext('This is a quote:\n')
+    draft.addtext("This is a quote:\n")
     draft.addblobquote(
-        b'\xD0is is i\xF1 L\xE1tin\xB9.\n',
-        'utf-8',
-        'latin1.txt',
+        b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+        "utf-8",
+        "latin1.txt",
     )
     assert email2dict(draft.compile()) == {
         "unixfrom": None,
@@ -247,7 +254,7 @@ def test_compile_text_undecodable_quote() -> None:
                     },
                 },
                 "preamble": None,
-                "content": 'This is a quote:\n',
+                "content": "This is a quote:\n",
                 "epilogue": None,
             },
             {
@@ -263,7 +270,7 @@ def test_compile_text_undecodable_quote() -> None:
                     },
                 },
                 "preamble": None,
-                "content": b'\xD0is is i\xF1 L\xE1tin\xB9.\n',
+                "content": b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
                 "epilogue": None,
             },
         ],

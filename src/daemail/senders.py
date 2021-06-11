@@ -1,11 +1,12 @@
 import locale
-from   subprocess import CalledProcessError
+from subprocess import CalledProcessError
 import traceback
 import attr
-from   eletter    import reply_quote
-from   outgoing   import Sender, from_dict
-from   .message   import DraftMessage
-from   .util      import rc_with_signal
+from eletter import reply_quote
+from outgoing import Sender, from_dict
+from .message import DraftMessage
+from .util import rc_with_signal
+
 
 @attr.s(auto_attribs=True)
 class TryingSender:
@@ -23,31 +24,30 @@ class TryingSender:
             self.sender.send(msgobj)
         except Exception as e:
             msg.addtext(
-                '\nAdditionally, an error occurred while trying to send'
-                ' this e-mail:\n\n'
+                "\nAdditionally, an error occurred while trying to send"
+                " this e-mail:\n\n"
             )
             if isinstance(e, CalledProcessError):
-                msg.addtext(f'Command: {e.cmd}\n')
-                msg.addtext(f'Exit Status: {rc_with_signal(e.returncode)}\n')
+                msg.addtext(f"Command: {e.cmd}\n")
+                msg.addtext(f"Exit Status: {rc_with_signal(e.returncode)}\n")
                 if e.output:
-                    msg.addtext('\nOutput:\n')
+                    msg.addtext("\nOutput:\n")
                     msg.addblobquote(
                         e.output,
                         locale.getpreferredencoding(True),
-                        'sendmail-output',
-                   )
+                        "sendmail-output",
+                    )
                 else:
-                    msg.addtext('\nOutput: none\n')
+                    msg.addtext("\nOutput: none\n")
                 if e.stderr:
-                    msg.addtext('\nStderr:\n')
+                    msg.addtext("\nStderr:\n")
                     msg.addblobquote(
                         e.stderr,
                         locale.getpreferredencoding(True),
-                        'sendmail-stderr',
-                   )
+                        "sendmail-stderr",
+                    )
             else:
                 msg.addtext(reply_quote(traceback.format_exc()))
             ### TODO: Handle failures here!
-            with from_dict({"method": "mbox", "path": self.dead_letter_path}) \
-                    as sender:
+            with from_dict({"method": "mbox", "path": self.dead_letter_path}) as sender:
                 sender.send(msg.compile())

@@ -1,9 +1,10 @@
-from   datetime import datetime
+from datetime import datetime
 import subprocess
 import traceback
-from   typing   import List, Optional, Union
+from typing import List, Optional, Union
 import attr
-from   .        import util  # Access dtnow through util for mocking purposes
+from . import util  # Access dtnow through util for mocking purposes
+
 
 @attr.s(auto_attribs=True)
 class CommandRunner:
@@ -25,19 +26,19 @@ class CommandRunner:
             r = subprocess.run([command, *args], stdout=stdout, stderr=stderr)
         except Exception:
             return CommandError(
-                argv  = [command, *args],
-                start = start,
-                end   = util.dtnow(),
-                tb    = traceback.format_exc(),
+                argv=[command, *args],
+                start=start,
+                end=util.dtnow(),
+                tb=traceback.format_exc(),
             )
         end = util.dtnow()
         return CommandResult(
-            argv   = [command, *args],
-            rc     = r.returncode,
-            start  = start,
-            end    = end,
-            stdout = r.stdout,
-            stderr = r.stderr,
+            argv=[command, *args],
+            rc=r.returncode,
+            start=start,
+            end=end,
+            stdout=r.stdout,
+            stderr=r.stderr,
         )
 
 
