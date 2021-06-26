@@ -1,7 +1,7 @@
 from email.headerregistry import Address
 from typing import Dict
 from mailbits import email2dict
-from daemail.message import DraftMessage, USER_AGENT
+from daemail.message import USER_AGENT, DraftMessage
 
 TEXT = "àéîøü\n"
 
