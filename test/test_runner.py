@@ -120,7 +120,7 @@ def test_runner(
     runresult: Any,
     cmdresult: Union[CommandResult, CommandError],
 ) -> None:
-    def subprocess_run(*args: Any, **kwargs: Any) -> Any:
+    def subprocess_run(*_args: Any, **_kwargs: Any) -> Any:
         if isinstance(runresult, Exception):
             raise runresult
         else:
