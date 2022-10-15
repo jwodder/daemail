@@ -32,7 +32,7 @@ stdout and stderr) once it's done.
 Installation
 ============
 
-``daemail`` requires Python 3.6 or higher.  Just use `pip
+``daemail`` requires Python 3.7 or higher.  Just use `pip
 <https://pip.pypa.io>`_ for Python 3 (You have pip, right?) to install
 ``daemail`` and its dependencies::
 
