@@ -1,5 +1,5 @@
+from __future__ import annotations
 from datetime import datetime, timedelta, timezone
-from typing import List
 import pytest
 from daemail.util import dt2stamp, get_mime_type, multiline822, show_argv
 
@@ -68,7 +68,7 @@ w4 = timezone(timedelta(hours=-4))
         (["fooébar"], r"$'foo\xc3\xa9bar'"),
     ],
 )
-def test_show_argv(argv: List[str], output: str) -> None:
+def test_show_argv(argv: list[str], output: str) -> None:
     assert show_argv(*argv) == output
 
 

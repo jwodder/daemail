@@ -1,7 +1,8 @@
+from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import subprocess
 from types import SimpleNamespace
-from typing import Any, Dict, Union
+from typing import Any
 from unittest.mock import ANY, sentinel
 import pytest
 from pytest_mock import MockerFixture
@@ -116,9 +117,9 @@ def test_runner(
     no_stderr: bool,
     no_stdout: bool,
     split: bool,
-    run_kwargs: Dict[str, Any],
+    run_kwargs: dict[str, Any],
     runresult: Any,
-    cmdresult: Union[CommandResult, CommandError],
+    cmdresult: CommandResult | CommandError,
 ) -> None:
     def subprocess_run(*_args: Any, **_kwargs: Any) -> Any:
         if isinstance(runresult, Exception):

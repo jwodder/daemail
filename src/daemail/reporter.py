@@ -1,5 +1,6 @@
+from __future__ import annotations
 from email.headerregistry import Address
-from typing import List, Optional, Union
+from typing import Optional
 import attr
 from eletter import reply_quote
 
@@ -19,12 +20,10 @@ class CommandReporter:
     nonempty: bool
     stderr_encoding: str
     stdout_filename: Optional[str]  # non-None iff mime_type is non-None
-    to_addrs: List[Address] = attr.ib(converter=address_list)
+    to_addrs: list[Address] = attr.ib(converter=address_list)
     utc: bool
 
-    def report(
-        self, result: Union[CommandResult, CommandError]
-    ) -> Optional[DraftMessage]:
+    def report(self, result: CommandResult | CommandError) -> Optional[DraftMessage]:
         if isinstance(result, CommandError):
             msg = DraftMessage(
                 from_addr=self.from_addr,

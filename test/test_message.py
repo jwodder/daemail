@@ -1,12 +1,12 @@
+from __future__ import annotations
 from email.headerregistry import Address
-from typing import Dict
 from mailbits import email2dict
 from daemail.message import USER_AGENT, DraftMessage
 
 TEXT = "àéîøü\n"
 
 
-def addr2dict(addr: Address) -> Dict[str, str]:
+def addr2dict(addr: Address) -> dict[str, str]:
     return {
         "display_name": addr.display_name,
         "address": addr.addr_spec,

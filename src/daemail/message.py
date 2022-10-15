@@ -1,7 +1,8 @@
+from __future__ import annotations
 from email.headerregistry import Address
 from email.message import EmailMessage
 import platform
-from typing import List, Optional, Union
+from typing import Optional
 import attr
 import eletter
 from eletter import BytesAttachment, MailItem, TextBody, reply_quote
@@ -22,10 +23,10 @@ USER_AGENT = "daemail/{} ({}) outgoing/{} eletter/{} {}/{}".format(
 @attr.s(auto_attribs=True)
 class DraftMessage:
     from_addr: Optional[Address]
-    to_addrs: List[Address] = attr.ib(converter=address_list)
+    to_addrs: list[Address] = attr.ib(converter=address_list)
     subject: str
     # List of strings and/or attachments:
-    parts: List[Union[str, MailItem]] = attr.ib(factory=list, init=False)
+    parts: list[str | MailItem] = attr.ib(factory=list, init=False)
 
     def addtext(self, txt: str) -> None:
         if self.parts and isinstance(self.parts[-1], str):

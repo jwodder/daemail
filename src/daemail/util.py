@@ -1,3 +1,5 @@
+from __future__ import annotations
+from collections.abc import Iterable
 from datetime import datetime, timezone
 from email.headerregistry import Address
 from mimetypes import guess_type
@@ -5,7 +7,7 @@ import os
 import re
 from shlex import quote
 from signal import Signals
-from typing import Iterable, List, Optional
+from typing import Optional
 import click
 from mailbits import parse_address
 
@@ -22,7 +24,7 @@ def rc_with_signal(rc: int) -> str:
 
 
 bash_slash = {
-    c: fr"\x{c:02x}" for c in list(range(0x00, 0x20)) + list(range(0x7F, 0x100))
+    c: rf"\x{c:02x}" for c in list(range(0x00, 0x20)) + list(range(0x7F, 0x100))
 }
 bash_slash.update(
     {
@@ -124,5 +126,5 @@ def get_mime_type(filename: str) -> str:
         return "application/x-" + encoding
 
 
-def address_list(addrs: Iterable[Address]) -> List[Address]:
+def address_list(addrs: Iterable[Address]) -> list[Address]:
     return list(addrs)

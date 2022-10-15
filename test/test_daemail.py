@@ -1,3 +1,4 @@
+from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import email
 from email import policy
@@ -7,7 +8,7 @@ from pathlib import Path
 import subprocess
 from traceback import format_exception
 from types import SimpleNamespace
-from typing import Any, Dict, List
+from typing import Any
 from click.testing import CliRunner, Result
 from mailbits import email2dict
 import pytest
@@ -358,11 +359,11 @@ def show_result(r: Result) -> Any:
 )
 def test_daemail(
     mocker: MockerFixture,
-    opts: List[str],
-    argv: List[str],
-    run_kwargs: Dict[str, Any],
+    opts: list[str],
+    argv: list[str],
+    run_kwargs: dict[str, Any],
     cmdresult: Any,
-    mailspec: Dict[str, Any],
+    mailspec: dict[str, Any],
 ) -> None:
     daemon_mock = mocker.patch("daemon.DaemonContext", autospec=True)
     run_mock = mocker.patch("subprocess.run", return_value=cmdresult)
@@ -469,9 +470,9 @@ def test_daemail(
 )
 def test_no_message(
     mocker: MockerFixture,
-    opts: List[str],
-    argv: List[str],
-    run_kwargs: Dict[str, Any],
+    opts: list[str],
+    argv: list[str],
+    run_kwargs: dict[str, Any],
     cmdresult: Any,
 ) -> None:
     daemon_mock = mocker.patch("daemon.DaemonContext", autospec=True)

@@ -1,7 +1,8 @@
+from __future__ import annotations
 from datetime import datetime
 import subprocess
 import traceback
-from typing import List, Optional, Union
+from typing import Optional
 import attr
 from . import util  # Access dtnow through util for mocking purposes
 
@@ -12,7 +13,7 @@ class CommandRunner:
     no_stdout: bool
     split: bool
 
-    def run(self, command: str, *args: str) -> Union["CommandResult", "CommandError"]:
+    def run(self, command: str, *args: str) -> CommandResult | CommandError:
         stdout: Optional[int]
         stderr: Optional[int]
         if self.split or self.no_stdout or self.no_stderr:
@@ -44,7 +45,7 @@ class CommandRunner:
 
 @attr.s(auto_attribs=True)
 class CommandResult:
-    argv: List[str]
+    argv: list[str]
     rc: int
     start: datetime  # aware
     end: datetime  # aware
@@ -54,7 +55,7 @@ class CommandResult:
 
 @attr.s(auto_attribs=True)
 class CommandError:
-    argv: List[str]
+    argv: list[str]
     start: datetime  # aware
     end: datetime  # aware
     tb: str

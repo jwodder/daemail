@@ -1,11 +1,13 @@
+from __future__ import annotations
 from codecs import getdecoder
+from contextlib import AbstractContextManager
 from email.headerregistry import Address
 import locale
 import os
 from pathlib import Path
 import sys
 import traceback
-from typing import Any, ContextManager, Optional, Tuple, Union
+from typing import Any, Optional
 import attr
 import click
 import daemon
@@ -167,13 +169,13 @@ def get_cwd() -> str:
 @click.argument("args", nargs=-1, type=click.UNPROCESSED)
 def main(
     command: str,
-    args: Tuple[str, ...],
-    config: Union[Path, str],
+    args: tuple[str, ...],
+    config: Path | str,
     chdir: str,
     foreground: bool,
     logfile: str,
     from_addr: Optional[Address],
-    to_addr: Tuple[Address],
+    to_addr: tuple[Address, ...],
     failure_only: bool,
     nonempty: bool,
     no_stdout: bool,
@@ -225,7 +227,7 @@ def main(
         ),
     )
 
-    ctx: ContextManager[Any]
+    ctx: AbstractContextManager[Any]
     if foreground:
         ctx = dirchanged(chdir)
     else:
