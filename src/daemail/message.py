@@ -52,7 +52,7 @@ class DraftMessage:
             )
         )
 
-    def compile(self) -> EmailMessage:
+    def compile(self) -> EmailMessage:  # noqa: A003
         msg: MailItem
         if isinstance(self.parts[0], str):
             msg = TextBody(self.parts[0])
