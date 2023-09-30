@@ -243,7 +243,7 @@ def main(
             raise
         # Daemonization succeeded but mailer failed; report errors to logfile.
         # If this open() fails, die alone where no one will ever know.
-        with open(logfile, "a") as fp:
+        with open(logfile, "a", encoding="utf-8") as fp:
             print("daemail:", __version__, file=fp)
             print("Command:", show_argv(command, *args), file=fp)
             print("Date:", dt2stamp(dtnow()), file=fp)
