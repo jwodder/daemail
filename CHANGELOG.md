@@ -1,6 +1,6 @@
 v0.8.0 (in development)
 -----------------------
-- Support Python 3.10 and 3.11
+- Support Python 3.10, 3.11, and 3.12
 - Drop support for Python 3.6
 - Support python-daemon v3.0
 - Always write to logfile using UTF-8 encoding
