@@ -4,6 +4,7 @@ v0.8.0 (in development)
 - Drop support for Python 3.6
 - Support python-daemon v3.0
 - Always write to logfile using UTF-8 encoding
+- Migrated from setuptools to hatch
 
 v0.7.0 (2021-03-15)
 -------------------
