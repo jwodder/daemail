@@ -1,5 +1,6 @@
 from __future__ import annotations
 from datetime import datetime, timedelta, timezone
+import sys
 import pytest
 from daemail.util import dt2stamp, get_mime_type, multiline822, show_argv
 
@@ -64,8 +65,14 @@ w4 = timezone(timedelta(hours=-4))
         (["foo~bar"], "'foo~bar'"),
         (["foo\x7Fbar"], r"$'foo\x7fbar'"),
         (["foo\udc80bar"], r"$'foo\x80bar'"),
-        ### TODO: This assumes sys.getfilesystemencoding() == 'utf-8':
-        (["fooébar"], r"$'foo\xc3\xa9bar'"),
+        pytest.param(
+            ["fooébar"],
+            r"$'foo\xc3\xa9bar'",
+            marks=pytest.mark.skipif(
+                sys.getfilesystemencoding() != "utf-8",
+                reason="FS encoding not UTF-8",
+            ),
+        ),
     ],
 )
 def test_show_argv(argv: list[str], output: str) -> None:
