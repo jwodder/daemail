@@ -49,6 +49,8 @@ w4 = timezone(timedelta(hours=-4))
         (["foo=bar", "quux", "bar=baz"], r"'foo=bar' quux bar=baz"),
         (["foo", "bar=baz"], r"foo bar=baz"),
         (["foo=bar=quux", "glarch"], r"'foo=bar=quux' glarch"),
+        (["quux=foo\nbar"], r"$'quux=foo\nbar'"),
+        (["quux=foo!bar"], "'quux=foo!bar'"),
         (["foo>bar"], "'foo>bar'"),
         (["foo?bar"], "'foo?bar'"),
         (["foo@bar"], "foo@bar"),
