@@ -50,8 +50,8 @@ def show_argv(*argv: str) -> str:
     should still be understandable to users of other shells.
 
     The elements of ``argv`` are assumed to have been taken directly from
-    `sys.argv` (possibly with a detour through `argparse`); specifically, they
-    are assumed to be text strings decoded with `os.fsdecode`.
+    `sys.argv` (possibly with a detour through `click`); specifically, they are
+    assumed to be text strings decoded with `os.fsdecode()`.
     """
     # Just using `repr` for this won't work, as the quotes it adds around
     # simple (e.g., alphanumeric) arguments are unnecessary, and the double
