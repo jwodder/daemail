@@ -10,7 +10,7 @@ Run ``daemail --help`` or visit <https://github.com/jwodder/daemail> for more
 information.
 """
 
-__version__ = "0.8.0.dev1"
+__version__ = "0.7.1"
 __author__ = "John Thorvald Wodder II"
 __author_email__ = "daemail@varonathe.org"
 __license__ = "MIT"
