@@ -549,7 +549,8 @@ def test_sendmail_failure(mocker: MockerFixture) -> None:
         ]
         sent_msg = email.message_from_bytes(
             run_mock.call_args_list[1][1]["input"],
-            policy=policy.default,
+            # <https://github.com/python/typeshed/issues/13273>
+            policy=policy.default,  # type: ignore[arg-type]
         )
         assert email2dict(sent_msg) == {
             "unixfrom": None,
