@@ -600,7 +600,7 @@ def test_report_undecodable_stdout_empty_stderr(
         rc=0,
         start=datetime(2020, 3, 10, 15, 0, 28, 123456, w4),
         end=datetime(2020, 3, 10, 15, 1, 27, 654321, w4),
-        stdout=b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+        stdout=b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
         stderr=stderr,
     )
     reporter = CommandReporter(
@@ -630,7 +630,7 @@ def test_report_undecodable_stdout_empty_stderr(
                 "Output:\n"
             ),
             BytesAttachment(
-                b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+                b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
                 "stdout",
                 content_type="application/octet-stream",
                 inline=True,
@@ -648,7 +648,7 @@ def test_report_undecodable_stdout_good_stderr(mocker: MockerFixture) -> None:
         rc=0,
         start=datetime(2020, 3, 10, 15, 0, 28, 123456, w4),
         end=datetime(2020, 3, 10, 15, 1, 27, 654321, w4),
-        stdout=b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+        stdout=b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
         stderr=b"This is in ASCII.\n",
     )
     reporter = CommandReporter(
@@ -678,7 +678,7 @@ def test_report_undecodable_stdout_good_stderr(mocker: MockerFixture) -> None:
                 "Output:\n"
             ),
             BytesAttachment(
-                b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+                b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
                 "stdout",
                 content_type="application/octet-stream",
                 inline=True,
@@ -698,7 +698,7 @@ def test_report_empty_stdout_undecodable_stderr(mocker: MockerFixture) -> None:
         start=datetime(2020, 3, 10, 15, 0, 28, 123456, w4),
         end=datetime(2020, 3, 10, 15, 1, 27, 654321, w4),
         stdout=b"",
-        stderr=b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+        stderr=b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
     )
     reporter = CommandReporter(
         encoding="utf-8",
@@ -729,7 +729,7 @@ def test_report_empty_stdout_undecodable_stderr(mocker: MockerFixture) -> None:
                 "Error Output:\n"
             ),
             BytesAttachment(
-                b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+                b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
                 "stderr",
                 content_type="application/octet-stream",
                 inline=True,
@@ -748,7 +748,7 @@ def test_report_good_stdout_undecodable_stderr(mocker: MockerFixture) -> None:
         start=datetime(2020, 3, 10, 15, 0, 28, 123456, w4),
         end=datetime(2020, 3, 10, 15, 1, 27, 654321, w4),
         stdout=b"This is in ASCII.\n",
-        stderr=b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+        stderr=b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
     )
     reporter = CommandReporter(
         encoding="utf-8",
@@ -780,7 +780,7 @@ def test_report_good_stdout_undecodable_stderr(mocker: MockerFixture) -> None:
                 "Error Output:\n"
             ),
             BytesAttachment(
-                b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+                b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
                 "stderr",
                 content_type="application/octet-stream",
                 inline=True,
@@ -798,8 +798,8 @@ def test_report_undecodable_stdout_and_stderr(mocker: MockerFixture) -> None:
         rc=0,
         start=datetime(2020, 3, 10, 15, 0, 28, 123456, w4),
         end=datetime(2020, 3, 10, 15, 1, 27, 654321, w4),
-        stdout=b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
-        stderr=b"\xE3\x88\x89\xA2@\x89\xA2@\x89\x95@\xC5\xC2\xC3\xC4\xC9\xC3K%",
+        stdout=b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
+        stderr=b"\xe3\x88\x89\xa2@\x89\xa2@\x89\x95@\xc5\xc2\xc3\xc4\xc9\xc3K%",
     )
     reporter = CommandReporter(
         encoding="utf-8",
@@ -828,14 +828,14 @@ def test_report_undecodable_stdout_and_stderr(mocker: MockerFixture) -> None:
                 "Output:\n"
             ),
             BytesAttachment(
-                b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+                b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
                 "stdout",
                 content_type="application/octet-stream",
                 inline=True,
             ),
             "\nError Output:\n",
             BytesAttachment(
-                b"\xE3\x88\x89\xA2@\x89\xA2@\x89\x95@\xC5\xC2\xC3\xC4\xC9\xC3K%",
+                b"\xe3\x88\x89\xa2@\x89\xa2@\x89\x95@\xc5\xc2\xc3\xc4\xc9\xc3K%",
                 "stderr",
                 content_type="application/octet-stream",
                 inline=True,

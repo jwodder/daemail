@@ -115,7 +115,7 @@ def test_compile_text_blob_text() -> None:
     )
     draft.addtext("This is line 1.\n")
     draft.addmimeblob(
-        b"\xDE\xAD\xBE\xEF",
+        b"\xde\xad\xbe\xef",
         "application/octet-stream",
         "deadbeef.dat",
     )
@@ -159,7 +159,7 @@ def test_compile_text_blob_text() -> None:
                     },
                 },
                 "preamble": None,
-                "content": b"\xDE\xAD\xBE\xEF",
+                "content": b"\xde\xad\xbe\xef",
                 "epilogue": None,
             },
             {
@@ -192,7 +192,7 @@ def test_compile_text_quote() -> None:
     )
     draft.addtext("This is a quote:\n")
     draft.addblobquote(
-        b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+        b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
         "iso-8859-1",
         "latin1.txt",
     )
@@ -209,7 +209,7 @@ def test_compile_text_quote() -> None:
             },
         },
         "preamble": None,
-        "content": "This is a quote:\n> \xD0is is i\xF1 L\xE1tin\xB9.\n",
+        "content": "This is a quote:\n> \xd0is is i\xf1 L\xe1tin\xb9.\n",
         "epilogue": None,
     }
 
@@ -227,7 +227,7 @@ def test_compile_text_undecodable_quote() -> None:
     )
     draft.addtext("This is a quote:\n")
     draft.addblobquote(
-        b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+        b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
         "utf-8",
         "latin1.txt",
     )
@@ -270,7 +270,7 @@ def test_compile_text_undecodable_quote() -> None:
                     },
                 },
                 "preamble": None,
-                "content": b"\xD0is is i\xF1 L\xE1tin\xB9.\n",
+                "content": b"\xd0is is i\xf1 L\xe1tin\xb9.\n",
                 "epilogue": None,
             },
         ],

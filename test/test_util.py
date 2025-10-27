@@ -22,7 +22,7 @@ w4 = timezone(timedelta(hours=-4))
         (["foo\vbar"], r"$'foo\vbar'"),
         (["foo\fbar"], r"$'foo\fbar'"),
         (["foo\rbar"], r"$'foo\rbar'"),
-        (["foo\x1Bbar"], r"$'foo\ebar'"),
+        (["foo\x1bbar"], r"$'foo\ebar'"),
         (["foo bar"], "'foo bar'"),
         (["foo!bar"], "'foo!bar'"),
         (['foo"bar'], "'foo\"bar'"),
@@ -65,7 +65,7 @@ w4 = timezone(timedelta(hours=-4))
         (["foo|bar"], "'foo|bar'"),
         (["foo}bar"], "'foo}bar'"),
         (["foo~bar"], "'foo~bar'"),
-        (["foo\x7Fbar"], r"$'foo\x7fbar'"),
+        (["foo\x7fbar"], r"$'foo\x7fbar'"),
         (["foo\udc80bar"], r"$'foo\x80bar'"),
         pytest.param(
             ["fooébar"],
