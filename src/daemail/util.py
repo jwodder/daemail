@@ -1,5 +1,4 @@
 from __future__ import annotations
-from collections.abc import Iterable
 from datetime import datetime, timezone
 from email.headerregistry import Address
 from mimetypes import guess_type
@@ -123,7 +122,3 @@ def get_mime_type(filename: str) -> str:
         # return mtype + '+gzip'
     else:
         return "application/x-" + encoding
-
-
-def address_list(addrs: Iterable[Address]) -> list[Address]:
-    return list(addrs)

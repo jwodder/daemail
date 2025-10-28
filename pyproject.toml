@@ -45,7 +45,6 @@ classifiers = [
 ]
 
 dependencies = [
-    "attrs         >= 18.1",
     "click         >= 7.0",
     "eletter       ~= 0.4",
     "mailbits      ~= 0.2",

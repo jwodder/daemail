@@ -1,12 +1,12 @@
 from __future__ import annotations
+from dataclasses import dataclass
 from datetime import datetime
 import subprocess
 import traceback
-import attr
 from . import util  # Access dtnow through util for mocking purposes
 
 
-@attr.s(auto_attribs=True)
+@dataclass
 class CommandRunner:
     no_stderr: bool
     no_stdout: bool
@@ -42,7 +42,7 @@ class CommandRunner:
         )
 
 
-@attr.s(auto_attribs=True)
+@dataclass
 class CommandResult:
     argv: list[str]
     rc: int
@@ -52,7 +52,7 @@ class CommandResult:
     stderr: bytes | None
 
 
-@attr.s(auto_attribs=True)
+@dataclass
 class CommandError:
     argv: list[str]
     start: datetime  # aware

@@ -2,6 +2,7 @@ v0.8.0 (in development)
 -----------------------
 - Support Python 3.14
 - Drop support for Python 3.8 and 3.9
+- Remove `attrs` dependency
 
 v0.7.1 (2024-12-01)
 -------------------

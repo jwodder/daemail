@@ -1,6 +1,7 @@
 from __future__ import annotations
 from codecs import getdecoder
 from contextlib import AbstractContextManager
+from dataclasses import dataclass
 from email.headerregistry import Address
 import locale
 import os
@@ -8,7 +9,6 @@ from pathlib import Path
 import sys
 import traceback
 from typing import Any
-import attr
 import click
 import daemon
 from daemon.daemon import DaemonError
@@ -218,7 +218,7 @@ def main(
             nonempty=nonempty,
             stderr_encoding=stderr_encoding,
             stdout_filename=stdout_filename,
-            to_addrs=to_addr,
+            to_addrs=list(to_addr),
             utc=utc,
         ),
         mailer=senders.TryingSender(
@@ -256,7 +256,7 @@ def main(
         sys.exit(1)
 
 
-@attr.s(auto_attribs=True)
+@dataclass
 class Daemail:
     runner: runner.CommandRunner
     reporter: reporter.CommandReporter
