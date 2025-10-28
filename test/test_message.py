@@ -15,10 +15,10 @@ def addr2dict(addr: Address) -> dict[str, str]:
 
 def test_compile_text() -> None:
     from_addr = Address("Joe Q. Sender", addr_spec="joe@example.nil")
-    to_addrs = (
+    to_addrs = [
         Address(addr_spec="me@example.com"),
         Address("Jane Q. Recipient", addr_spec="jane@example.org"),
-    )
+    ]
     draft = DraftMessage(
         from_addr=from_addr,
         to_addrs=to_addrs,
@@ -44,10 +44,10 @@ def test_compile_text() -> None:
 
 
 def test_compile_text_no_from() -> None:
-    to_addrs = (
+    to_addrs = [
         Address(addr_spec="me@example.com"),
         Address("Jane Q. Recipient", addr_spec="jane@example.org"),
-    )
+    ]
     draft = DraftMessage(
         from_addr=None,
         to_addrs=to_addrs,
@@ -73,10 +73,10 @@ def test_compile_text_no_from() -> None:
 
 def test_compile_multiline_text() -> None:
     from_addr = Address("Joe Q. Sender", addr_spec="joe@example.nil")
-    to_addrs = (
+    to_addrs = [
         Address(addr_spec="me@example.com"),
         Address("Jane Q. Recipient", addr_spec="jane@example.org"),
-    )
+    ]
     draft = DraftMessage(
         from_addr=from_addr,
         to_addrs=to_addrs,
@@ -104,10 +104,10 @@ def test_compile_multiline_text() -> None:
 
 def test_compile_text_blob_text() -> None:
     from_addr = Address("Joe Q. Sender", addr_spec="joe@example.nil")
-    to_addrs = (
+    to_addrs = [
         Address(addr_spec="me@example.com"),
         Address("Jane Q. Recipient", addr_spec="jane@example.org"),
-    )
+    ]
     draft = DraftMessage(
         from_addr=from_addr,
         to_addrs=to_addrs,
@@ -181,10 +181,10 @@ def test_compile_text_blob_text() -> None:
 
 def test_compile_text_quote() -> None:
     from_addr = Address("Joe Q. Sender", addr_spec="joe@example.nil")
-    to_addrs = (
+    to_addrs = [
         Address(addr_spec="me@example.com"),
         Address("Jane Q. Recipient", addr_spec="jane@example.org"),
-    )
+    ]
     draft = DraftMessage(
         from_addr=from_addr,
         to_addrs=to_addrs,
@@ -216,10 +216,10 @@ def test_compile_text_quote() -> None:
 
 def test_compile_text_undecodable_quote() -> None:
     from_addr = Address("Joe Q. Sender", addr_spec="joe@example.nil")
-    to_addrs = (
+    to_addrs = [
         Address(addr_spec="me@example.com"),
         Address("Jane Q. Recipient", addr_spec="jane@example.org"),
-    )
+    ]
     draft = DraftMessage(
         from_addr=from_addr,
         to_addrs=to_addrs,

@@ -1,5 +1,4 @@
 from __future__ import annotations
-from collections.abc import Iterable
 from datetime import datetime, timezone
 from email.headerregistry import Address
 from mimetypes import guess_type
@@ -7,7 +6,6 @@ import os
 import re
 from shlex import quote
 from signal import Signals
-from typing import Optional
 import click
 from mailbits import parse_address
 
@@ -98,8 +96,8 @@ class AddressParamType(click.ParamType):
     def convert(
         self,
         value: str,
-        param: Optional[click.Parameter],
-        ctx: Optional[click.Context],
+        param: click.Parameter | None,
+        ctx: click.Context | None,
     ) -> Address:
         try:
             return parse_address(value)
@@ -124,7 +122,3 @@ def get_mime_type(filename: str) -> str:
         # return mtype + '+gzip'
     else:
         return "application/x-" + encoding
-
-
-def address_list(addrs: Iterable[Address]) -> list[Address]:
-    return list(addrs)

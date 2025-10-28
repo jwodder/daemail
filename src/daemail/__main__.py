@@ -1,14 +1,14 @@
 from __future__ import annotations
 from codecs import getdecoder
 from contextlib import AbstractContextManager
+from dataclasses import dataclass
 from email.headerregistry import Address
 import locale
 import os
 from pathlib import Path
 import sys
 import traceback
-from typing import Any, Optional
-import attr
+from typing import Any
 import click
 import daemon
 from daemon.daemon import DaemonError
@@ -174,17 +174,17 @@ def main(
     chdir: str,
     foreground: bool,
     logfile: str,
-    from_addr: Optional[Address],
+    from_addr: Address | None,
     to_addr: tuple[Address, ...],
     failure_only: bool,
     nonempty: bool,
     no_stdout: bool,
     no_stderr: bool,
     split: bool,
-    encoding: Optional[str],
-    stderr_encoding: Optional[str],
-    mime_type: Optional[str],
-    stdout_filename: Optional[str],
+    encoding: str | None,
+    stderr_encoding: str | None,
+    mime_type: str | None,
+    stdout_filename: str | None,
     utc: bool,
     dead_letter: str,
 ) -> None:
@@ -218,7 +218,7 @@ def main(
             nonempty=nonempty,
             stderr_encoding=stderr_encoding,
             stdout_filename=stdout_filename,
-            to_addrs=to_addr,
+            to_addrs=list(to_addr),
             utc=utc,
         ),
         mailer=senders.TryingSender(
@@ -256,7 +256,7 @@ def main(
         sys.exit(1)
 
 
-@attr.s(auto_attribs=True)
+@dataclass
 class Daemail:
     runner: runner.CommandRunner
     reporter: reporter.CommandReporter

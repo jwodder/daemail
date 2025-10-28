@@ -1,14 +1,14 @@
+from dataclasses import dataclass
 import locale
 from subprocess import CalledProcessError
 import traceback
-import attr
 from eletter import reply_quote
 from outgoing import Sender, from_dict
 from .message import DraftMessage
 from .util import rc_with_signal
 
 
-@attr.s(auto_attribs=True)
+@dataclass
 class TryingSender:
     """
     Tries to send a message via the given sender object, falling back to

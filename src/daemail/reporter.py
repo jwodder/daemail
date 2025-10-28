@@ -1,29 +1,26 @@
 from __future__ import annotations
+from dataclasses import dataclass
 from email.headerregistry import Address
-from typing import Optional
-import attr
 from eletter import reply_quote
-
-# Access `show_argv()` through `util` for mocking purposes
-from . import util
+from . import util  # Access `show_argv()` through `util` for mocking purposes
 from .message import DraftMessage
 from .runner import CommandError, CommandResult
-from .util import address_list, dt2stamp, rc_with_signal
+from .util import dt2stamp, rc_with_signal
 
 
-@attr.s(auto_attribs=True)
+@dataclass
 class CommandReporter:
     encoding: str
     failure_only: bool
-    from_addr: Optional[Address]
-    mime_type: Optional[str]
+    from_addr: Address | None
+    mime_type: str | None
     nonempty: bool
     stderr_encoding: str
-    stdout_filename: Optional[str]  # non-None iff mime_type is non-None
-    to_addrs: list[Address] = attr.ib(converter=address_list)
+    stdout_filename: str | None  # non-None iff mime_type is non-None
+    to_addrs: list[Address]
     utc: bool
 
-    def report(self, result: CommandResult | CommandError) -> Optional[DraftMessage]:
+    def report(self, result: CommandResult | CommandError) -> DraftMessage | None:
         if isinstance(result, CommandError):
             msg = DraftMessage(
                 from_addr=self.from_addr,

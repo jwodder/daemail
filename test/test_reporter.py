@@ -1,8 +1,7 @@
+from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 from email.headerregistry import Address
 import signal
-from typing import Optional
-import attr
 from eletter import BytesAttachment
 import pytest
 from pytest_mock import MockerFixture
@@ -203,7 +202,7 @@ def test_report_plain_message(
     show_argv_spy = mocker.spy(util, "show_argv")
     msg = reporter.report(result)
     assert isinstance(msg, DraftMessage)
-    assert attr.asdict(msg) == {
+    assert asdict(msg) == {
         "to_addrs": to_addrs,
         "subject": subject,
         "from_addr": from_addr,
@@ -245,7 +244,7 @@ def test_report_command_error(
     show_argv_spy = mocker.spy(util, "show_argv")
     msg = reporter.report(result)
     assert isinstance(msg, DraftMessage)
-    assert attr.asdict(msg) == {
+    assert asdict(msg) == {
         "to_addrs": to_addrs,
         "subject": "[ERROR] foo -x bar.txt",
         "from_addr": from_addr,
@@ -284,7 +283,7 @@ def test_report_stdout_mime(mocker: MockerFixture) -> None:
     show_argv_spy = mocker.spy(util, "show_argv")
     msg = reporter.report(result)
     assert isinstance(msg, DraftMessage)
-    assert attr.asdict(msg, recurse=False) == {
+    assert asdict(msg) == {
         "to_addrs": to_addrs,
         "subject": "[DONE] foo -x bar.txt",
         "from_addr": from_addr,
@@ -411,8 +410,8 @@ def test_report_stdout_mime(mocker: MockerFixture) -> None:
 )
 def test_report_nonempty(
     result: CommandResult,
-    subject: Optional[str],
-    body: Optional[str],
+    subject: str | None,
+    body: str | None,
 ) -> None:
     from_addr = Address("Command Reporter", addr_spec="reporter@example.com")
     to_addrs = [Address("Re Cipient", addr_spec="person@example.com")]
@@ -432,7 +431,7 @@ def test_report_nonempty(
         assert msg is None
     else:
         assert isinstance(msg, DraftMessage)
-        assert attr.asdict(msg) == {
+        assert asdict(msg) == {
             "to_addrs": to_addrs,
             "subject": subject,
             "from_addr": from_addr,
@@ -518,8 +517,8 @@ def test_report_nonempty(
 )
 def test_report_failure_only(
     result: CommandResult,
-    subject: Optional[str],
-    body: Optional[str],
+    subject: str | None,
+    body: str | None,
 ) -> None:
     from_addr = Address("Command Reporter", addr_spec="reporter@example.com")
     to_addrs = [Address("Re Cipient", addr_spec="person@example.com")]
@@ -539,7 +538,7 @@ def test_report_failure_only(
         assert msg is None
     else:
         assert isinstance(msg, DraftMessage)
-        assert attr.asdict(msg) == {
+        assert asdict(msg) == {
             "to_addrs": to_addrs,
             "subject": subject,
             "from_addr": from_addr,
@@ -572,7 +571,7 @@ def test_report_utc(mocker: MockerFixture) -> None:
     show_argv_spy = mocker.spy(util, "show_argv")
     msg = reporter.report(result)
     assert isinstance(msg, DraftMessage)
-    assert attr.asdict(msg) == {
+    assert asdict(msg) == {
         "to_addrs": to_addrs,
         "subject": "[DONE] foo -x bar.txt",
         "from_addr": from_addr,
@@ -591,7 +590,7 @@ def test_report_utc(mocker: MockerFixture) -> None:
 @pytest.mark.parametrize("stderr", [b"", None])
 def test_report_undecodable_stdout_empty_stderr(
     mocker: MockerFixture,
-    stderr: Optional[bytes],
+    stderr: bytes | None,
 ) -> None:
     from_addr = Address("Command Reporter", addr_spec="reporter@example.com")
     to_addrs = [Address("Re Cipient", addr_spec="person@example.com")]
@@ -617,7 +616,7 @@ def test_report_undecodable_stdout_empty_stderr(
     show_argv_spy = mocker.spy(util, "show_argv")
     msg = reporter.report(result)
     assert isinstance(msg, DraftMessage)
-    assert attr.asdict(msg, recurse=False) == {
+    assert asdict(msg) == {
         "to_addrs": to_addrs,
         "subject": "[DONE] foo -x bar.txt",
         "from_addr": from_addr,
@@ -665,7 +664,7 @@ def test_report_undecodable_stdout_good_stderr(mocker: MockerFixture) -> None:
     show_argv_spy = mocker.spy(util, "show_argv")
     msg = reporter.report(result)
     assert isinstance(msg, DraftMessage)
-    assert attr.asdict(msg, recurse=False) == {
+    assert asdict(msg) == {
         "to_addrs": to_addrs,
         "subject": "[DONE] foo -x bar.txt",
         "from_addr": from_addr,
@@ -714,7 +713,7 @@ def test_report_empty_stdout_undecodable_stderr(mocker: MockerFixture) -> None:
     show_argv_spy = mocker.spy(util, "show_argv")
     msg = reporter.report(result)
     assert isinstance(msg, DraftMessage)
-    assert attr.asdict(msg, recurse=False) == {
+    assert asdict(msg) == {
         "to_addrs": to_addrs,
         "subject": "[DONE] foo -x bar.txt",
         "from_addr": from_addr,
@@ -764,7 +763,7 @@ def test_report_good_stdout_undecodable_stderr(mocker: MockerFixture) -> None:
     show_argv_spy = mocker.spy(util, "show_argv")
     msg = reporter.report(result)
     assert isinstance(msg, DraftMessage)
-    assert attr.asdict(msg, recurse=False) == {
+    assert asdict(msg) == {
         "to_addrs": to_addrs,
         "subject": "[DONE] foo -x bar.txt",
         "from_addr": from_addr,
@@ -815,7 +814,7 @@ def test_report_undecodable_stdout_and_stderr(mocker: MockerFixture) -> None:
     show_argv_spy = mocker.spy(util, "show_argv")
     msg = reporter.report(result)
     assert isinstance(msg, DraftMessage)
-    assert attr.asdict(msg, recurse=False) == {
+    assert asdict(msg) == {
         "to_addrs": to_addrs,
         "subject": "[DONE] foo -x bar.txt",
         "from_addr": from_addr,
