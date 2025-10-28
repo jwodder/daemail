@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import sys
 import traceback
-from typing import Any, Optional
+from typing import Any
 import attr
 import click
 import daemon
@@ -174,17 +174,17 @@ def main(
     chdir: str,
     foreground: bool,
     logfile: str,
-    from_addr: Optional[Address],
+    from_addr: Address | None,
     to_addr: tuple[Address, ...],
     failure_only: bool,
     nonempty: bool,
     no_stdout: bool,
     no_stderr: bool,
     split: bool,
-    encoding: Optional[str],
-    stderr_encoding: Optional[str],
-    mime_type: Optional[str],
-    stdout_filename: Optional[str],
+    encoding: str | None,
+    stderr_encoding: str | None,
+    mime_type: str | None,
+    stdout_filename: str | None,
     utc: bool,
     dead_letter: str,
 ) -> None:

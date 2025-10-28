@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from email.headerregistry import Address
 import signal
-from typing import Optional
 import attr
 from eletter import BytesAttachment
 import pytest
@@ -411,8 +410,8 @@ def test_report_stdout_mime(mocker: MockerFixture) -> None:
 )
 def test_report_nonempty(
     result: CommandResult,
-    subject: Optional[str],
-    body: Optional[str],
+    subject: str | None,
+    body: str | None,
 ) -> None:
     from_addr = Address("Command Reporter", addr_spec="reporter@example.com")
     to_addrs = [Address("Re Cipient", addr_spec="person@example.com")]
@@ -518,8 +517,8 @@ def test_report_nonempty(
 )
 def test_report_failure_only(
     result: CommandResult,
-    subject: Optional[str],
-    body: Optional[str],
+    subject: str | None,
+    body: str | None,
 ) -> None:
     from_addr = Address("Command Reporter", addr_spec="reporter@example.com")
     to_addrs = [Address("Re Cipient", addr_spec="person@example.com")]
@@ -591,7 +590,7 @@ def test_report_utc(mocker: MockerFixture) -> None:
 @pytest.mark.parametrize("stderr", [b"", None])
 def test_report_undecodable_stdout_empty_stderr(
     mocker: MockerFixture,
-    stderr: Optional[bytes],
+    stderr: bytes | None,
 ) -> None:
     from_addr = Address("Command Reporter", addr_spec="reporter@example.com")
     to_addrs = [Address("Re Cipient", addr_spec="person@example.com")]

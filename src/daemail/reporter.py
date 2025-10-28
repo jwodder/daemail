@@ -1,6 +1,5 @@
 from __future__ import annotations
 from email.headerregistry import Address
-from typing import Optional
 import attr
 from eletter import reply_quote
 
@@ -15,15 +14,15 @@ from .util import address_list, dt2stamp, rc_with_signal
 class CommandReporter:
     encoding: str
     failure_only: bool
-    from_addr: Optional[Address]
-    mime_type: Optional[str]
+    from_addr: Address | None
+    mime_type: str | None
     nonempty: bool
     stderr_encoding: str
-    stdout_filename: Optional[str]  # non-None iff mime_type is non-None
+    stdout_filename: str | None  # non-None iff mime_type is non-None
     to_addrs: list[Address] = attr.ib(converter=address_list)
     utc: bool
 
-    def report(self, result: CommandResult | CommandError) -> Optional[DraftMessage]:
+    def report(self, result: CommandResult | CommandError) -> DraftMessage | None:
         if isinstance(result, CommandError):
             msg = DraftMessage(
                 from_addr=self.from_addr,

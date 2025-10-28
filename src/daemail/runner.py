@@ -2,7 +2,6 @@ from __future__ import annotations
 from datetime import datetime
 import subprocess
 import traceback
-from typing import Optional
 import attr
 from . import util  # Access dtnow through util for mocking purposes
 
@@ -14,8 +13,8 @@ class CommandRunner:
     split: bool
 
     def run(self, command: str, *args: str) -> CommandResult | CommandError:
-        stdout: Optional[int]
-        stderr: Optional[int]
+        stdout: int | None
+        stderr: int | None
         if self.split or self.no_stdout or self.no_stderr:
             stdout = None if self.no_stdout else subprocess.PIPE
             stderr = None if self.no_stderr else subprocess.PIPE
@@ -49,8 +48,8 @@ class CommandResult:
     rc: int
     start: datetime  # aware
     end: datetime  # aware
-    stdout: Optional[bytes]
-    stderr: Optional[bytes]
+    stdout: bytes | None
+    stderr: bytes | None
 
 
 @attr.s(auto_attribs=True)

@@ -7,7 +7,6 @@ import os
 import re
 from shlex import quote
 from signal import Signals
-from typing import Optional
 import click
 from mailbits import parse_address
 
@@ -98,8 +97,8 @@ class AddressParamType(click.ParamType):
     def convert(
         self,
         value: str,
-        param: Optional[click.Parameter],
-        ctx: Optional[click.Context],
+        param: click.Parameter | None,
+        ctx: click.Context | None,
     ) -> Address:
         try:
             return parse_address(value)
