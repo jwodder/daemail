@@ -359,6 +359,8 @@ def show_result(r: Result) -> Any:
 )
 def test_daemail(
     mocker: MockerFixture,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
     opts: list[str],
     argv: list[str],
     run_kwargs: dict[str, Any],
@@ -371,25 +373,24 @@ def test_daemail(
         "daemail.util.dtnow",
         side_effect=[MOCK_START, MOCK_END],
     )
-    runner = CliRunner()
-    with runner.isolated_filesystem():
-        Path("config.toml").write_text(
-            "[outgoing]\n" 'method = "mbox"\n' 'path = "daemail.mbox"\n'
-        )
-        r = runner.invoke(main, [*opts, "--config", "config.toml", *argv])
-        assert r.exit_code == 0, show_result(r)
-        if "--foreground" in opts:
-            assert not daemon_mock.called
-        else:
-            assert daemon_mock.call_count == 1
-            assert daemon_mock.return_value.__enter__.call_count == 1
-        run_mock.assert_called_once_with(argv, **run_kwargs)
-        assert dtnow_mock.call_count == 2
-        assert sorted(os.listdir()) == ["config.toml", "daemail.mbox"]
-        mbox = mailbox.mbox("daemail.mbox")
-        mbox.lock()
-        msgs = list(mbox)
-        mbox.close()
+    monkeypatch.chdir(tmp_path)
+    Path("config.toml").write_text(
+        '[outgoing]\nmethod = "mbox"\npath = "daemail.mbox"\n'
+    )
+    r = CliRunner().invoke(main, [*opts, "--config", "config.toml", *argv])
+    assert r.exit_code == 0, show_result(r)
+    if "--foreground" in opts:
+        assert not daemon_mock.called
+    else:
+        assert daemon_mock.call_count == 1
+        assert daemon_mock.return_value.__enter__.call_count == 1
+    run_mock.assert_called_once_with(argv, **run_kwargs)
+    assert dtnow_mock.call_count == 2
+    assert sorted(os.listdir()) == ["config.toml", "daemail.mbox"]
+    mbox = mailbox.mbox("daemail.mbox")
+    mbox.lock()
+    msgs = list(mbox)
+    mbox.close()
     assert len(msgs) == 1
     msgdict = email2dict(msgs[0])
     msgdict["unixfrom"] = None
@@ -470,6 +471,8 @@ def test_daemail(
 )
 def test_no_message(
     mocker: MockerFixture,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
     opts: list[str],
     argv: list[str],
     run_kwargs: dict[str, Any],
@@ -481,21 +484,22 @@ def test_no_message(
         "daemail.util.dtnow",
         side_effect=[MOCK_START, MOCK_END],
     )
-    runner = CliRunner()
-    with runner.isolated_filesystem():
-        Path("config.toml").write_text(
-            "[outgoing]\n" 'method = "mbox"\n' 'path = "daemail.mbox"\n'
-        )
-        r = runner.invoke(main, [*opts, "--config", "config.toml", *argv])
-        assert r.exit_code == 0, show_result(r)
-        assert daemon_mock.call_count == 1
-        assert daemon_mock.return_value.__enter__.call_count == 1
-        run_mock.assert_called_once_with(argv, **run_kwargs)
-        assert dtnow_mock.call_count == 2
-        assert os.listdir() == ["config.toml"]
+    monkeypatch.chdir(tmp_path)
+    Path("config.toml").write_text(
+        '[outgoing]\nmethod = "mbox"\npath = "daemail.mbox"\n'
+    )
+    r = CliRunner().invoke(main, [*opts, "--config", "config.toml", *argv])
+    assert r.exit_code == 0, show_result(r)
+    assert daemon_mock.call_count == 1
+    assert daemon_mock.return_value.__enter__.call_count == 1
+    run_mock.assert_called_once_with(argv, **run_kwargs)
+    assert dtnow_mock.call_count == 2
+    assert os.listdir() == ["config.toml"]
 
 
-def test_sendmail_failure(mocker: MockerFixture) -> None:
+def test_sendmail_failure(
+    mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     daemon_mock = mocker.patch("daemon.DaemonContext", autospec=True)
     run_mock = mocker.patch(
         "subprocess.run",
@@ -517,70 +521,69 @@ def test_sendmail_failure(mocker: MockerFixture) -> None:
         "daemail.util.dtnow",
         side_effect=[MOCK_START, MOCK_END],
     )
-    runner = CliRunner()
     argv = ["not-a-real-command", "-x", "foo.txt"]
-    with runner.isolated_filesystem():
-        Path("config.toml").write_text('[outgoing]\nmethod = "command"\n')
-        r = runner.invoke(
-            main,
-            [
-                "-t",
-                "null@test.test",
-                "-f",
-                "Me <sender@example.nil>",
-                "-c",
-                "config.toml",
-                *argv,
-            ],
-        )
-        assert r.exit_code == 0, show_result(r)
-        assert daemon_mock.call_count == 1
-        assert daemon_mock.return_value.__enter__.call_count == 1
-        assert run_mock.call_args_list == [
-            mocker.call(argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT),
-            mocker.call(
-                ["sendmail", "-i", "-t"],
-                shell=False,
-                input=mocker.ANY,
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            ),
-        ]
-        sent_msg = email.message_from_bytes(
-            run_mock.call_args_list[1][1]["input"],
-            # <https://github.com/python/typeshed/issues/13273>
-            policy=policy.default,  # type: ignore[arg-type]
-        )
-        assert email2dict(sent_msg) == {
-            "unixfrom": None,
-            "headers": {
-                "from": [{"display_name": "Me", "address": "sender@example.nil"}],
-                "to": [{"display_name": "", "address": "null@test.test"}],
-                "subject": "[DONE] not-a-real-command -x foo.txt",
-                "user-agent": [USER_AGENT],
-                "content-type": {
-                    "content_type": "text/plain",
-                    "params": {},
-                },
+    monkeypatch.chdir(tmp_path)
+    Path("config.toml").write_text('[outgoing]\nmethod = "command"\n')
+    r = CliRunner().invoke(
+        main,
+        [
+            "-t",
+            "null@test.test",
+            "-f",
+            "Me <sender@example.nil>",
+            "-c",
+            "config.toml",
+            *argv,
+        ],
+    )
+    assert r.exit_code == 0, show_result(r)
+    assert daemon_mock.call_count == 1
+    assert daemon_mock.return_value.__enter__.call_count == 1
+    assert run_mock.call_args_list == [
+        mocker.call(argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT),
+        mocker.call(
+            ["sendmail", "-i", "-t"],
+            shell=False,
+            input=mocker.ANY,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        ),
+    ]
+    sent_msg = email.message_from_bytes(
+        run_mock.call_args_list[1][1]["input"],
+        # <https://github.com/python/typeshed/issues/13273>
+        policy=policy.default,  # type: ignore[arg-type]
+    )
+    assert email2dict(sent_msg) == {
+        "unixfrom": None,
+        "headers": {
+            "from": [{"display_name": "Me", "address": "sender@example.nil"}],
+            "to": [{"display_name": "", "address": "null@test.test"}],
+            "subject": "[DONE] not-a-real-command -x foo.txt",
+            "user-agent": [USER_AGENT],
+            "content-type": {
+                "content_type": "text/plain",
+                "params": {},
             },
-            "preamble": None,
-            "content": (
-                "Start Time:  2020-03-11 16:22:32.010203-04:00\n"
-                "End Time:    2020-03-11 16:24:19.102030-04:00\n"
-                "Exit Status: 0\n"
-                "\n"
-                "Output:\n"
-                "> This is the output.\n"
-            ),
-            "epilogue": None,
-        }
-        assert dtnow_mock.call_count == 2
-        assert sorted(os.listdir()) == ["config.toml", "dead.letter"]
-        mbox = mailbox.mbox("dead.letter")
-        mbox.lock()
-        dead_msgs = list(mbox)
-        mbox.close()
+        },
+        "preamble": None,
+        "content": (
+            "Start Time:  2020-03-11 16:22:32.010203-04:00\n"
+            "End Time:    2020-03-11 16:24:19.102030-04:00\n"
+            "Exit Status: 0\n"
+            "\n"
+            "Output:\n"
+            "> This is the output.\n"
+        ),
+        "epilogue": None,
+    }
+    assert dtnow_mock.call_count == 2
+    assert sorted(os.listdir()) == ["config.toml", "dead.letter"]
+    mbox = mailbox.mbox("dead.letter")
+    mbox.lock()
+    dead_msgs = list(mbox)
+    mbox.close()
     assert len(dead_msgs) == 1
     msgdict = email2dict(dead_msgs[0])
     msgdict["unixfrom"] = None
